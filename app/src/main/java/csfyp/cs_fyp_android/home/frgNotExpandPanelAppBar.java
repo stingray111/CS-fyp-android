@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import csfyp.cs_fyp_android.R;
 
-public class FrgNotExpandPanelAppBar extends Fragment {
+class FrgNotExpandPanelAppBar extends Fragment {
 
     public FrgNotExpandPanelAppBar() {
     }
