@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+            <!--  icon  row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal">
+                <!-- icon -->
+                <LinearLayout
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="#c40d0d"></LinearLayout>
+            </LinearLayout>
+            <!-- name row -->
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dp"
+                    android:textAlignment="center"
+                    android:textSize="50dp"
+                    android:text="Ken Tung"
+                    android:textColor="@drawable/ic_arrow_back_black_48dp"/>
+            <!-- level row -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:paddingLeft="5dp"
+                android:text="[Lv: 12]" />
+            <!-- thump row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp">
+
+            </LinearLayout>
+            <!-- line -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#111111"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="mobile"
+                android:textColor="@drawable/ic_arrow_back_black_48dp"
+                android:paddingBottom="5dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="6156 5916"
+                android:textColor="#2115d7"/>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#111111"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="email"
+                android:textColor="@drawable/ic_arrow_back_black_48dp"
+                android:paddingBottom="5dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ken31ee@gmail.com"
+                android:textColor="#2115d7"/>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#111111"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>
