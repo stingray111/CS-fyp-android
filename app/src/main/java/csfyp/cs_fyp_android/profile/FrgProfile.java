@@ -9,10 +9,6 @@ import android.view.ViewGroup;
 
 import csfyp.cs_fyp_android.R;
 
-/**
- * Created by ray on 5/10/2016.
- */
-
 public class FrgProfile extends Fragment{
     public FrgProfile() {
     }
