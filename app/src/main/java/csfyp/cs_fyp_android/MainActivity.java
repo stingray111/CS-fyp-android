@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import csfyp.cs_fyp_android.home.FrgHome;
+import csfyp.cs_fyp_android.profile.FrgProfile;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.parent_fragment_container, FrgHome.newInstance());
+        ft.replace(R.id.parent_fragment_container, FrgProfile.newInstance());
         ft.commit();
     }
 }
