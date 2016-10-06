@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    sothree:umanoPanelHeight="200dp"
+    sothree:umanoPanelHeight="250dp"
     sothree:umanoShadowHeight="4dp"
     sothree:umanoDragView="@+id/frg_container"
     sothree:umanoScrollableView="@+id/rvEvent">
@@ -22,7 +22,7 @@
             android:id="@+id/my_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="#f50"
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
@@ -51,7 +51,8 @@
         <FrameLayout
             android:id="@+id/frg_container"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize">
+            android:layout_height="?attr/actionBarSize"
+            android:background="#f50">
         </FrameLayout>
 
         <android.support.v7.widget.RecyclerView
