@@ -2,12 +2,16 @@ package csfyp.cs_fyp_android.home;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -25,26 +30,45 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.ArrayList;
+
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
 
 public class FrgHome extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "HomeFragment";
     private boolean mIsPanelExpanded;
     private boolean mIsPanelAnchored;
+    private HomeFrgBinding mDataBinding;
 
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    // For Toolbar
+    private Toolbar mToolBar;
 
+    // For Event Recycler View
+    private RecyclerView mEventRecyclerView;
+    private RecyclerView.Adapter mEventAdapter;
+    private RecyclerView.LayoutManager mEventLayoutManager;
+
+    // For Left Drawer
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private RecyclerView mDrawerRecyclerView;
+    private RecyclerView.Adapter mDrawerAdapter;
+    private RecyclerView.LayoutManager mDrawerLayoutManager;
+
+    // For Google Map
     private MapView mMapView;
     private GoogleMap mGoogleMap;
     private GoogleApiClient client;
 
+    // For Sliding Up Panel
     private SlidingUpPanelLayout mLayout;
 
 
@@ -63,6 +87,8 @@ public class FrgHome extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // initialize Pull-up Panel, try getting the last status
         if (savedInstanceState != null)
             mIsPanelExpanded = savedInstanceState.getBoolean("isPanelExpanded");
 
@@ -84,17 +110,24 @@ public class FrgHome extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View v = inflater.inflate(R.layout.home_frg, container, false);
+        mDataBinding = DataBindingUtil.inflate(
+                inflater, R.layout.home_frg, container, false);
+        View v = mDataBinding.getRoot();
+        AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
 
-        // Gets the toolbar from XML
-        Toolbar myToolbar = (Toolbar) v.findViewById(R.id.my_toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(myToolbar);
+        // Setting up Action Bar
+        mToolBar = (Toolbar) v.findViewById(R.id.toolbar);
+        mToolBar.setTitle("AppName");
+        parentActivity.setSupportActionBar(mToolBar);
+        mToolBar.setNavigationIcon(R.drawable.ic_hamburger);
+        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
 
-        if (savedInstanceState != null)
-            mIsPanelExpanded = savedInstanceState.getBoolean("isPanelExpanded");
-        else
-            mIsPanelExpanded = false;
-
+        // Setting up Pull-up Panel
         if (mIsPanelExpanded) {
             Fragment expandPanelAppBar = FrgExpandPanelAppBar.newInstance();
             FragmentTransaction ft = getChildFragmentManager().beginTransaction();
@@ -107,7 +140,21 @@ public class FrgHome extends Fragment implements OnMapReadyCallback {
             ft.commit();
         }
 
-        // Gets the MapView from XML
+        // Setting up Navigation Drawer
+        mDrawerLayout = (DrawerLayout) v.findViewById(R.id.drawer_layout);
+        // Setting up RecyclerView for Navigation bar
+        mDrawerRecyclerView = (RecyclerView) v.findViewById(R.id.rvDrawer);
+        mDrawerLayoutManager = new LinearLayoutManager(getContext());
+        mDrawerRecyclerView.setLayoutManager(mDrawerLayoutManager);
+        ArrayList<String> data = new ArrayList<>();
+        data.add("Joined Events");
+        data.add("History");
+        data.add("About Us");
+        data.add("Setting");
+        mDrawerAdapter = new AdtNavigationItem(data);
+        mDrawerRecyclerView.setAdapter(mDrawerAdapter);
+
+        // Setting up Google Map
         mMapView = (MapView) v.findViewById(R.id.map);
         Bundle mapState;
         if (savedInstanceState != null)
@@ -117,13 +164,12 @@ public class FrgHome extends Fragment implements OnMapReadyCallback {
         mMapView.onCreate(mapState);
         mMapView.getMapAsync(this);
 
-        mRecyclerView = (RecyclerView) v.findViewById(R.id.rvEvent);
-        mLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        mAdapter = new AdtHome();
-        mRecyclerView.setAdapter(mAdapter);
-
+        // Setting up RcyclerView for event
+        mEventRecyclerView = (RecyclerView) v.findViewById(R.id.rvEvent);
+        mEventLayoutManager = new LinearLayoutManager(getContext());
+        mEventRecyclerView.setLayoutManager(mEventLayoutManager);
+        mEventAdapter = new AdtHome();
+        mEventRecyclerView.setAdapter(mEventAdapter);
 
         return v;
     }
@@ -131,6 +177,8 @@ public class FrgHome extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // setting up listener for Pull-up Panel
         mLayout = (SlidingUpPanelLayout) view.findViewById(R.id.sliding_layout);
         mLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -215,9 +263,9 @@ public class FrgHome extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
-        LatLng hk = new LatLng(22.25, 114.1667);
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -230,8 +278,34 @@ public class FrgHome extends Fragment implements OnMapReadyCallback {
             return;
         }
 
-        mGoogleMap.addMarker(new MarkerOptions().position(hk).title("Marker in Hong Kong"));
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(hk));
+        mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                View myContentView = LayoutInflater.from(getContext()).inflate(
+                        R.layout.home_map_item_info_window, null);
+                TextView tvInfoWinTitle = ((TextView) myContentView
+                        .findViewById(R.id.infoWinTitle));
+                tvInfoWinTitle.setText(marker.getTitle());
+                return myContentView;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                return null;
+            }
+        });
+
+        mGoogleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(22.25, 114.1667))
+                .title("Event 1")
+                .snippet("Custom")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
+        mGoogleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(22.28, 114.1679))
+                .title("Event 2")
+                .snippet("Custom2")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
     }
 
     public Action getIndexApiAction() {
@@ -246,3 +320,5 @@ public class FrgHome extends Fragment implements OnMapReadyCallback {
                 .build();
     }
 }
+
+
