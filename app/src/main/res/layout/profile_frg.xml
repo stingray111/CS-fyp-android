@@ -8,10 +8,10 @@
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:layout_height="56dp"
+        android:background="#FFFFFFFF"
         android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
+        android:id="@+id/profileToolBar"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -174,12 +174,3 @@
 </LinearLayout>
 
 
-
-    <!--
-
-        -->
-
-        <!--View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#111111" /-->

@@ -5,12 +5,13 @@
     android:orientation="vertical"
     android:background="#999999">
 
+
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:layout_height="56dp"
+        android:background="#FFFFFFFF"
         android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
+        android:id="@+id/eventToolBar"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -345,17 +346,74 @@
                             android:textSize="16sp"
                             android:textColor="#000000"/>
                     </LinearLayout>
-                    <LinearLayout
+                    <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        >
+                        android:text=""
+                        android:textAlignment="textEnd"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginRight="4dp"
+                            android:src="@drawable/ic_people_1"/>
+
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:textAlignment="textEnd"/>
+                            android:layout_width="0dp"
+                            android:layout_height="24dp"
+                            android:layout_weight="3"
+                            android:gravity="center_vertical"
+                            android:text="username"
+                            android:textSize="16sp"
+                            android:textColor="#000000"/>
                     </LinearLayout>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=""
+                        android:textAlignment="textEnd"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginRight="4dp"
+                            android:src="@drawable/ic_people_1"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="24dp"
+                            android:layout_weight="3"
+                            android:gravity="center_vertical"
+                            android:text="username"
+                            android:textSize="16sp"
+                            android:textColor="#000000"/>
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=""
+                        android:textAlignment="textEnd"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
