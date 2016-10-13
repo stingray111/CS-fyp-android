@@ -10,6 +10,7 @@ public class CustomFragment extends Fragment {
     public void switchFragment(Fragment fragment) {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.parent_fragment_container, fragment);
+        ft.addToBackStack(null);
         ft.commit();
     }
 }

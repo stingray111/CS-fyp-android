@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -40,6 +40,7 @@ import java.util.ArrayList;
 
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
+import csfyp.cs_fyp_android.profile.FrgProfile;
 
 public class FrgHome extends CustomFragment implements OnMapReadyCallback {
 
@@ -58,7 +59,6 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
 
     // For Left Drawer
     private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
     private RecyclerView mDrawerRecyclerView;
     private RecyclerView.Adapter mDrawerAdapter;
     private RecyclerView.LayoutManager mDrawerLayoutManager;
@@ -110,8 +110,8 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        mDataBinding = DataBindingUtil.inflate(
-                inflater, R.layout.home_frg, container, false);
+        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.home_frg, container, false);
+        mDataBinding.setHandlers(this);
         View v = mDataBinding.getRoot();
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
 
@@ -308,7 +308,9 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
     }
 
-    public void onClickProfile(View v) {
+    public void onClickProfile(View view) {
+        Log.i(TAG, "hihihi");
+        Toast.makeText(getContext(), "hello", Toast.LENGTH_LONG).show();
         switchFragment(FrgProfile.newInstance());
     }
 
