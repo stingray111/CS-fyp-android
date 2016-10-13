@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
 
-public class FrgHome extends Fragment implements OnMapReadyCallback {
+public class FrgHome extends CustomFragment implements OnMapReadyCallback {
 
     private static final String TAG = "HomeFragment";
     private boolean mIsPanelExpanded;
@@ -117,7 +117,7 @@ public class FrgHome extends Fragment implements OnMapReadyCallback {
 
         // Setting up Action Bar
         mToolBar = (Toolbar) v.findViewById(R.id.homeToolbar);
-        mToolBar.setTitle("AppName");
+        mToolBar.setTitle("Home");
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_hamburger);
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -306,6 +306,10 @@ public class FrgHome extends Fragment implements OnMapReadyCallback {
                 .snippet("Custom2")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
+    }
+
+    public void onClickProfile(View v) {
+        switchFragment(FrgProfile.newInstance());
     }
 
     public Action getIndexApiAction() {
