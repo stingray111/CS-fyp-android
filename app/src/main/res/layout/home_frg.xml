@@ -30,7 +30,7 @@
                 android:orientation="vertical">
 
                 <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
+                    android:id="@+id/homeToolbar"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:elevation="4dp"

@@ -116,7 +116,7 @@ public class FrgHome extends Fragment implements OnMapReadyCallback {
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
 
         // Setting up Action Bar
-        mToolBar = (Toolbar) v.findViewById(R.id.toolbar);
+        mToolBar = (Toolbar) v.findViewById(R.id.homeToolbar);
         mToolBar.setTitle("AppName");
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_hamburger);
