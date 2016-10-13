@@ -1,4 +1,4 @@
-package csfyp.cs_fyp_android.home;
+package csfyp.cs_fyp_android.profile;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,16 +9,15 @@ import android.view.ViewGroup;
 
 import csfyp.cs_fyp_android.R;
 
-class FrgNotExpandPanelAppBar extends Fragment {
-
-    public FrgNotExpandPanelAppBar() {
+public class FrgProfile extends Fragment{
+    public FrgProfile() {
     }
 
-    public static FrgNotExpandPanelAppBar newInstance() {
+    public static FrgProfile newInstance() {
 
         Bundle args = new Bundle();
 
-        FrgNotExpandPanelAppBar fragment = new FrgNotExpandPanelAppBar();
+        FrgProfile fragment = new FrgProfile();
         fragment.setArguments(args);
         return fragment;
     }
@@ -26,6 +25,6 @@ class FrgNotExpandPanelAppBar extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.not_epxand_panel_appbar_frg, container, false);
+        return inflater.inflate(R.layout.profile_frg, container, false);
     }
 }
