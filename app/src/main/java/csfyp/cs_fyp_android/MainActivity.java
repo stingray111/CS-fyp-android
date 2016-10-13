@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import csfyp.cs_fyp_android.databinding.ActivityMainBinding;
+import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 
