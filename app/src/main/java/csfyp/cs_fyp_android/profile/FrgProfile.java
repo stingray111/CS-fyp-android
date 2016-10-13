@@ -34,7 +34,7 @@ public class FrgProfile extends Fragment{
         mToolBar.setTitle("username");
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
         parentActivity.setSupportActionBar(mToolBar);
-        mToolBar.setNavigationIcon(R.drawable.ic_hamburger);
+        mToolBar.setNavigationIcon(R.drawable.ic_previous_page);
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
