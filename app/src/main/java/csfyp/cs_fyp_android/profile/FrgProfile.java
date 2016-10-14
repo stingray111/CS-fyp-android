@@ -2,7 +2,6 @@ package csfyp.cs_fyp_android.profile;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -10,8 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.home.CustomFragment;
 
-public class FrgProfile extends Fragment{
+public class FrgProfile extends CustomFragment{
+    public static final String TAG = "ProfileFragment";
     private Toolbar mToolBar;
     public FrgProfile() {
     }
@@ -38,7 +39,7 @@ public class FrgProfile extends Fragment{
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                onBack(TAG);
             }
         });
         return v;
