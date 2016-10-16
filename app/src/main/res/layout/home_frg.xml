@@ -109,7 +109,7 @@
                     android:layout_weight="1"
                     android:layout_marginLeft="8dp"
                     android:text="UserName"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#FFFFFF"
                     android:clickable="false"/>
@@ -133,8 +133,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
                     android:text="Joined Event"
-                    android:textSize="20sp"
-                    android:includeFontPadding="false"/>
+                    android:textSize="16sp"
+                    android:includeFontPadding="false"
+                    android:gravity="center_vertical" />
 
             </LinearLayout>
 
@@ -161,8 +162,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
                     android:text="History"
-                    android:textSize="20sp"
-                    android:includeFontPadding="false"/>
+                    android:textSize="16sp"
+                    android:includeFontPadding="false"
+                    android:gravity="center_vertical"/>
 
             </LinearLayout>
 
@@ -183,14 +185,15 @@
                     android:layout_height="24dp"
                     android:layout_marginLeft="4dp"
                     android:layout_marginRight="8dp"
-                    android:src="@drawable/ic_setting"/>
+                    android:src="@drawable/ic_setting" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
                     android:text="Setting"
-                    android:textSize="20sp"
-                    android:includeFontPadding="false"/>
+                    android:textSize="16sp"
+                    android:includeFontPadding="false"
+                    android:gravity="center_vertical"/>
 
             </LinearLayout>
 
@@ -217,8 +220,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
                     android:text="About Us"
-                    android:textSize="20sp"
-                    android:includeFontPadding="false"/>
+                    android:textSize="16sp"
+                    android:includeFontPadding="false"
+                    android:gravity="center_vertical"/>
 
             </LinearLayout>
 

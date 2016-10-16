@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import csfyp.cs_fyp_android.R;
-import csfyp.cs_fyp_android.home.CustomFragment;
+import csfyp.cs_fyp_android.CustomFragment;
 
 public class FrgProfile extends CustomFragment{
     public static final String TAG = "ProfileFragment";

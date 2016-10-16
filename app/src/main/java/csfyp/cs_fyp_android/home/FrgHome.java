@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
 import csfyp.cs_fyp_android.profile.FrgProfile;
@@ -295,7 +296,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
     }
 
     public void onClickProfile(View view) {
-        switchFragment(FrgProfile.newInstance(), FrgProfile.TAG);
+        switchFragment(FrgProfile.newInstance());
     }
 
     public Action getIndexApiAction() {
