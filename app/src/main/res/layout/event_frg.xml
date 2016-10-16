@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:background="#999999">
 
-
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -40,7 +39,7 @@
                         android:layout_weight="2"
                         android:padding="8dp"
                         android:text="Event Name"
-                        android:textSize="24sp"
+                        android:textSize="20sp"
                         android:textColor="#202020"/>
 
                     <TextView
@@ -69,7 +68,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginRight="4dp"
-                        android:src="@drawable/ic_people_1"
+                        android:src="@drawable/ic_star"
                         android:id="@+id/imageView" />
 
                     <TextView
@@ -111,19 +110,10 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginLeft="4dp"
-                        android:src="@drawable/ic_people_2"
+                        android:src="@drawable/ic_people_3"
                         android:id="@+id/imageView2" />
 
                 </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:text="This is a good event. It will be very ..."
-                    android:textSize="16sp"
-                    android:textColor="#202020"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -140,8 +130,9 @@
 
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="16dp"
                         android:layout_weight="1"
+                        android:layout_gravity="center_vertical"
                         android:text="24/09 16:00-18:00" />
 
                     <LinearLayout
@@ -156,7 +147,8 @@
                             android:layout_marginRight="3dp"
                             android:text="Deadline"
                             android:textColor="#111111"
-                            android:textSize="16sp"/>
+                            android:textSize="16sp"
+                            android:id="@+id/textView4" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -180,13 +172,16 @@
                 android:paddingBottom="15dp"
                 android:layout_margin="4dp"
                 android:background="@drawable/bg_event">
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingBottom="5dp"
                     android:text="Detail"
                     android:textSize="15sp"
-                    android:textColor="#777777"/>
+                    android:textColor="#777777"
+                    android:id="@+id/textView3" />
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -194,6 +189,7 @@
                     android:textSize="15sp"
                     android:textColor="#000000"/>
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -246,7 +242,8 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginLeft="4dp"
-                        android:src="@drawable/ic_people_2"/>
+                        android:src="@drawable/ic_people_3"
+                        android:id="@+id/imageView3" />
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -261,7 +258,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginRight="4dp"
-                            android:src="@drawable/ic_people_1"/>
+                            android:src="@drawable/ic_star"/>
 
                         <TextView
                             android:layout_width="0dp"
@@ -282,10 +279,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="(Event Holder)"
-                            android:textAlignment="textEnd"/>
+                            android:gravity="right"/>
                     </LinearLayout>
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -319,8 +317,40 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text=""
-                            android:textAlignment="textEnd"/>
+                            android:gravity="right"/>
                     </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginRight="4dp"
+                            android:src="@drawable/ic_people_1"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="24dp"
+                            android:layout_weight="3"
+                            android:gravity="center_vertical"
+                            android:text="username"
+                            android:textSize="16sp"
+                            android:textColor="#000000"/>
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=""
+                        android:gravity="right"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -351,7 +381,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text=""
-                        android:textAlignment="textEnd"/>
+                        android:gravity="right"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -377,43 +407,14 @@
                             android:textSize="16sp"
                             android:textColor="#000000"/>
                     </LinearLayout>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text=""
-                        android:textAlignment="textEnd"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginRight="4dp"
-                            android:src="@drawable/ic_people_1"/>
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="24dp"
-                            android:layout_weight="3"
-                            android:gravity="center_vertical"
-                            android:text="username"
-                            android:textSize="16sp"
-                            android:textColor="#000000"/>
-                    </LinearLayout>
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text=""
-                        android:textAlignment="textEnd"/>
+                        android:gravity="right"
+                        android:id="@+id/textView2" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

@@ -28,7 +28,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginRight="4dp"
-            android:src="@drawable/ic_people_1"
+            android:src="@drawable/ic_star"
             android:id="@+id/imageView" />
 
         <TextView
@@ -70,7 +70,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginLeft="4dp"
-            android:src="@drawable/ic_people_2"
+            android:src="@drawable/ic_people_3"
             android:id="@+id/imageView2" />
 
     </LinearLayout>

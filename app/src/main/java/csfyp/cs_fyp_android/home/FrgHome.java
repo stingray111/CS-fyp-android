@@ -35,8 +35,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.util.ArrayList;
-
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
 import csfyp.cs_fyp_android.profile.FrgProfile;
@@ -141,17 +139,6 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
 
         // Setting up Navigation Drawer
         mDrawerLayout = (DrawerLayout) v.findViewById(R.id.drawer_layout);
-        // Setting up RecyclerView for Navigation bar
-        mDrawerRecyclerView = (RecyclerView) v.findViewById(R.id.rvDrawer);
-        mDrawerLayoutManager = new LinearLayoutManager(getContext());
-        mDrawerRecyclerView.setLayoutManager(mDrawerLayoutManager);
-        ArrayList<String> data = new ArrayList<>();
-        data.add("Joined Events");
-        data.add("History");
-        data.add("About Us");
-        data.add("Setting");
-        mDrawerAdapter = new AdtNavigationItem(data);
-        mDrawerRecyclerView.setAdapter(mDrawerAdapter);
 
         // Setting up Google Map
         mMapView = (MapView) v.findViewById(R.id.map);

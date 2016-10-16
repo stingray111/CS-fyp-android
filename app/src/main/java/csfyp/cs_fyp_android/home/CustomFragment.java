@@ -1,7 +1,6 @@
 package csfyp.cs_fyp_android.home;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import csfyp.cs_fyp_android.R;
@@ -16,7 +15,6 @@ public class CustomFragment extends Fragment {
     }
 
     public void onBack(String identifier) {
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        fm.popBackStack(identifier, 0);
+        getActivity().onBackPressed();
     }
 }
