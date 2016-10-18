@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.home.AdtHome;
@@ -19,7 +20,7 @@ import csfyp.cs_fyp_android.home.AdtHome;
  * Created by ray on 13/10/2016.
  */
 
-public class FrgCurrentEvent extends Fragment{
+public class FrgCurrentEvent extends CustomFragment {
     public FrgCurrentEvent() {
         super();
     }
@@ -27,6 +28,7 @@ public class FrgCurrentEvent extends Fragment{
     private RecyclerView mEventRecyclerView;
     private RecyclerView.Adapter mEventAdapter;
     private RecyclerView.LayoutManager mEventLayoutManager;
+    public static final String TAG = "CurrentEvent";
 
     public static FrgCurrentEvent newInstance() {
 
@@ -49,7 +51,7 @@ public class FrgCurrentEvent extends Fragment{
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                onBack(TAG);
             }
         });
 

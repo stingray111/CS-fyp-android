@@ -120,7 +120,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_margin="8dp">
+                android:layout_margin="8dp"
+                android:clickable="true"
+                android:onClick="@{handlers.onClickJoined}">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -207,7 +209,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_margin="8dp">
+                android:layout_margin="8dp"
+                android:clickable="true"
+                android:onClick="@{handlers.onClickAbout}">
+
 
                 <ImageView
                     android:layout_width="24dp"
