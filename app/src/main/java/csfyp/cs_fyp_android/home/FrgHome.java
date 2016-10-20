@@ -42,6 +42,7 @@ import csfyp.cs_fyp_android.currentEvent.FrgCurrentEvent;
 import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
 import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
+import csfyp.cs_fyp_android.setting.FrgSetting;
 
 public class FrgHome extends CustomFragment implements OnMapReadyCallback {
 
@@ -298,13 +299,13 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
     }
 
+    public void onClickSetting(View view){ switchFragment(FrgSetting.newInstance());}
     public void onClickProfile(View view) {
         switchFragment(FrgProfile.newInstance());
     }
     public void onClickAbout(View view) {
         switchFragment(FrgAbout.newInstance());
     }
-
     public void onClickDrawerEvent(View view) { switchFragment(FrgEvent.newInstance());}
 
     public Action getIndexApiAction() {

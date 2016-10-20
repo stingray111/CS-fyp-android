@@ -9,6 +9,7 @@ import csfyp.cs_fyp_android.about.FrgAbout;
 import csfyp.cs_fyp_android.databinding.ActivityMainBinding;
 import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.home.FrgHome;
+import csfyp.cs_fyp_android.setting.FrgSetting;
 
 public class MainActivity extends AppCompatActivity {
 
