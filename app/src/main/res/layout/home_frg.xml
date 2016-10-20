@@ -122,6 +122,31 @@
                 android:orientation="horizontal"
                 android:layout_margin="8dp"
                 android:clickable="true"
+                android:onClick="@{handlers.onClickNewEvent}">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/ic_plus"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:text="Create Event"
+                    android:textSize="16sp"
+                    android:includeFontPadding="false"
+                    android:gravity="center_vertical" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="8dp"
+                android:clickable="true"
                 android:onClick="@{handlers.onClickJoined}">
 
                 <ImageView
