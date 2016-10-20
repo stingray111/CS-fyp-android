@@ -1,8 +1,7 @@
-package csfyp.cs_fyp_android.currentEvent;
+package csfyp.cs_fyp_android.history;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,38 +12,37 @@ import android.view.ViewGroup;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
-import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.home.AdtHome;
 
 /**
- * Created by ray on 13/10/2016.
+ * Created by ray on 20/10/2016.
  */
 
-public class FrgCurrentEvent extends CustomFragment {
-    public FrgCurrentEvent() {
-        super();
-    }
+
+public class FrgHistory extends CustomFragment{
+    public FrgHistory(){super();}
     private Toolbar mToolBar;
     private RecyclerView mEventRecyclerView;
     private RecyclerView.Adapter mEventAdapter;
     private RecyclerView.LayoutManager mEventLayoutManager;
-    public static final String TAG = "CurrentEvent";
+    public static final String TAG = "History";
 
-    public static FrgCurrentEvent newInstance() {
+    public static FrgHistory newInstance() {
 
         Bundle args = new Bundle();
 
-        FrgCurrentEvent fragment = new FrgCurrentEvent();
+        FrgHistory fragment = new FrgHistory();
         fragment.setArguments(args);
         return fragment;
     }
+
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View v  = inflater.inflate(R.layout.current_event_frg, container, false);
-        mToolBar = (Toolbar) v.findViewById(R.id.currentEventToolBar);
-        mToolBar.setTitle("Current Event");
+        View v  = inflater.inflate(R.layout.history_frg, container, false);
+        mToolBar = (Toolbar) v.findViewById(R.id.historyToolBar);
+        mToolBar.setTitle("History");
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);
@@ -55,7 +53,7 @@ public class FrgCurrentEvent extends CustomFragment {
             }
         });
 
-        mEventRecyclerView = (RecyclerView) v.findViewById(R.id.currentEventRV);
+        mEventRecyclerView = (RecyclerView) v.findViewById(R.id.historyRV);
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
         mEventAdapter = new AdtHome();

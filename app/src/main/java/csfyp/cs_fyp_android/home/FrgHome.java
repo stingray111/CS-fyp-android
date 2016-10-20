@@ -39,8 +39,13 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.about.FrgAbout;
+import csfyp.cs_fyp_android.currentEvent.FrgCurrentEvent;
 import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
+import csfyp.cs_fyp_android.event.FrgEvent;
+import csfyp.cs_fyp_android.history.FrgHistory;
 import csfyp.cs_fyp_android.profile.FrgProfile;
+import csfyp.cs_fyp_android.setting.FrgSetting;
 
 public class FrgHome extends CustomFragment implements OnMapReadyCallback {
 
@@ -302,9 +307,15 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
     }
 
+    public void onClickSetting(View view){ switchFragment(FrgSetting.newInstance());}
     public void onClickProfile(View view) {
         switchFragment(FrgProfile.newInstance());
     }
+    public void onClickAbout(View view) {
+        switchFragment(FrgAbout.newInstance());
+    }
+    public void onClickDrawerEvent(View view) { switchFragment(FrgEvent.newInstance());}
+    public void onClickHistory(View view){switchFragment(FrgHistory.newInstance());}
 
     public Action getIndexApiAction() {
         Thing object = new Thing.Builder()
@@ -317,6 +328,11 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
     }
+
+    public void onClickJoined(View view){
+        switchFragment(FrgCurrentEvent.newInstance());
+    }
+
 }
 
 

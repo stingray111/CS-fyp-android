@@ -1,6 +1,7 @@
 package csfyp.cs_fyp_android.event;
 
 
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,16 +27,19 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.databinding.EventFrgBinding;
 
 
 public class FrgEvent extends CustomFragment implements OnMapReadyCallback {
     public FrgEvent() {
         super();
     }
+    private static final String TAG = "EventFragment";
     private Toolbar mToolBar;
     private GoogleMap mGoogleMap;
     private GoogleApiClient client;
     private MapView mMapView;
+    private EventFrgBinding mDataBinding;
 
     public static FrgEvent newInstance() {
         
@@ -56,7 +60,11 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         super.onCreateView(inflater, container, savedInstanceState);
-        View v  = inflater.inflate(R.layout.event_frg, container, false);
+        mDataBinding = DataBindingUtil.inflate(inflater,R.layout.event_frg, container,false);
+        mDataBinding.setHandlers(this);
+        View v  = mDataBinding.getRoot();
+
+        //Tool Bar
         mToolBar = (Toolbar) v.findViewById(R.id.eventToolBar);
         mToolBar.setTitle("username");
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
@@ -65,7 +73,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback {
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                onBack(TAG);
             }
         });
 
@@ -82,6 +90,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap  = googleMap;
         mGoogleMap.getUiSettings().setZoomControlsEnabled(false);
+        mGoogleMap.getUiSettings().setAllGesturesEnabled(false);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
         mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
         //TODO: disable zoom by gesture
