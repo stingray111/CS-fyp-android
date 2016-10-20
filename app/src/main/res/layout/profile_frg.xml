@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#999999"
     >
 
     <android.support.v7.widget.Toolbar
@@ -29,7 +28,7 @@
                 android:paddingBottom="10dp"
                 android:paddingTop="20dp"
                 android:background="@drawable/bg_event"
-                android:elevation="4dp"
+                android:elevation="2dp"
                 android:layout_margin="4dp">
                 <!-- icon -->
                 <ImageView
@@ -96,6 +95,7 @@
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 android:layout_margin="4dp"
+                android:elevation="2dp"
                 android:background="@drawable/bg_event">
                 <TextView
                     android:layout_width="match_parent"
@@ -128,6 +128,7 @@
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
+                android:elevation="2dp"
                 android:layout_margin="4dp">
                 <TextView
                     android:layout_width="match_parent"
@@ -152,6 +153,7 @@
                 android:paddingRight="20dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
+                android:elevation="2dp"
                 android:paddingBottom="15dp"
                 android:layout_margin="4dp">
 
