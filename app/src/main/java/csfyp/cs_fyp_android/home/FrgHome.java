@@ -17,6 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -91,7 +93,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
             mIsPanelExpanded = savedInstanceState.getBoolean("isPanelExpanded");
 
         client = new GoogleApiClient.Builder(getContext()).addApi(AppIndex.API).build();
-
+        setHasOptionsMenu(true);
 
     }
 
@@ -100,7 +102,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
         super.onSaveInstanceState(outState);
         Bundle mapState = new Bundle();
         mMapView.onSaveInstanceState(mapState);
-        outState.putBundle("mapSaveInstanceState", mapState);
+        outState.putBundle("mapSaveInstanceState", mapState); //// TODO: 19/10/2016 change key
         outState.putBoolean("isPanelExpanded", mIsPanelExpanded);
     }
 
@@ -143,9 +145,9 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
 
         // Setting up Google Map
         mMapView = (MapView) v.findViewById(R.id.map);
-        Bundle mapState;
+        Bundle mapState; //// TODO: 19/10/2016 move to private
         if (savedInstanceState != null)
-            mapState = savedInstanceState.getBundle("mapSaveInstanceState");
+            mapState = savedInstanceState.getBundle("mapSaveInstanceState"); // TODO: 19/10/2016 change key
         else
             mapState = null;
         mMapView.onCreate(mapState);
@@ -233,6 +235,11 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
     public void onPause() {
         super.onPause();
         mMapView.onPause();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.option_menu, menu);
     }
 
     @Override

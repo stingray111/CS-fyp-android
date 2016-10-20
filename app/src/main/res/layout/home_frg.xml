@@ -34,7 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:elevation="4dp"
-                    android:background="#FFFFFF"/>
+                    android:background="#FFFFFF" />
 
                 <FrameLayout
                     android:layout_width="match_parent"

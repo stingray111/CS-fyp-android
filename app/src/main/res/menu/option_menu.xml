@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="sort"
+        android:icon="@drawable/ic_sort"
+        app:showAsAction="always" >
+
+        <menu>
+
+            <item
+                android:title="Sort by Distance" />
+
+            <item
+                android:title="Sort by Popularity" />
+
+            <item
+                android:title="Sort by Name" />
+
+        </menu>
+
+    </item>
+
+</menu>
