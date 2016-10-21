@@ -4,7 +4,7 @@
     <data>
         <variable
             name="handlers"
-            type="csfyp.cs_fyp_android.home.FrgHome" />
+            type="csfyp.cs_fyp_android.home.AdtHome.ViewHolder" />
     </data>
 
     <LinearLayout

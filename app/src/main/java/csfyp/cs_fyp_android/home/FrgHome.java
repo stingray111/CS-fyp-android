@@ -48,7 +48,7 @@ import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
 
-public class FrgHome extends CustomFragment implements OnMapReadyCallback {
+public class FrgHome extends CustomFragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private static final String TAG = "HomeFragment";
     private boolean mIsPanelExpanded;
@@ -107,7 +107,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundle mapState = new Bundle();
-        mMapView.onSaveInstanceState(mapState);
+        mMapView.onSaveInstanceState(mapState);  // TODO: 21/10/2016 fix mapState 
         outState.putBundle("mapSaveInstanceState", mapState); //// TODO: 19/10/2016 change key
         outState.putBoolean("isPanelExpanded", mIsPanelExpanded);
     }
@@ -150,7 +150,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
         mDrawerLayout = (DrawerLayout) v.findViewById(R.id.drawer_layout);
 
         // Setting up Google Map
-        mMapView = (MapView) v.findViewById(R.id.map);
+        mMapView = (MapView) v.findViewById(R.id.homeMap);
         Bundle mapState; //// TODO: 19/10/2016 move to private
         if (savedInstanceState != null)
             mapState = savedInstanceState.getBundle("mapSaveInstanceState"); // TODO: 19/10/2016 change key
@@ -163,7 +163,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
         mEventRecyclerView = (RecyclerView) v.findViewById(R.id.rvEvent);
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
-        mEventAdapter = new AdtHome();
+        mEventAdapter = new AdtHome(this);
         mEventRecyclerView.setAdapter(mEventAdapter);
 
         return v;
@@ -263,6 +263,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mGoogleMap.setOnInfoWindowClickListener(this);
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
@@ -308,6 +309,11 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
     }
 
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        switchFragment(FrgEvent.newInstance());
+    }
+
     public void onClickNewEvent(View view) {
         switchFragment(FrgNewEvent.newInstance());
     }
@@ -338,6 +344,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback {
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
     }
+
 
 }
 

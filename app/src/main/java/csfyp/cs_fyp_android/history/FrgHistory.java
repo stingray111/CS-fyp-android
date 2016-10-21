@@ -56,7 +56,7 @@ public class FrgHistory extends CustomFragment{
         mEventRecyclerView = (RecyclerView) v.findViewById(R.id.historyRV);
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
-        mEventAdapter = new AdtHome();
+        mEventAdapter = new AdtHome(this);
         mEventRecyclerView.setAdapter(mEventAdapter);
         return v;
     }
