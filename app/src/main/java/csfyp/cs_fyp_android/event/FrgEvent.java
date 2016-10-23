@@ -63,7 +63,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback {
         View v  = mDataBinding.getRoot();
 
         //Tool Bar
-        mToolBar = (Toolbar) v.findViewById(R.id.eventToolBar);
+        mToolBar = mDataBinding.eventToolBar;
         mToolBar.setTitle("username");
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
         parentActivity.setSupportActionBar(mToolBar);
@@ -74,8 +74,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback {
                 onBack(TAG);
             }
         });
-
-        mMapView = (MapView) v.findViewById(R.id.eventMap);
+        mMapView = mDataBinding.eventMap;
         mMapView.onCreate(null);
         mMapView.getMapAsync(this);
 
@@ -93,11 +92,6 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback {
         mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
         //TODO: disable zoom by gesture
 
-        mGoogleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(22.25, 114.1667))
-                .title("Event 1")
-                .snippet("Custom")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
         mGoogleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(22.28, 114.1679))
                 .title("Event 2")

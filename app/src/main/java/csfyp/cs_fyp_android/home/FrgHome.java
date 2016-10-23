@@ -122,7 +122,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback, Googl
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
 
         // Setting up Action Bar
-        mToolBar = (Toolbar) v.findViewById(R.id.homeToolbar);
+        mToolBar = mDataBinding.homeToolbar;
         mToolBar.setTitle("Home");
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_hamburger);
@@ -147,10 +147,10 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback, Googl
         }
 
         // Setting up Navigation Drawer
-        mDrawerLayout = (DrawerLayout) v.findViewById(R.id.drawer_layout);
+        mDrawerLayout = mDataBinding.drawerLayout;
 
         // Setting up Google Map
-        mMapView = (MapView) v.findViewById(R.id.homeMap);
+        mMapView = mDataBinding.homeMap;
         Bundle mapState; //// TODO: 19/10/2016 move to private
         if (savedInstanceState != null)
             mapState = savedInstanceState.getBundle("mapSaveInstanceState"); // TODO: 19/10/2016 change key
@@ -160,7 +160,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback, Googl
         mMapView.getMapAsync(this);
 
         // Setting up RcyclerView for event
-        mEventRecyclerView = (RecyclerView) v.findViewById(R.id.rvEvent);
+        mEventRecyclerView = mDataBinding.rvEvent;
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
         mEventAdapter = new AdtHome(this);
@@ -174,7 +174,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback, Googl
         super.onViewCreated(view, savedInstanceState);
 
         // setting up listener for Pull-up Panel
-        mLayout = (SlidingUpPanelLayout) view.findViewById(R.id.sliding_layout);
+        mLayout = mDataBinding.slidingLayout;
         mLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -284,8 +284,7 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback, Googl
             public View getInfoWindow(Marker marker) {
                 View myContentView = LayoutInflater.from(getContext()).inflate(
                         R.layout.home_map_item_info_window, null);
-                TextView tvInfoWinTitle = ((TextView) myContentView
-                        .findViewById(R.id.infoWinTitle));
+                TextView tvInfoWinTitle = ((TextView) myContentView.findViewById(R.id.infoWinTitle));
                 tvInfoWinTitle.setText(marker.getTitle());
                 return myContentView;
             }
@@ -328,10 +327,6 @@ public class FrgHome extends CustomFragment implements OnMapReadyCallback, Googl
         switchFragment(FrgAbout.newInstance());
     }
     public void onClickHistory(View view){switchFragment(FrgHistory.newInstance());}
-
-    public void onClickEventItem(View view) {
-        switchFragment(FrgEvent.newInstance());
-    }
 
     public Action getIndexApiAction() {
         Thing object = new Thing.Builder()

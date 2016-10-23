@@ -127,7 +127,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
 
         // Setting up Action Bar
-        mToolBar = (Toolbar) v.findViewById(R.id.newEventToolbar);
+        mToolBar = mDataBinding.newEventToolbar;
         mToolBar.setTitle("Create New Event");
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);
@@ -139,7 +139,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
         });
 
         // Setting up Google Map
-        mMapView = (MapView) v.findViewById(R.id.newEventMap);
+        mMapView = (MapView) mDataBinding.newEventMap;
         if (savedInstanceState != null)
             mMapState = savedInstanceState.getBundle("newEventMapSaveInstanceState");
         else
@@ -148,7 +148,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
         mMapView.getMapAsync(this);
 
         // Setting up Spinners
-        mMinPplSpinner = (Spinner) v.findViewById(R.id.minPplSpinner);
+        mMinPplSpinner = mDataBinding.minPplSpinner;
         ArrayAdapter<String> minPplSpinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -172,7 +172,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
         mMinPplSpinner.setAdapter(minPplSpinnerAdapter);
         mMinPplSpinner.setSelection(minPplSpinnerAdapter.getCount());
 
-        mMaxPplSpinner = (Spinner) v.findViewById(R.id.maxPplSpinner);
+        mMaxPplSpinner = mDataBinding.maxPplSpinner;
         ArrayAdapter<String> maxPplSpinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -215,7 +215,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
                         mNewEventHour = i;
                         mNewEventMin = i1;
-                        ((TextView) mDataBinding.getRoot().findViewById(R.id.eventStartText)).setText(mNewEventYear + "/" + mNewEventMonth + "/" + mNewEventDay + " " + mNewEventHour + ":" + mNewEventMin);
+                        mDataBinding.eventStartText.setText(mNewEventYear + "/" + mNewEventMonth + "/" + mNewEventDay + " " + mNewEventHour + ":" + mNewEventMin);
                     }
                 }, hour, min, false);
                 mStartTimePickerDialog.show();
@@ -236,7 +236,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
                         mDeadlineEventHour = i;
                         mDeadlineEventMin = i1;
-                        ((TextView) mDataBinding.getRoot().findViewById(R.id.eventDeadlineText)).setText(mDeadlineEventYear + "/" + mDeadlineEventMonth + "/" + mDeadlineEventDay + " " + mDeadlineEventHour + ":" + mDeadlineEventMin);
+                        mDataBinding.eventDeadlineText.setText(mDeadlineEventYear + "/" + mDeadlineEventMonth + "/" + mDeadlineEventDay + " " + mDeadlineEventHour + ":" + mDeadlineEventMin);
                     }
                 }, hour, min, false);
                 mDeadlineTimePickerDialog.show();
@@ -244,8 +244,8 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
         }, year, month, day);
 
         if(savedInstanceState != null) {
-            ((TextView) v.findViewById(R.id.eventStartText)).setText(mNewEventYear + "/" + mNewEventMonth + "/" + mNewEventDay + " " + mNewEventHour + ":" + mNewEventMin);
-            ((TextView) v.findViewById(R.id.eventDeadlineText)).setText(mDeadlineEventYear + "/" + mDeadlineEventMonth + "/" + mDeadlineEventDay + " " + mDeadlineEventHour + ":" + mDeadlineEventMin);
+            mDataBinding.eventStartText.setText(mNewEventYear + "/" + mNewEventMonth + "/" + mNewEventDay + " " + mNewEventHour + ":" + mNewEventMin);
+            mDataBinding.eventDeadlineText.setText(mDeadlineEventYear + "/" + mDeadlineEventMonth + "/" + mDeadlineEventDay + " " + mDeadlineEventHour + ":" + mDeadlineEventMin);
         }
 
         return v;
