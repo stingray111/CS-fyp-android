@@ -1,15 +1,20 @@
 package csfyp.cs_fyp_android.home;
 
 import android.Manifest;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,7 +33,17 @@ import android.widget.TextView;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -55,13 +70,25 @@ import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
 
-public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallbacks<List<Event>>, OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallbacks<List<Event>>,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener,
+        OnMapReadyCallback,
+        GoogleMap.OnInfoWindowClickListener {
 
     private static final int LOADER_ID = 1;
     private static final String TAG = "HomeFragment";
+
     private boolean mIsPanelExpanded;
     private boolean mIsPanelAnchored;
+    private boolean mIsLoadFinished = false;
+    private boolean mIsMapReady = false;
+    private boolean mIsUseLocation = true;
+    private List<Event> mData;
+
     private HomeFrgBinding mDataBinding;
+
     private LoaderManager.LoaderCallbacks<List<Event>> mCallbacks;
 
     // For Toolbar
@@ -74,11 +101,11 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
 
     // For Left Drawer
     private DrawerLayout mDrawerLayout;
-    private RecyclerView mDrawerRecyclerView;
-    private RecyclerView.Adapter mDrawerAdapter;
-    private RecyclerView.LayoutManager mDrawerLayoutManager;
 
     // For Google Map
+    private Location mLastLocation;
+    private Location mCurrentLocation;
+    private LocationRequest mLocationRequest;
     private MapView mMapView;
     private GoogleMap mGoogleMap;
     private GoogleApiClient client;
@@ -99,15 +126,42 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         return fragment;
     }
 
+    private void populateMapMarker() {
+        if (mData != null && mIsMapReady && mIsLoadFinished) {
+            for (Event item : mData) {
+                mGoogleMap.addMarker(new MarkerOptions()
+                        .position(item.getPosition())
+                        .title(item.getEventName())
+                        .snippet(item.getHolderName() + "&" + item.getEventStart() + "&" + item.getCurrentPpl() + "&" + item.getMaxPpl())
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
+            }
+            if (mIsUseLocation && mCurrentLocation != null) {}
+            else
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mData.get(0).getPosition(), 11.0f));
+        }
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // initialize Pull-up Panel, try getting the last status
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             mIsPanelExpanded = savedInstanceState.getBoolean("isPanelExpanded");
+            mIsUseLocation = savedInstanceState.getBoolean("isUseLocation");
+            mCurrentLocation = savedInstanceState.getParcelable("currentLocation");
 
-        client = new GoogleApiClient.Builder(getContext()).addApi(AppIndex.API).build();
+        }
+
+        if (client == null) {
+            client = new GoogleApiClient.Builder(getContext())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .addApi(AppIndex.API)
+                    .build();
+        }
+
         setHasOptionsMenu(true);
 
     }
@@ -116,7 +170,10 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundle mapState = new Bundle();
-        mMapView.onSaveInstanceState(mapState);  // TODO: 21/10/2016 fix mapState 
+        mMapView.onSaveInstanceState(mapState);  // TODO: 21/10/2016 fix mapState
+        outState.putBoolean("isUseLocation", mIsUseLocation);
+        outState.putParcelable("currentLocation", mCurrentLocation);
+        
         outState.putBundle("mapSaveInstanceState", mapState); //// TODO: 19/10/2016 change key
         outState.putBoolean("isPanelExpanded", mIsPanelExpanded);
     }
@@ -247,12 +304,19 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     public void onResume() {
         super.onResume();
         mMapView.onResume();
+        if (client.isConnected()) {
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                LocationServices.FusedLocationApi.requestLocationUpdates(client, mLocationRequest, this);
+            }
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mMapView.onPause();
+        if (client.isConnected())
+            LocationServices.FusedLocationApi.removeLocationUpdates(client, this);
     }
 
     @Override
@@ -275,22 +339,16 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mIsMapReady = true;
         mGoogleMap.setOnInfoWindowClickListener(this);
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
+
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             mGoogleMap.setMyLocationEnabled(true);
             return;
         }
-
         mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
             public View getInfoWindow(Marker marker) {
@@ -315,6 +373,100 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                 return null;
             }
         });
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mData.get(0).getPosition(), 11.0f));
+        populateMapMarker();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 11.0f));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(client);
+                    LocationServices.FusedLocationApi.requestLocationUpdates(client, mLocationRequest, this);
+                }
+            } else {
+                mIsUseLocation = false;
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2) {
+            mIsUseLocation = true;
+        }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        // check location setting
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(20000);
+        mLocationRequest.setFastestInterval(10000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(client, builder.build());
+
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+
+            @Override
+            public void onResult(@NonNull LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        mIsUseLocation = true;
+
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied, but this can be fixed
+                        // by showing the user a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(getActivity(), 2);
+                        } catch (IntentSender.SendIntentException e) {
+                            mIsUseLocation = false;
+                        }
+                        mIsUseLocation = true;
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        mIsUseLocation = false;
+                        break;
+                }
+
+            }
+        });
+
+        // check permission for location
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1); // TODO: 26/10/2016 request code change to constant 
+            }
+        } else {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(client);
+            // TODO: 26/10/2016 check wheather user has turned location updates on or off
+            LocationServices.FusedLocationApi.requestLocationUpdates(client, mLocationRequest, this);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mIsUseLocation = false;
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        mIsUseLocation = false;
     }
 
     @Override
@@ -335,14 +487,9 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     @Override
     public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
         mEventAdapter.setmEventList(data);
-        for (Event item: data) {
-            mGoogleMap.addMarker(new MarkerOptions()
-                    .position(item.getPosition())
-                    .title(item.getEventName())
-                    .snippet(item.getHolderName() + "&" + item.getEventStart() + "&" + item.getCurrentPpl() + "&" + item.getMaxPpl())
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
-        }
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(data.get(0).getPosition(), 11.0f));
+        mData = data;
+        mIsLoadFinished = true;
+        populateMapMarker();
     }
 
     @Override
@@ -386,7 +533,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
     }
-
 }
 
 
