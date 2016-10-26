@@ -5,6 +5,8 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -26,9 +28,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.EventFrgBinding;
+import csfyp.cs_fyp_android.lib.CustomLoader;
+import csfyp.cs_fyp_android.model.Event;
 
 
-public class FrgEvent extends CustomFragment implements OnMapReadyCallback {
+public class FrgEvent extends CustomFragment implements OnMapReadyCallback,LoaderManager.LoaderCallbacks<Event>{
     public FrgEvent() {
         super();
     }
@@ -38,12 +42,21 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback {
     private GoogleApiClient client;
     private MapView mMapView;
     private EventFrgBinding mDataBinding;
+    private int mEventId;
+    private Event mEventObj;
 
-    public static FrgEvent newInstance() {
+
+    public FrgEvent (int id){
+        this.mEventId = id;
+    }
+
+
+    public static FrgEvent newInstance(int id) {
+        //TODO: give id to the fragment
         
         Bundle args = new Bundle();
         
-        FrgEvent fragment = new FrgEvent();
+        FrgEvent fragment = new FrgEvent(id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,6 +90,8 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback {
         mMapView = mDataBinding.eventMap;
         mMapView.onCreate(null);
         mMapView.getMapAsync(this);
+
+        getLoaderManager().initLoader(2,null,this);
 
 
         return v;
@@ -157,5 +172,26 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback {
                 .build();
     }
 
+    @Override
+    public Loader<Event> onCreateLoader(int id, Bundle args) {
+
+        return new CustomLoader<Event>(getContext()) {
+            @Override
+            public Event loadInBackground() {
+                //TODO: connect to the server
+                return new Event("My 4th Event", new LatLng(22.381419, 114.194298), "stingRay", 3, 10, "This is my fourth event");
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Event> loader, Event data) {
+        mEventObj = data;
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Event> loader) {
+
+    }
 }
 

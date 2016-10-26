@@ -65,7 +65,7 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
         public void onClickEventItem(View view) {
             FragmentTransaction ft = ((AppCompatActivity)binding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
-                    .replace(R.id.parent_fragment_container, FrgEvent.newInstance())
+                    .replace(R.id.parent_fragment_container, FrgEvent.newInstance(123))
                     .addToBackStack(null)
                     .commit();
         }
