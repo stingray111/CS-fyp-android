@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
-import csfyp.cs_fyp_android.home.AdtHome;
+import csfyp.cs_fyp_android.home.AdtEvent;
 
 /**
  * Created by ray on 20/10/2016.
@@ -56,7 +56,7 @@ public class FrgHistory extends CustomFragment{
         mEventRecyclerView = (RecyclerView) v.findViewById(R.id.historyRV);
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
-        mEventAdapter = new AdtHome(this);
+        mEventAdapter = new AdtEvent();
         mEventRecyclerView.setAdapter(mEventAdapter);
         return v;
     }

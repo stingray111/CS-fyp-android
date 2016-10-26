@@ -3,14 +3,11 @@ package csfyp.cs_fyp_android.lib;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import java.util.ArrayList;
-import java.util.List;
 
-
-public class CustomLoader<D> extends AsyncTaskLoader<List<D>> {
+public abstract class CustomLoader<D> extends AsyncTaskLoader<D> {
 
     // We hold a reference to the Loader’s data here.
-    private List<D> mData;
+    private D mData;
 
     public CustomLoader(Context ctx) {
         super(ctx);
@@ -20,23 +17,12 @@ public class CustomLoader<D> extends AsyncTaskLoader<List<D>> {
     /** (1) A task that performs the asynchronous load **/
     /****************************************************/
 
-    @Override
-    public List<D> loadInBackground() {
-        // This method is called on a background thread and should generate a
-        // new set of data to be delivered back to the client.
-        List<D> data = new ArrayList<D>();
-
-        // TODO: Perform the query here and add the results to 'data'.
-
-        return data;
-    }
-
     /********************************************************/
     /** (2) Deliver the results to the registered listener **/
     /********************************************************/
 
     @Override
-    public void deliverResult(List<D> data) {
+    public void deliverResult(D data) {
         if (isReset()) {
             // The Loader has been reset; ignore the result and invalidate the data.
             releaseResources(data);
@@ -45,7 +31,7 @@ public class CustomLoader<D> extends AsyncTaskLoader<List<D>> {
 
         // Hold a reference to the old data so it doesn't get garbage collected.
         // We must protect it until the new data has been delivered.
-        List<D> oldData = mData;
+        D oldData = mData;
         mData = data;
 
         if (isStarted()) {
@@ -104,7 +90,7 @@ public class CustomLoader<D> extends AsyncTaskLoader<List<D>> {
     }
 
     @Override
-    public void onCanceled(List<D> data) {
+    public void onCanceled(D data) {
         // Attempt to cancel the current asynchronous load.
         super.onCanceled(data);
 
@@ -113,7 +99,7 @@ public class CustomLoader<D> extends AsyncTaskLoader<List<D>> {
         releaseResources(data);
     }
 
-    private void releaseResources(List<D> data) {}
+    private void releaseResources(D data) {}
 
     /*********************************************************************/
     /** (4) Observer which receives notifications when the data changes **/
