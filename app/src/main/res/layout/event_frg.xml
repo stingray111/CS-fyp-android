@@ -6,6 +6,9 @@
         <variable
             name="handlers"
             type="csfyp.cs_fyp_android.event.FrgEvent"/>
+        <variable
+            name="eventObj"
+            type="csfyp.cs_fyp_android.model.Event"/>
     </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -56,7 +59,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:padding="8dp"
-                        android:text="Event Name"
+                        android:text="@{eventObj.eventName}"
                         android:textSize="20sp"
                         android:textColor="#202020"/>
 
@@ -65,7 +68,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="right"
-                        android:text="Hong Kong"
+                        android:text="TODO: temp location"
                         android:textSize="16sp"/>
 
                     <ImageView
@@ -94,8 +97,9 @@
                         android:layout_height="24dp"
                         android:layout_weight="3"
                         android:gravity="center_vertical"
-                        android:text="username"
+                        android:text="@{eventObj.holderName}"
                         android:textSize="16sp"/>
+
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -107,7 +111,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="5"
+                            android:text="@{Integer.toString(eventObj.currentPpl)}"
                             android:textSize="16sp"/>
 
                         <TextView
@@ -119,7 +123,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="8"
+                            android:text="@{Integer.toString(eventObj.maxPpl)}"
                             android:textSize="16sp"/>
 
                     </LinearLayout>
@@ -151,7 +155,7 @@
                         android:layout_height="16dp"
                         android:layout_weight="1"
                         android:layout_gravity="center_vertical"
-                        android:text="24/09 16:00-18:00" />
+                        android:text="@{eventObj.eventStart}" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -172,7 +176,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="right"
-                            android:text="23/09 19:00"/>
+                            android:text="@{eventObj.eventDeadline}"/>
 
                     </LinearLayout>
 
@@ -203,7 +207,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="This is a good event. It will be very interesting. We plan to go to Frankie to have lunch. After that, we may try to watch a movie."
+                    android:text="@{eventObj.description}"
                     android:textSize="15sp"
                     android:textColor="#000000"/>
             </LinearLayout>

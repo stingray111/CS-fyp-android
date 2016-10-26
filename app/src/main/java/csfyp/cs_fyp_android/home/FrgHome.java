@@ -352,7 +352,8 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        switchFragment(FrgEvent.newInstance());
+        //TODO marker get id subsitude 123
+        switchFragment(FrgEvent.newInstance(123));
     }
 
     public void onClickNewEvent(View view) {
