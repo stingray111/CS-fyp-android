@@ -59,7 +59,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
             @Override
             public User loadInBackground() {
                 //TODO: connect to server
-                return new User("Luk","Ping Shan","Stingray",true,10,1,2,"psluk@link.cuhk.edu.hk","23456789","I am crazy");
+                return new User("Luk","Ping Shan","Stingray",true,10,1,2,"psluk@link.cuhk.edu.hk","23456789","I am crazy",12);
             }
         };
     }

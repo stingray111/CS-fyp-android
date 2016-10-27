@@ -15,8 +15,10 @@ public class User {
     private String email;
     private String phone;
     private String description;
+    private String fullName;
+    private int level;
 
-    public User(String first, String last, String nick, boolean gender, int attend, int miss, int hold, String mailaddr, String phonenum, String descriptions){
+    public User(String first, String last, String nick, boolean gender, int attend, int miss, int hold, String mailaddr, String phonenum, String descriptions,int level){
         this.firstName=first;
         this.lastName=last;
         this.nickName=nick;
@@ -27,6 +29,8 @@ public class User {
         this.email =  mailaddr;
         this.phone = phonenum;
         this.description = descriptions;
+        this.fullName = firstName+" "+lastName+" ("+nickName+") ";
+        this.level = level;
     }
 
     public String getFirstName(){ return this.firstName;}
@@ -39,6 +43,8 @@ public class User {
     public String getEmail(){ return this.email;}
     public String getPhone(){ return this.phone;}
     public String getDescription(){ return this.description;}
+    public String getFullName(){ return this.fullName;}
+    public int getLevel(){return this.level;}
 
     public void setFirstName(String first){ this.firstName =first; }
     public void setLastName(String last){ this.lastName=last; }
@@ -50,6 +56,8 @@ public class User {
     public void setEmail(String emailaddr){ this.email=emailaddr; }
     public void setPhone(String phonenum){ this.phone=phonenum; }
     public void setDescription(String descript){ this.description=descript; }
+    public void setFullName(String fullName){this.fullName=fullName;}
+    public void setLevel(int level){this.level= level;}
 
 
 }

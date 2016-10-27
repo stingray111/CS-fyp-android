@@ -47,7 +47,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tung Pak Yin (Ken)"
+                    android:text="@{userObj.fullName}"
                     android:gravity="center"
                     android:textColor="#111111"
                     android:textSize="20sp" />
@@ -58,15 +58,24 @@
                     android:layout_height="wrap_content"
                     android:gravity="center">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAlignment="center"
-                        android:paddingRight="4dp"
-                        android:text="Lv: 12"
-                        android:textSize="16sp"
                         android:gravity="center"
-                        android:paddingTop="4dp"/>
+                        android:paddingRight="4dp"
+                        android:paddingTop="4dp">
+                        android:textAlignment="center"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Lv: "
+                            android:textSize="16sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{userObj.level}"
+                            android:textSize="16sp"/>
+                    </LinearLayout>
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -91,7 +100,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
-                    android:text="作為一位CSer，只要你係識打CODE既，我都好樂意同你做下朋友，假如你唔識打CODE既話，我都可以教下你既，不過要收反錢lo,日頭果時就寫Android，夜晚果時就寫IOS，悶果時又可以寫下C++，生活都咪話唔充實"/>
+                    android:text="@{userObj.description}"/>
             </LinearLayout>
 
             <!-- past record -->
@@ -113,18 +122,40 @@
                     android:text="往績"
                     android:textSize="18sp"
                     android:textColor="#777777"/>
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="曾報名活動: 20"
-                    android:textSize="14sp"
-                    android:textColor="#000000" />
-                <TextView
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="曾報名活動: "
+                        android:textSize="14sp"
+                        android:textColor="#000000" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{Integer.toString(userObj.attendEventNum)}"
+                        android:textSize="14sp"
+                        android:textColor="#000000" />
+                </LinearLayout>
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="曾走數活動: 0"
-                    android:textSize="14sp"
-                    android:textColor="#000000" />
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="曾走數活動: "
+                        android:textSize="14sp"
+                        android:textColor="#000000" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{userObj.missingEventNum}"
+                        android:textSize="14sp"
+                        android:textColor="#000000" />
+                </LinearLayout>
 
             </LinearLayout>
             <!-- mobile and email -->
@@ -149,7 +180,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="6156 5916"
+                    android:text="@{userObj.phone}"
                     android:textSize="14sp"
                     android:textColor="#000000" />
             </LinearLayout>
@@ -176,7 +207,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="ken31ee@gmail.com"
+                    android:text="@{userObj.email}"
                     android:textSize="14sp"
                     android:textColor="#000000" />
             </LinearLayout>
