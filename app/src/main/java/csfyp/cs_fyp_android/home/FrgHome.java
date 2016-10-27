@@ -77,7 +77,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener {
 
-    private static final int LOADER_ID = 1;
+    private static final int HOME_LOADER_ID = 1;
     private static final String TAG = "HomeFragment";
 
     private boolean mIsPanelExpanded;
@@ -240,7 +240,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         mEventRecyclerView.setAdapter(mEventAdapter);
 
         // Setting up loader
-        getLoaderManager().initLoader(LOADER_ID, null, this);
+        getLoaderManager().initLoader(HOME_LOADER_ID, null, this);
 
         return v;
     }
@@ -376,7 +376,8 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                 }
                 if (marker == mSelfMarker)
                     return null;
-                return myContentView;
+                else
+                    return myContentView;
             }
 
             @Override
@@ -515,6 +516,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         mEventAdapter.setmEventList(data);
         mData = data;
         mIsLoadFinished = true;
+        mEventAdapter.notifyDataSetChanged();
         populateMapMarker();
     }
 
@@ -529,6 +531,13 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         mLastTarget = mGoogleMap.getCameraPosition().target;
         mLastZoom = mGoogleMap.getCameraPosition().zoom;
         switchFragment(FrgEvent.newInstance(123));
+    }
+
+    @Override
+    public void switchFragment(Fragment fragment) {
+        mLastTarget = mGoogleMap.getCameraPosition().target;
+        mLastZoom = mGoogleMap.getCameraPosition().zoom;
+        super.switchFragment(fragment);
     }
 
     public void onClickNewEvent(View view) {

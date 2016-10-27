@@ -4,11 +4,10 @@ import android.databinding.DataBindingUtil;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.android.databinding.library.baseAdapters.BR;
 
 import java.util.List;
 
@@ -27,8 +26,10 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        if (mEventList != null)
+        if (mEventList != null) {
+            Log.i("Size of count", mEventList.size() + "");
             return mEventList.size();
+        }
         else
             return 0;
     }
@@ -45,11 +46,12 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.getBinding().setHandlers(holder);
-        holder.getBinding().setVariable(BR.item, mEventList.get(position));
+        holder.getBinding().setItem(mEventList.get(position));
         holder.getBinding().executePendingBindings();
     }
 
     public void setmEventList(List<Event> mEventList) {
+        Log.i("ADT", "Set Data");
         this.mEventList = mEventList;
     }
 

@@ -36,6 +36,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     public FrgEvent() {
         super();
     }
+    private static final int EVENT_LOADER_ID  = 2;
     private static final String TAG = "EventFragment";
     private Toolbar mToolBar;
     private GoogleMap mGoogleMap;
@@ -45,8 +46,8 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     private int mEventId;
     private Event mEventObj;
 
-
-    public FrgEvent (int id){
+    // TODO: 27/10/2016 fix constructor to use putParam
+    public FrgEvent(int id){
         this.mEventId = id;
     }
 
@@ -91,8 +92,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         mMapView.onCreate(null);
         mMapView.getMapAsync(this);
 
-        getLoaderManager().initLoader(2,null,this);
-
+        getLoaderManager().initLoader(EVENT_LOADER_ID, null, this);
 
         return v;
     }

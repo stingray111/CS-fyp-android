@@ -10,7 +10,7 @@
         android:id="@+id/historyToolBar"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/historyRV"
+        android:id="@+id/rvHistory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="4dp"
