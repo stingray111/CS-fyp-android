@@ -34,7 +34,7 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());  // TODO: 26/10/2016 change to parent
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         HomeItemEventBinding binding = DataBindingUtil.inflate(inflater, R.layout.home_item_event, parent, false);
         ViewHolder holder = new ViewHolder(binding.getRoot());
         holder.setBinding(binding);

@@ -12,8 +12,11 @@ import android.view.ViewGroup;
 
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.databinding.ProfileFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.model.User;
+
+import static com.google.android.gms.analytics.internal.zzy.m;
 
 public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCallbacks<User>{
     public static final String TAG = "ProfileFragment";
@@ -21,6 +24,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
     public FrgProfile() { super(); }
     private int mUserID;
     private User mUserObj;
+    private ProfileFrgBinding mDatabinding;
 
     public FrgProfile(int id){ this.mUserID = id;}
 
@@ -67,6 +71,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<User> loader, User data) {
         mUserObj = data;
+        mDatabinding.setUserObj(mUserObj);
     }
 
     @Override
