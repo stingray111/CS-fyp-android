@@ -44,8 +44,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     private EventFrgBinding mDataBinding;
     private int mEventId;
     private Event mEventObj;
-    private boolean mIsLoadFinished = false;
-    private boolean mIsMapReady = false;
+
 
     public FrgEvent (int id){
         this.mEventId = id;
@@ -113,11 +112,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                 .title("Event 2")
                 .snippet("Custom2")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
-
-        mIsMapReady = true;
-        if(mIsMapReady && mIsLoadFinished){
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mEventObj.getPosition(),11.0f));
-        }
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
     }
 
 
@@ -192,10 +187,6 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     @Override
     public void onLoadFinished(Loader<Event> loader, Event data) {
         mEventObj = data;
-        mIsLoadFinished = true;
-        if(mIsMapReady && mIsLoadFinished){
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mEventObj.getPosition(),11.0f));
-        }
     }
 
     @Override

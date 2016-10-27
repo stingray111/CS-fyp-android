@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
-    <data>
-        <variable
-            name="userObj"
-            type="csfyp.cs_fyp_android.model.User"/>
-    </data>
-    <LinearLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     >
-
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
@@ -43,7 +36,6 @@
                     android:layout_height="150dp"
                     android:src="#c40d0d" />
                 <!-- name row -->
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -51,7 +43,6 @@
                     android:gravity="center"
                     android:textColor="#111111"
                     android:textSize="20sp" />
-
                 <!-- level and thump row -->
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -214,5 +205,5 @@
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
-</layout>
+
 
