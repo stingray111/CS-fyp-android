@@ -84,7 +84,9 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     private boolean mIsPanelAnchored;
     private boolean mIsLoadFinished = false;
     private boolean mIsMapReady = false;
-    private boolean mIsUseLocation = true;
+    private boolean mIsUseLocation = false;
+
+    private boolean mIsSetToSelfLocation = false;
     private List<Event> mData;
 
     private HomeFrgBinding mDataBinding;
@@ -103,6 +105,9 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     private DrawerLayout mDrawerLayout;
 
     // For Google Map
+    private Marker mSelfMarker;
+    private LatLng mLastTarget;
+    private float mLastZoom;
     private Location mLastLocation;
     private Location mCurrentLocation;
     private LocationRequest mLocationRequest;
@@ -135,9 +140,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                         .snippet(item.getHolderName() + "&" + item.getEventStart() + "&" + item.getCurrentPpl() + "&" + item.getMaxPpl())
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
             }
-            if (mIsUseLocation && mCurrentLocation != null) {}
-            else
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mData.get(0).getPosition(), 11.0f));
         }
     }
 
@@ -148,8 +150,11 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         // initialize Pull-up Panel, try getting the last status
         if (savedInstanceState != null) {
             mIsPanelExpanded = savedInstanceState.getBoolean("isPanelExpanded");
-            mIsUseLocation = savedInstanceState.getBoolean("isUseLocation");
             mCurrentLocation = savedInstanceState.getParcelable("currentLocation");
+            mLastLocation = savedInstanceState.getParcelable("lastLocation");
+            mLastTarget = savedInstanceState.getParcelable("lastTarget");
+            mLastZoom = savedInstanceState.getFloat("lastZoom");
+            mIsSetToSelfLocation = savedInstanceState.getBoolean("isSetToSelfLocation");
 
         }
 
@@ -171,11 +176,13 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         super.onSaveInstanceState(outState);
         Bundle mapState = new Bundle();
         mMapView.onSaveInstanceState(mapState);  // TODO: 21/10/2016 fix mapState
-        outState.putBoolean("isUseLocation", mIsUseLocation);
         outState.putParcelable("currentLocation", mCurrentLocation);
-        
+        outState.putParcelable("lastLocation", mLastLocation);
+        outState.putParcelable("lastTarget", mLastTarget);
+        outState.putFloat("lastZoom", mLastZoom);
         outState.putBundle("mapSaveInstanceState", mapState); //// TODO: 19/10/2016 change key
         outState.putBoolean("isPanelExpanded", mIsPanelExpanded);
+        outState.putBoolean("isSetToSelfLocation", mIsSetToSelfLocation);
     }
 
     @Nullable
@@ -356,15 +363,19 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                         R.layout.home_map_item_info_window, null);
                 TextView tvInfoWinTitle = ((TextView) myContentView.findViewById(R.id.infoWinTitle));
                 tvInfoWinTitle.setText(marker.getTitle());
-                String[] temp = marker.getSnippet().split("&");
-                TextView tvInfoWinUsername = ((TextView) myContentView.findViewById(R.id.infoWinUsername));
-                TextView tvInfoWinEventStart = ((TextView) myContentView.findViewById(R.id.infoWinEventStart));
-                TextView tvInfoWinCurrentPpl = ((TextView) myContentView.findViewById(R.id.infoWinCurrentPpl));
-                TextView tvInfoWinMaxPpl = ((TextView) myContentView.findViewById(R.id.infoWinMaxPpl));
-                tvInfoWinUsername.setText(temp[0]);
-                tvInfoWinEventStart.setText(temp[1]);
-                tvInfoWinCurrentPpl.setText(temp[2]);
-                tvInfoWinMaxPpl.setText(temp[3]);
+                if(marker.getSnippet() != null) {
+                    String[] temp = marker.getSnippet().split("&");
+                    TextView tvInfoWinUsername = ((TextView) myContentView.findViewById(R.id.infoWinUsername));
+                    TextView tvInfoWinEventStart = ((TextView) myContentView.findViewById(R.id.infoWinEventStart));
+                    TextView tvInfoWinCurrentPpl = ((TextView) myContentView.findViewById(R.id.infoWinCurrentPpl));
+                    TextView tvInfoWinMaxPpl = ((TextView) myContentView.findViewById(R.id.infoWinMaxPpl));
+                    tvInfoWinUsername.setText(temp[0]);
+                    tvInfoWinEventStart.setText(temp[1]);
+                    tvInfoWinCurrentPpl.setText(temp[2]);
+                    tvInfoWinMaxPpl.setText(temp[3]);
+                }
+                if (marker == mSelfMarker)
+                    return null;
                 return myContentView;
             }
 
@@ -373,14 +384,29 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                 return null;
             }
         });
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mData.get(0).getPosition(), 11.0f));
+
+        if(mCurrentLocation != null) {
+            mSelfMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+        } else if (mLastLocation != null) {
+            mSelfMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+        }
+
+        if (mLastTarget != null)
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastTarget, mLastZoom));
+
         populateMapMarker();
     }
 
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 11.0f));
+        if (mSelfMarker != null)
+            mSelfMarker.remove();
+        mSelfMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+        if (!mIsSetToSelfLocation) {
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 11.0f));
+            mIsSetToSelfLocation = true;
+        }
     }
 
     @Override
@@ -500,6 +526,8 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     @Override
     public void onInfoWindowClick(Marker marker) {
         //TODO marker get id subsitude 123
+        mLastTarget = mGoogleMap.getCameraPosition().target;
+        mLastZoom = mGoogleMap.getCameraPosition().zoom;
         switchFragment(FrgEvent.newInstance(123));
     }
 
@@ -514,14 +542,15 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     public void onClickSetting(View view){ switchFragment(FrgSetting.newInstance());}
 
     public void onClickProfile(View view) {
-        switchFragment(FrgProfile.newInstance());
+        //TODO marker get id subsitude 123
+        switchFragment(FrgProfile.newInstance(123));
     }
 
     public void onClickAbout(View view) {
         switchFragment(FrgAbout.newInstance());
     }
 
-    public void onClickHistory(View view){switchFragment(FrgHistory.newInstance());}
+    public void onClickHistory(View view){ switchFragment(FrgHistory.newInstance());}
 
     public Action getIndexApiAction() {
         Thing object = new Thing.Builder()
