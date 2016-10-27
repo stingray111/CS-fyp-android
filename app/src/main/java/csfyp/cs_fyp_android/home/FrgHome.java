@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,20 +30,20 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Result;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -70,21 +71,27 @@ import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
 
+import static android.app.Activity.RESULT_OK;
+
 public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallbacks<List<Event>>,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
+        ResultCallback,
         LocationListener,
         OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener {
 
-    private static final int HOME_LOADER_ID = 1;
-    private static final String TAG = "HomeFragment";
+    public static final int HOME_LOADER_ID = 1;
+    public static final int HOME_LOCATION_SETTING_CALLBACK = 2;
+    public static final int HOME_PERMISSION_CALLBACK = 1;
+    public static final String TAG = "HomeFragment";
 
     private boolean mIsPanelExpanded;
     private boolean mIsPanelAnchored;
     private boolean mIsLoadFinished = false;
     private boolean mIsMapReady = false;
-    private boolean mIsUseLocation = false;
+    private boolean mIsPermissionGranted = false;
+    private boolean mIsLocationSettingEnable = false;
 
     private boolean mIsSetToSelfLocation = false;
     private List<Event> mData;
@@ -105,12 +112,11 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     private DrawerLayout mDrawerLayout;
 
     // For Google Map
-    private Marker mSelfMarker;
     private LatLng mLastTarget;
     private float mLastZoom;
-    private Location mLastLocation;
     private Location mCurrentLocation;
     private LocationRequest mLocationRequest;
+    private LocationSettingsRequest mLocationSettingsRequest;
     private MapView mMapView;
     private GoogleMap mGoogleMap;
     private GoogleApiClient client;
@@ -143,6 +149,43 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         }
     }
 
+    private void buildGoogleApiClient() {
+        client = new GoogleApiClient.Builder(getContext())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .addApi(AppIndex.API)
+                .build();
+    }
+
+    private void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(20000);
+        mLocationRequest.setFastestInterval(10000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+    }
+
+    private void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        builder.setAlwaysShow(true);
+        mLocationSettingsRequest = builder.build();
+    }
+
+    private void checkLocationSettings() {
+        LocationServices.SettingsApi.checkLocationSettings(client, mLocationSettingsRequest)
+                        .setResultCallback(this);
+    }
+
+    private void startLocationUpdate() {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (mIsLocationSettingEnable && mIsPermissionGranted) {
+                Toast.makeText(getContext(),"Location update started", Toast.LENGTH_LONG).show();
+                LocationServices.FusedLocationApi.requestLocationUpdates(client, mLocationRequest, this);
+            }
+        }
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,21 +193,9 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         // initialize Pull-up Panel, try getting the last status
         if (savedInstanceState != null) {
             mIsPanelExpanded = savedInstanceState.getBoolean("isPanelExpanded");
-            mCurrentLocation = savedInstanceState.getParcelable("currentLocation");
-            mLastLocation = savedInstanceState.getParcelable("lastLocation");
             mLastTarget = savedInstanceState.getParcelable("lastTarget");
             mLastZoom = savedInstanceState.getFloat("lastZoom");
             mIsSetToSelfLocation = savedInstanceState.getBoolean("isSetToSelfLocation");
-
-        }
-
-        if (client == null) {
-            client = new GoogleApiClient.Builder(getContext())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .addApi(AppIndex.API)
-                    .build();
         }
 
         setHasOptionsMenu(true);
@@ -176,8 +207,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         super.onSaveInstanceState(outState);
         Bundle mapState = new Bundle();
         mMapView.onSaveInstanceState(mapState);  // TODO: 21/10/2016 fix mapState
-        outState.putParcelable("currentLocation", mCurrentLocation);
-        outState.putParcelable("lastLocation", mLastLocation);
         outState.putParcelable("lastTarget", mLastTarget);
         outState.putFloat("lastZoom", mLastZoom);
         outState.putBundle("mapSaveInstanceState", mapState); //// TODO: 19/10/2016 change key
@@ -223,14 +252,25 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         mDrawerLayout = mDataBinding.drawerLayout;
 
         // Setting up Google Map
+        new Runnable() {
+            @Override
+            public void run() {
+                mMapView.onCreate(null);
+            }
+        };
+
         mMapView = mDataBinding.homeMap;
-        Bundle mapState; //// TODO: 19/10/2016 move to private
-        if (savedInstanceState != null)
+
+        if (savedInstanceState != null) {
+            Bundle mapState;
             mapState = savedInstanceState.getBundle("mapSaveInstanceState"); // TODO: 19/10/2016 change key
+            mMapView.onCreate(mapState);
+        }
         else
-            mapState = null;
-        mMapView.onCreate(mapState);
+            mMapView.onCreate(null);
+
         mMapView.getMapAsync(this);
+
 
         // Setting up RcyclerView for event
         mEventRecyclerView = mDataBinding.rvEvent;
@@ -241,6 +281,9 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
 
         // Setting up loader
         getLoaderManager().initLoader(HOME_LOADER_ID, null, this);
+
+        // check location setting
+        buildGoogleApiClient();
 
         return v;
     }
@@ -310,11 +353,10 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     @Override
     public void onResume() {
         super.onResume();
-        mMapView.onResume();
+        if (mMapView != null)
+            mMapView.onResume();
         if (client.isConnected()) {
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                LocationServices.FusedLocationApi.requestLocationUpdates(client, mLocationRequest, this);
-            }
+            startLocationUpdate();
         }
     }
 
@@ -351,11 +393,10 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
-
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mGoogleMap.setMyLocationEnabled(true);
-            return;
         }
+
         mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
             public View getInfoWindow(Marker marker) {
@@ -374,10 +415,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                     tvInfoWinCurrentPpl.setText(temp[2]);
                     tvInfoWinMaxPpl.setText(temp[3]);
                 }
-                if (marker == mSelfMarker)
-                    return null;
-                else
-                    return myContentView;
+                return myContentView;
             }
 
             @Override
@@ -385,12 +423,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                 return null;
             }
         });
-
-        if(mCurrentLocation != null) {
-            mSelfMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-        } else if (mLastLocation != null) {
-            mSelfMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-        }
 
         if (mLastTarget != null)
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLastTarget, mLastZoom));
@@ -401,9 +433,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
-        if (mSelfMarker != null)
-            mSelfMarker.remove();
-        mSelfMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
         if (!mIsSetToSelfLocation) {
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 11.0f));
             mIsSetToSelfLocation = true;
@@ -411,89 +440,80 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     }
 
     @Override
+    public void onResult(@NonNull Result result) {
+        final Status status = result.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                mIsLocationSettingEnable = true;
+                startLocationUpdate();
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                try {
+                    status.startResolutionForResult(getActivity(), HOME_LOCATION_SETTING_CALLBACK);
+                } catch (IntentSender.SendIntentException e) {
+                    // TODO: 27/10/2016 ignore?
+                    Toast.makeText(getContext(),"Try get Location fail", Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
+        if (requestCode == HOME_PERMISSION_CALLBACK) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(client);
-                    LocationServices.FusedLocationApi.requestLocationUpdates(client, mLocationRequest, this);
-                }
-            } else {
-                mIsUseLocation = false;
+                Toast.makeText(getContext(),"Permission Granted", Toast.LENGTH_LONG).show();
+                mIsPermissionGranted = true;
+                startLocationUpdate();
             }
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 2) {
-            mIsUseLocation = true;
+        // result for location setting prompt
+        if (requestCode == HOME_LOCATION_SETTING_CALLBACK) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(getContext(),"Location Setting Enabled", Toast.LENGTH_LONG).show();
+                mIsLocationSettingEnable = true;
+                startLocationUpdate();
+            } else {
+                LocationServices.SettingsApi.checkLocationSettings(client, mLocationSettingsRequest)
+                        .setResultCallback(this);
+            }
         }
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         // check location setting
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(20000);
-        mLocationRequest.setFastestInterval(10000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
-        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(client, builder.build());
 
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-
-            @Override
-            public void onResult(@NonNull LocationSettingsResult result) {
-                final Status status = result.getStatus();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        mIsUseLocation = true;
-
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        // Location settings are not satisfied, but this can be fixed
-                        // by showing the user a dialog.
-                        try {
-                            // Show the dialog by calling startResolutionForResult(),
-                            // and check the result in onActivityResult().
-                            status.startResolutionForResult(getActivity(), 2);
-                        } catch (IntentSender.SendIntentException e) {
-                            mIsUseLocation = false;
-                        }
-                        mIsUseLocation = true;
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        mIsUseLocation = false;
-                        break;
-                }
-
-            }
-        });
+        createLocationRequest();
+        buildLocationSettingsRequest();
+        checkLocationSettings();
 
         // check permission for location
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
             } else {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1); // TODO: 26/10/2016 request code change to constant 
+                Toast.makeText(getContext(),"Try Get Permission", Toast.LENGTH_LONG).show();
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, HOME_PERMISSION_CALLBACK);
             }
         } else {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(client);
-            // TODO: 26/10/2016 check wheather user has turned location updates on or off
-            LocationServices.FusedLocationApi.requestLocationUpdates(client, mLocationRequest, this);
+            // permission granted
+            Toast.makeText(getContext(),"Permission Granted in connected", Toast.LENGTH_LONG).show();
+            mIsPermissionGranted = true;
+            startLocationUpdate();
         }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        mIsUseLocation = false;
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        mIsUseLocation = false;
     }
 
     @Override
@@ -537,7 +557,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     public void switchFragment(Fragment fragment) {
         mLastTarget = mGoogleMap.getCameraPosition().target;
         mLastZoom = mGoogleMap.getCameraPosition().zoom;
-        super.switchFragment(fragment);
+        super.switchFragment(this, fragment);
     }
 
     public void onClickNewEvent(View view) {
@@ -571,6 +591,14 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                 .setObject(object)
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
+    }
+
+    class LoadingMapAsyncTask extends AsyncTask<String, Integer, Integer> {
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+            return null;
+        }
     }
 }
 

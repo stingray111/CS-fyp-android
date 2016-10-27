@@ -88,6 +88,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                 onBack(TAG);
             }
         });
+
         mMapView = mDataBinding.eventMap;
         mMapView.onCreate(null);
         mMapView.getMapAsync(this);
@@ -105,14 +106,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         mGoogleMap.getUiSettings().setAllGesturesEnabled(false);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
         mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
-        //TODO: disable zoom by gesture
 
-        mGoogleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(22.28, 114.1679))
-                .title("Event 2")
-                .snippet("Custom2")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
     }
 
 
@@ -187,6 +181,9 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     @Override
     public void onLoadFinished(Loader<Event> loader, Event data) {
         mEventObj = data;
+        mDataBinding.setEventObj(mEventObj);
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mEventObj.getPosition(), 12.0f));
+        mGoogleMap.addMarker(new MarkerOptions().position(mEventObj.getPosition()));
     }
 
     @Override

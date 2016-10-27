@@ -26,10 +26,14 @@
             android:elevation="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <com.google.android.gms.maps.MapView
+                xmlns:map="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/eventMap"
                 android:layout_width="match_parent"
-                android:layout_height="200dp" />
+                android:layout_height="200dp"
+                map:liteMode="true"/>
+
         </LinearLayout>
 
 

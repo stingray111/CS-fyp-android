@@ -4,7 +4,6 @@ import android.databinding.DataBindingUtil;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,6 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
     @Override
     public int getItemCount() {
         if (mEventList != null) {
-            Log.i("Size of count", mEventList.size() + "");
             return mEventList.size();
         }
         else
@@ -51,7 +49,6 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
     }
 
     public void setmEventList(List<Event> mEventList) {
-        Log.i("ADT", "Set Data");
         this.mEventList = mEventList;
     }
 
