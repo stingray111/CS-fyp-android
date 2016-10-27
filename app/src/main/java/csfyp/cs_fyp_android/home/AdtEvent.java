@@ -1,7 +1,6 @@
 package csfyp.cs_fyp_android.home;
 
 import android.databinding.DataBindingUtil;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +20,6 @@ import csfyp.cs_fyp_android.model.Event;
 public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
 
     private List<Event> mEventList;
-    private Fragment mParent;
 
     public AdtEvent() {
 
@@ -65,7 +63,6 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
 
         // each data item is just a string in this case
         public void onClickEventItem(View view) {
-            // // TODO: 26/10/2016 save map target 
             FragmentTransaction ft = ((AppCompatActivity)binding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
                     .replace(R.id.parent_fragment_container, FrgEvent.newInstance(123))

@@ -46,7 +46,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     private Event mEventObj;
 
 
-    public FrgEvent(int id){
+    public FrgEvent (int id){
         this.mEventId = id;
     }
 
@@ -187,7 +187,6 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     @Override
     public void onLoadFinished(Loader<Event> loader, Event data) {
         mEventObj = data;
-        mDataBinding.setEventObj(mEventObj);
     }
 
     @Override
