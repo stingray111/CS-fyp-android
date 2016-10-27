@@ -3,6 +3,7 @@ package csfyp.cs_fyp_android.profile;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -11,18 +12,24 @@ import android.view.ViewGroup;
 
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.lib.CustomLoader;
+import csfyp.cs_fyp_android.model.User;
 
-public class FrgProfile extends CustomFragment {
+public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCallbacks<User>{
     public static final String TAG = "ProfileFragment";
     private Toolbar mToolBar;
-    public FrgProfile() {
-    }
+    public FrgProfile() { super(); }
+    private int mUserID;
+    private User mUserObj;
 
-    public static FrgProfile newInstance() {
+    public FrgProfile(int id){ this.mUserID = id;}
+
+    public static FrgProfile newInstance(int id) {
+        //TODO: give id to the fragment
 
         Bundle args = new Bundle();
 
-        FrgProfile fragment = new FrgProfile();
+        FrgProfile fragment = new FrgProfile(id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -44,5 +51,26 @@ public class FrgProfile extends CustomFragment {
             }
         });
         return v;
+    }
+
+    @Override
+    public Loader<User> onCreateLoader(int id, Bundle args) {
+        return  new CustomLoader<User>(getContext()) {
+            @Override
+            public User loadInBackground() {
+                //TODO: connect to server
+                return new User("Luk","Ping Shan","Stingray",true,10,1,2,"psluk@link.cuhk.edu.hk","23456789","I am crazy");
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<User> loader, User data) {
+        mUserObj = data;
+    }
+
+    @Override
+    public void onLoaderReset(Loader<User> loader) {
+
     }
 }

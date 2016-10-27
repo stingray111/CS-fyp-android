@@ -373,7 +373,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                 return null;
             }
         });
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mData.get(0).getPosition(), 11.0f));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.363843, 114.121513), 11.0f));
         populateMapMarker();
     }
 
@@ -514,7 +514,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     public void onClickSetting(View view){ switchFragment(FrgSetting.newInstance());}
 
     public void onClickProfile(View view) {
-        switchFragment(FrgProfile.newInstance());
+        switchFragment(FrgProfile.newInstance(1234));
     }
 
     public void onClickAbout(View view) {
