@@ -9,7 +9,9 @@ import csfyp.cs_fyp_android.about.FrgAbout;
 import csfyp.cs_fyp_android.databinding.ActivityMainBinding;
 import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.home.FrgHome;
+import csfyp.cs_fyp_android.model.FrgLogin;
 import csfyp.cs_fyp_android.setting.FrgSetting;
+import csfyp.cs_fyp_android.welcome.FrgWelcome;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.parent_fragment_container, FrgHome.newInstance());
+        ft.replace(R.id.parent_fragment_container, FrgLogin.newInstance());
         ft.commit();
     }
 }
