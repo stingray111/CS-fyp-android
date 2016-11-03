@@ -33,25 +33,23 @@
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content">
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="5dp"
-                        android:textSize="17sp"
-                        android:textColor="#000000"
-                        android:text="Usericon"
-                        />
+                        android:src="@drawable/ic_mail"/>
+
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="3"
+                    android:layout_weight="4"
                     android:layout_height="wrap_content">
 
                     <EditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="user name "
+                        android:hint="email address"
                         android:padding="5dp"
+                        android:textSize="20sp"
                         android:id="@+id/editText" />
                 </LinearLayout>
             </LinearLayout>
@@ -65,23 +63,20 @@
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content">
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="5dp"
-                        android:textSize="17sp"
-                        android:textColor="#000000"
-                        android:text="pwicon"
-                        />
+                        android:src="@drawable/ic_password"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="3"
+                    android:layout_weight="4"
                     android:layout_height="wrap_content">
                     <EditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="password"
+                        android:textSize="20sp"
                         android:padding="5dp"
                         />
                 </LinearLayout>
@@ -98,7 +93,7 @@
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="3"
+                    android:layout_weight="4"
                     android:layout_height="wrap_content">
                     <Button
                         android:layout_width="100dp"
@@ -122,6 +117,7 @@
                     android:textAlignment="center"
                     android:textColor="#0000EE"
                     android:padding="4dp"
+                    android:textSize="15sp"
                     android:text="Contact Us"/>
                 <TextView
                     android:layout_width="match_parent"
@@ -129,6 +125,7 @@
                     android:textAlignment="center"
                     android:textColor="#0000EE"
                     android:padding="4dp"
+                    android:textSize="15sp"
                     android:text="Forget Password?"/>
             </LinearLayout>
         </LinearLayout>

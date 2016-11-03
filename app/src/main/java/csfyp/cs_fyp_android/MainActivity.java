@@ -21,7 +21,8 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.parent_fragment_container, FrgLogin.newInstance());
+        ft.replace(R.id.parent_fragment_container, FrgWelcome.newInstance());
         ft.commit();
     }
 }
+
