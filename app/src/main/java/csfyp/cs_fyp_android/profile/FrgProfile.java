@@ -10,13 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.ProfileFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.model.User;
-
-import static com.google.android.gms.analytics.internal.zzy.m;
 
 public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCallbacks<User>{
     public static final String TAG = "ProfileFragment";
@@ -63,7 +61,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
             @Override
             public User loadInBackground() {
                 //TODO: connect to server
-                return new User("Luk","Ping Shan","Stingray",true,10,1,2,"psluk@link.cuhk.edu.hk","23456789","I am crazy",12);
+                return new User("stingRay", "12312343124", "Luk","Ping Shan","Stingray",true,10,1,2,"psluk@link.cuhk.edu.hk","23456789","I am crazy",12);
             }
         };
     }

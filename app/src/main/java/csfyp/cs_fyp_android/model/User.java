@@ -1,10 +1,8 @@
 package csfyp.cs_fyp_android.model;
 
-/**
- * Created by ray on 27/10/2016.
- */
-
 public class User {
+    private String userName;
+    private String password;
     private String firstName;
     private String lastName;
     private String nickName;
@@ -18,21 +16,26 @@ public class User {
     private String fullName;
     private int level;
 
-    public User(String first, String last, String nick, boolean gender, int attend, int miss, int hold, String mailaddr, String phonenum, String descriptions,int level){
-        this.firstName=first;
-        this.lastName=last;
-        this.nickName=nick;
-        this.isMale = gender;
-        this.attendEventNum =attend;
-        this.missingEventNum= miss;
-        this.holdingEventNum = hold;
-        this.email =  mailaddr;
-        this.phone = phonenum;
-        this.description = descriptions;
+    public User(String userName, String password, String firstName, String lastName, String nickName, boolean isMale, int attendEventNum, int missingEventNum, int holdingEventNum, String email, String phone, String description,int level){
+        this.userName = userName;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.nickName = nickName;
+        this.isMale = isMale;
+        this.attendEventNum = attendEventNum;
+        this.missingEventNum = missingEventNum;
+        this.holdingEventNum = holdingEventNum;
+        this.email =  email;
+        this.phone = phone;
+        this.description = description;
         this.fullName = firstName+" "+lastName+" ("+nickName+") ";
         this.level = level;
     }
 
+    public String getUserName() {
+        return userName;
+    }
     public String getFirstName(){ return this.firstName;}
     public String getLastName(){ return this.lastName;}
     public String getNickName(){ return this.nickName;}
@@ -46,6 +49,9 @@ public class User {
     public String getFullName(){ return this.fullName;}
     public int getLevel(){return this.level;}
 
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
     public void setFirstName(String first){ this.firstName =first; }
     public void setLastName(String last){ this.lastName=last; }
     public void setNickName(String nick){ this.nickName=nick; }
@@ -58,6 +64,5 @@ public class User {
     public void setDescription(String descript){ this.description=descript; }
     public void setFullName(String fullName){this.fullName=fullName;}
     public void setLevel(int level){this.level= level;}
-
 
 }
