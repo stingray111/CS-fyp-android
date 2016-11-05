@@ -60,8 +60,7 @@
                     android:id="@+id/frg_container"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:elevation="4dp"
-                    android:background="#FFFFFF"/>
+                    android:elevation="4dp"/>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rvEvent"
@@ -94,7 +93,7 @@
                 android:focusable="true"
                 android:clickable="true"
                 android:background="#484848"
-                android:onClick="@{handlers.onClickProfile}">
+                android:onClick="@{handlers::onClickProfile}">
 
                 <ImageView
                     android:layout_width="64dp"
@@ -122,7 +121,7 @@
                 android:orientation="horizontal"
                 android:layout_margin="8dp"
                 android:clickable="true"
-                android:onClick="@{handlers.onClickNewEvent}">
+                android:onClick="@{handlers::onClickNewEvent}">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -153,7 +152,7 @@
                 android:orientation="horizontal"
                 android:layout_margin="8dp"
                 android:clickable="true"
-                android:onClick="@{handlers.onClickJoined}">
+                android:onClick="@{handlers::onClickJoined}">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -183,7 +182,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:clickable="true"
-                android:onClick="@{handlers.onClickHistory}"
+                android:onClick="@{handlers::onClickHistory}"
                 android:layout_margin="8dp">
 
                 <ImageView
@@ -214,7 +213,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:clickable="true"
-                android:onClick="@{handlers.onClickSetting}"
+                android:onClick="@{handlers::onClickSetting}"
                 android:layout_margin="8dp">
 
                 <ImageView
@@ -246,7 +245,7 @@
                 android:orientation="horizontal"
                 android:layout_margin="8dp"
                 android:clickable="true"
-                android:onClick="@{handlers.onClickAbout}">
+                android:onClick="@{handlers::onClickAbout}">
 
 
                 <ImageView

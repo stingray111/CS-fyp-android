@@ -129,7 +129,7 @@
                         android:orientation="vertical"
                         android:padding="8dp"
                         android:clickable="true"
-                        android:onClick="@{handlers.onClickSetEventStart}">
+                        android:onClick="@{handlers::onClickSetEventStart}">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -158,7 +158,7 @@
                         android:orientation="vertical"
                         android:padding="8dp"
                         android:clickable="true"
-                        android:onClick="@{handlers.onClickSetEventDeadline}">
+                        android:onClick="@{handlers::onClickSetEventDeadline}">
 
                         <TextView
                             android:layout_width="wrap_content"

@@ -66,10 +66,13 @@ import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
 import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.history.FrgHistory;
 import csfyp.cs_fyp_android.lib.CustomLoader;
+import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
+import retrofit2.Call;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -521,6 +524,23 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         return new CustomLoader<List<Event>>(getContext()) {
             @Override
             public List<Event> loadInBackground() {
+
+                // TODO: 3/11/2016 change to connect server 
+
+                HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                User user = new User("ken31ee", "321542431242", "Ken", "Tung", "hii", true, 1, 1, 1, "tungpakyin04@outlook.com", "61565916", "Good", 1);
+                Call<Boolean> call = httpService.createUser("register", user);
+                try {
+                    boolean result = call.execute().isSuccessful();
+                    if(result)
+                        Log.i(TAG, "sucess");
+                    else
+                        Log.i(TAG, "not sucess");
+
+                } catch (Exception e) {
+
+                }
+
                 List<Event> list = new ArrayList<>();
                 list.add(new Event("My 1st Event", new LatLng(22.363843, 114.121513), "ken31ee", 2, 10, "This is my first event"));
                 list.add(new Event("My 2nd Event", new LatLng(22.337171, 114.163399), "stingRay", 10, 20, "This is my second event"));
