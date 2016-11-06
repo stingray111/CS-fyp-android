@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             ft.commit();
         } else {
 
-            
+            // TODO: 6/11/2016 verify token 
             // user login
             mHome = FrgHome.newInstance();
 

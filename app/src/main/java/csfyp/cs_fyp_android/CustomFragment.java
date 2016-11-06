@@ -9,7 +9,6 @@ public class CustomFragment extends Fragment {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
                 .replace(R.id.parent_fragment_container,fragment)
-                .addToBackStack(null)
                 .commit();
     }
 
