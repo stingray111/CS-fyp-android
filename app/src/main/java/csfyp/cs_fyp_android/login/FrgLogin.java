@@ -73,7 +73,7 @@ public class FrgLogin extends CustomFragment{
                 String strEmailOrUsername = mInputEmailOrUsername.getText().toString();
                 String strPassword = mInputPassword.getText().toString();
 
-                if (!strEmailOrUsername.matches("") && !strPassword.matches("")){
+                if (!strEmailOrUsername.matches("") && !strPassword.matches("")) {
                     Log.i(TAG, strEmailOrUsername);
                     Log.i(TAG, strPassword);
 
@@ -82,6 +82,7 @@ public class FrgLogin extends CustomFragment{
                     HTTP httpService = HTTP.retrofit.create(HTTP.class);
                     Login login = new Login(strEmailOrUsername, strPassword, uuidInString);
                     Call<LoginStatus> call = httpService.login(login);
+
                     call.enqueue(new Callback<LoginStatus>() {
                         @Override
                         public void onResponse(Call<LoginStatus> call, Response<LoginStatus> response) {

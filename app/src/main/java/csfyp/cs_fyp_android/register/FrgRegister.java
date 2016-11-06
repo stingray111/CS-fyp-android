@@ -57,17 +57,10 @@ public class FrgRegister extends CustomFragment {
             }
         });
 
-        mDataBinding.userNameField.getText().toString().matches("")
 
-        mSubmitBtn = (Button) v.findViewById(R.id.submitBtn);
         mSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (mDataBinding.userNameField.getText().toString().matches("") ||
-                        mDataBinding.emailField.getText().toString().matches("") ||
-                        mDataBinding.)
-
 
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 User user = new User("ken31ee", "321542431242", "Ken", "Tung", "hii", true, 1, 1, 1, "tungpakyin04@outlook.com", "61565916", "Good", 1);
