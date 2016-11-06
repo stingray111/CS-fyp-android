@@ -1,9 +1,12 @@
 package csfyp.cs_fyp_android.welcome;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import java.util.UUID;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.LoginStatus;
@@ -70,6 +74,9 @@ public class FrgLogin extends CustomFragment{
                 String strPassword = mInputPassword.getText().toString();
 
                 if (!strEmailOrUsername.matches("") && !strPassword.matches("")){
+                    Log.i(TAG, strEmailOrUsername);
+                    Log.i(TAG, strPassword);
+
                     String uuidInString = UUID.randomUUID().toString();
 
                     HTTP httpService = HTTP.retrofit.create(HTTP.class);
@@ -81,6 +88,17 @@ public class FrgLogin extends CustomFragment{
                             if(response.isSuccessful()){
                                 if(response.body().isSuccessful()) {
 
+                                    // save token to cache
+                                    SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPref.edit();
+                                    editor.putString("userToken", response.body().getToken());
+                                    editor.commit();
+
+                                    replaceFragment(FrgHome.newInstance());
+
+                                } else {
+                                    // TODO: 6/11/2016 print error msg to user
+                                    Log.i(TAG, response.body().getErrorMsg());
                                 }
                             }
                         }

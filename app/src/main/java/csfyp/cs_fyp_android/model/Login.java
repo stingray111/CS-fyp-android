@@ -1,20 +1,20 @@
 package csfyp.cs_fyp_android.model;
 
 public class Login {
-    private String usernameOrEMail;
+    private String usernameOrEmail;
     private String password;
     private String UUID;
     private String platform;
 
-    public Login(String usernameOrEMail, String password, String UUID) {
-        this.usernameOrEMail = usernameOrEMail;
+    public Login(String usernameOrEmail, String password, String UUID) {
+        this.usernameOrEmail = usernameOrEmail;
         this.password = password;
         this.UUID = UUID;
         this.platform = "Android";
     }
 
     public String getUsernameOrEMail() {
-        return usernameOrEMail;
+        return usernameOrEmail;
     }
 
     public String getPassword() {

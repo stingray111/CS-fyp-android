@@ -38,7 +38,7 @@ public class FrgWelcome extends CustomFragment{
         loginBtn.setOnClickListener(new Button.OnClickListener (){
             @Override
             public void onClick(View v) {
-                switchFragment(FrgLogin.newInstance());
+                replaceFragment(FrgLogin.newInstance());
             }
         });
         registerBtn = (Button) v.findViewById(R.id.welcomeLoginBtn);

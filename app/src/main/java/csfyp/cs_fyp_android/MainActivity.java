@@ -1,6 +1,8 @@
 package csfyp.cs_fyp_android;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -9,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import csfyp.cs_fyp_android.databinding.ActivityMainBinding;
 import csfyp.cs_fyp_android.home.FrgHome;
+import csfyp.cs_fyp_android.welcome.FrgLogin;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,10 +38,25 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        mHome = FrgHome.newInstance();
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        String token = sharedPref.getString("userToken", "");
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.parent_fragment_container, mHome);
-        ft.commit();
+        if (token.isEmpty()) {
+            // user not login
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.parent_fragment_container, FrgLogin.newInstance());
+            ft.commit();
+        } else {
+
+            
+            // user login
+            mHome = FrgHome.newInstance();
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.parent_fragment_container, mHome);
+            ft.commit();
+        }
+
+
     }
 }

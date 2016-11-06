@@ -582,7 +582,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         switchFragment(FrgEvent.newInstance(123));
     }
 
-    @Override
     public void switchFragment(Fragment fragment) {
         mLastTarget = mGoogleMap.getCameraPosition().target;
         mLastZoom = mGoogleMap.getCameraPosition().zoom;
