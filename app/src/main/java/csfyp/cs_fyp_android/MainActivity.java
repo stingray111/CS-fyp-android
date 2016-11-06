@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import csfyp.cs_fyp_android.databinding.ActivityMainBinding;
 import csfyp.cs_fyp_android.home.FrgHome;
-import csfyp.cs_fyp_android.welcome.FrgLogin;
+import csfyp.cs_fyp_android.login.FrgLogin;
 
 public class MainActivity extends AppCompatActivity {
 

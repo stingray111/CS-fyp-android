@@ -9,10 +9,7 @@ import android.widget.Button;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
-
-/**
- * Created by ray on 3/11/2016.
- */
+import csfyp.cs_fyp_android.login.FrgLogin;
 
 public class FrgWelcome extends CustomFragment{
     public FrgWelcome(){
