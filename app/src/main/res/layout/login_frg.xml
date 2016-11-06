@@ -45,13 +45,14 @@
                     android:layout_height="wrap_content">
 
                     <EditText
+                        android:id="@+id/inputEmailOrUsername"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="email address"
                         android:padding="5dp"
-                        android:textSize="20sp"
-                        android:id="@+id/editText" />
+                        android:textSize="20sp" />
                 </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -73,6 +74,7 @@
                     android:layout_weight="4"
                     android:layout_height="wrap_content">
                     <EditText
+                        android:id="@+id/inputPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="password"
@@ -96,6 +98,7 @@
                     android:layout_weight="4"
                     android:layout_height="wrap_content">
                     <Button
+                        android:id="@+id/loginBtn"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:text="login"

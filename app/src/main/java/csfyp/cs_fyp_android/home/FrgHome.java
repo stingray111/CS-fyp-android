@@ -68,11 +68,13 @@ import csfyp.cs_fyp_android.history.FrgHistory;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.RegisterStatus;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
 import retrofit2.Call;
+import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -529,13 +531,20 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
 
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 User user = new User("ken31ee", "321542431242", "Ken", "Tung", "hii", true, 1, 1, 1, "tungpakyin04@outlook.com", "61565916", "Good", 1);
-                Call<Boolean> call = httpService.createUser("register", user);
+                Call<RegisterStatus> call = httpService.createUser(user);
                 try {
-                    boolean result = call.execute().isSuccessful();
-                    if(result)
-                        Log.i(TAG, "sucess");
-                    else
-                        Log.i(TAG, "not sucess");
+                    Response<RegisterStatus> result = call.execute();
+                    if(result.isSuccessful())
+                        if (!result.body().isSuccessful()){
+                            Log.i(TAG, "200 but not success");
+                            Log.i(TAG, result.body().getErrorMsg());
+                            Toast.makeText(getContext(), result.body().getErrorMsg(), Toast.LENGTH_LONG).show();
+                        }
+                        else
+                            Log.i(TAG, "sucess");
+                    else {
+                        Log.i(TAG, "not 200: " + result.body().getErrorMsg());
+                    }
 
                 } catch (Exception e) {
 

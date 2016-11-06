@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
                     .detectDiskReads()
                     .detectDiskWrites()
                     .detectNetwork()
-                    .penaltyLog()
                     .build());
 
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
