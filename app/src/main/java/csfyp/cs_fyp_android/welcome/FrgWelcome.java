@@ -2,9 +2,6 @@ package csfyp.cs_fyp_android.welcome;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +9,7 @@ import android.widget.Button;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
-import csfyp.cs_fyp_android.model.FrgLogin;
-import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
+import csfyp.cs_fyp_android.login.FrgLogin;
 
 /**
  * Created by ray on 3/11/2016.

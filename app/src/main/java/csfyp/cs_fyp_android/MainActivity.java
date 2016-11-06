@@ -5,13 +5,9 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import csfyp.cs_fyp_android.about.FrgAbout;
 import csfyp.cs_fyp_android.databinding.ActivityMainBinding;
-import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.home.FrgHome;
-import csfyp.cs_fyp_android.model.FrgLogin;
-import csfyp.cs_fyp_android.setting.FrgSetting;
-import csfyp.cs_fyp_android.welcome.FrgWelcome;
+import csfyp.cs_fyp_android.register.FrgRegister;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.parent_fragment_container, FrgWelcome.newInstance());
+        ft.replace(R.id.parent_fragment_container, FrgRegister.newInstance());
         ft.commit();
     }
 }
