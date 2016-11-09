@@ -57,14 +57,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
-                    android:id="@+id/emailField"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_mail"/>
                 <EditText
-                    android:id="@+id/passwordField"
+                    android:id="@+id/emailField"
                     android:layout_width="0dp"
                     android:layout_weight="3"
                     android:hint="Email"
@@ -81,11 +80,12 @@
                     android:layout_weight="1"
                     android:src="@drawable/ic_password"/>
                 <EditText
-                    android:id="@+id/secondPasswordField"
+                    android:id="@+id/passwordField"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_weight="3"
                     android:textSize="15sp"
+                    android:inputType="textPassword"
                     android:hint="Password"/>
             </LinearLayout>
             <LinearLayout
@@ -96,6 +96,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
                 <EditText
+                    android:id="@+id/secondPasswordField"
+                    android:inputType="textPassword"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_weight="3"
