@@ -16,7 +16,7 @@ import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.RegisterFrgBinding;
 import csfyp.cs_fyp_android.lib.HTTP;
-import csfyp.cs_fyp_android.model.RegisterStatus;
+import csfyp.cs_fyp_android.model.RegisterRespond;
 import csfyp.cs_fyp_android.model.User;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -58,16 +58,16 @@ public class FrgRegister extends CustomFragment {
         });
 
 
-        mSubmitBtn.setOnClickListener(new View.OnClickListener() {
+        mDataBinding.submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 User user = new User("ken31ee", "321542431242", "Ken", "Tung", "hii", true, 1, 1, 1, "tungpakyin04@outlook.com", "61565916", "Good", 1);
-                Call<RegisterStatus> call = httpService.createUser(user);
-                call.enqueue(new Callback<RegisterStatus>() {
+                Call<RegisterRespond> call = httpService.createUser(user);
+                call.enqueue(new Callback<RegisterRespond>() {
                     @Override
-                    public void onResponse(Call<RegisterStatus> call, Response<RegisterStatus> response) {
+                    public void onResponse(Call<RegisterRespond> call, Response<RegisterRespond> response) {
                         if(response.isSuccessful()) {
                             if(!response.body().isSuccessful()) {
                                 Log.i(TAG, "200 but not success");
@@ -80,11 +80,10 @@ public class FrgRegister extends CustomFragment {
                     }
 
                     @Override
-                    public void onFailure(Call<RegisterStatus> call, Throwable t) {
+                    public void onFailure(Call<RegisterRespond> call, Throwable t) {
 
                     }
                 });
-
             }
         });
 

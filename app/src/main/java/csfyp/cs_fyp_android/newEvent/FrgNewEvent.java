@@ -35,8 +35,9 @@ import java.util.Calendar;
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.NewEventFrgBinding;
+import csfyp.cs_fyp_android.lib.HTTP;
 
-public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, AdapterView.OnItemSelectedListener {
+public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
 
     private static final String TAG = "NewEventFragment";
     private NewEventFrgBinding mDataBinding;
@@ -54,6 +55,9 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
     private TimePickerDialog mStartTimePickerDialog;
     private DatePickerDialog mDeadlineDatePickerDialog;
     private TimePickerDialog mDeadlineTimePickerDialog;
+
+    private int mMinPpl;
+    private int mMaxPpl;
 
     private int mNewEventYear;
     private int mNewEventMonth;
@@ -171,6 +175,12 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
         minPplSpinnerAdapter.add("9"); minPplSpinnerAdapter.add("10"); minPplSpinnerAdapter.add("Min People");
         mMinPplSpinner.setAdapter(minPplSpinnerAdapter);
         mMinPplSpinner.setSelection(minPplSpinnerAdapter.getCount());
+        mMinPplSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                mMinPpl = Integer.parseInt((String) adapterView.getItemAtPosition(i));
+            }
+        });
 
         mMaxPplSpinner = mDataBinding.maxPplSpinner;
         ArrayAdapter<String> maxPplSpinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item) {
@@ -188,6 +198,8 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
             public int getCount() {
                 return super.getCount()-1;
             }
+
+
         };
         maxPplSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         maxPplSpinnerAdapter.add("2"); maxPplSpinnerAdapter.add("3"); maxPplSpinnerAdapter.add("4"); maxPplSpinnerAdapter.add("5");
@@ -196,6 +208,12 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
         maxPplSpinnerAdapter.add("14"); maxPplSpinnerAdapter.add("15"); maxPplSpinnerAdapter.add("Max People");
         mMaxPplSpinner.setAdapter(maxPplSpinnerAdapter);
         mMaxPplSpinner.setSelection(maxPplSpinnerAdapter.getCount());
+        mMaxPplSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                mMaxPpl = Integer.parseInt((String) adapterView.getItemAtPosition(i));
+            }
+        });
 
         // Setting up Start Date Picker Dialog
         final Calendar c = Calendar.getInstance();
@@ -247,6 +265,26 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
             mDataBinding.eventStartText.setText(mNewEventYear + "/" + mNewEventMonth + "/" + mNewEventDay + " " + mNewEventHour + ":" + mNewEventMin);
             mDataBinding.eventDeadlineText.setText(mDeadlineEventYear + "/" + mDeadlineEventMonth + "/" + mDeadlineEventDay + " " + mDeadlineEventHour + ":" + mDeadlineEventMin);
         }
+
+
+        mDataBinding.submitEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!mDataBinding.eventName.getText().toString().matches("")
+                        && mMaxPpl != 0
+                        && mMinPpl != 0
+                        && !mDataBinding.eventDeadlineText.getText().toString().matches("Click to set time")
+                        && !mDataBinding.eventStartText.getText().toString().matches("Click to set time"))
+                {
+
+                    HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                    //httpService.pushEvent(new EventPost(mDataBinding.eventName.getText().toString(), mLat, mLong, "Hong Kong", mHolderId, mMaxPpl, mMinPpl, mDesciption));
+                }
+
+            }
+        });
+
+
 
         return v;
     }
@@ -307,16 +345,6 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback, A
                 .title("You")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_self_marker)));
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-
     }
 
     public Action getIndexApiAction() {

@@ -1,70 +1,82 @@
 package csfyp.cs_fyp_android.model;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 public class Event {
-    private String eventName;
-    private LatLng position;
-    private String holderName;
+    private int id;
+    private String name;
+    private double latitude;
+    private double longitude;
+    private String place;
+    private int holderId;
     private int maxPpl;
-    private int currentPpl;
-    private String eventStart;
-    private String eventEnd;
-    private String eventDeadline;
+    private int minPpl;
+    private int currentPpl;   // not in DB
+    private String eventStart_formated;
+    private String eventDeadline_formated;
     private String description;
 
-    public Event(String eventName, LatLng position, String holderName, int currentPpl, int maxPpl, String description) {
+    public Event(String eventName, double latitude, double longitude, String place, int holderId, int currentPpl, int maxPpl, int minPpl, String description) {
         SimpleDateFormat df = new SimpleDateFormat("dd/MM HH:mm");
-        int time = (int) (System.currentTimeMillis());
-        this.eventName = eventName;
-        this.position = position;
-        this.holderName = holderName;
+        this.name = eventName;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.holderId = holderId;
+        this.place = place;
         this.maxPpl = maxPpl;
+        this.minPpl = minPpl;
         this.currentPpl = currentPpl;
-        this.eventStart = df.format(new Timestamp(System.currentTimeMillis()));
-        this.eventEnd = df.format(new Timestamp(System.currentTimeMillis()));
-        this.eventDeadline = df.format(new Timestamp(System.currentTimeMillis()));
+        this.eventStart_formated = df.format(new Timestamp(System.currentTimeMillis()));
+        this.eventDeadline_formated = df.format(new Timestamp(System.currentTimeMillis()));
         this.description = description;
     }
 
-    public Event(String eventName, LatLng position, String holderName, int currentPpl, int maxPpl,
-                 String eventStart, String eventEnd, String eventDeadline, String description) {
-        this.eventName = eventName;
-        this.position = position;
-        this.holderName = holderName;
+    public Event(String eventName, double latitude, double longitude, String place, int holderId, int currentPpl, int maxPpl, int minPpl,
+                 String eventStart, String eventDeadline, String description) {
+        this.name = eventName;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.place = place;
+        this.holderId = holderId;
         this.maxPpl = maxPpl;
+        this.minPpl = minPpl;
         this.currentPpl = currentPpl;
-        this.eventStart = eventStart;
-        this.eventEnd = eventEnd;
-        this.eventDeadline = eventDeadline;
+        this.eventStart_formated = eventStart;
+        this.eventDeadline_formated = eventDeadline;
         this.description = description;
     }
 
-    public String getEventName() {
-        return eventName;
+    public String getName() {
+        return name;
     }
 
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
+    public void setName(String eventName) {
+        this.name = eventName;
     }
 
-    public LatLng getPosition() {
-        return position;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setPosition(LatLng position) {
-        this.position = position;
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
     }
 
-    public String getHolderName() {
-        return holderName;
+    public double getLongitude() {
+        return longitude;
     }
 
-    public void setHolderName(String holderName) {
-        this.holderName = holderName;
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
+    }
+
+    public int getHolderId() {
+        return holderId;
+    }
+
+    public void setHolderId(int holderId) {
+        this.holderId = holderId;
     }
 
     public int getMaxPpl() {
@@ -73,6 +85,14 @@ public class Event {
 
     public void setMaxPpl(int maxPpl) {
         this.maxPpl = maxPpl;
+    }
+
+    public int getMinPpl() {
+        return minPpl;
+    }
+
+    public void setMinPpl(int minPpl) {
+        this.minPpl = minPpl;
     }
 
     public int getCurrentPpl() {
@@ -84,27 +104,19 @@ public class Event {
     }
 
     public String getEventStart() {
-        return eventStart;
+        return eventStart_formated;
     }
 
     public void setEventStart(String eventStart) {
-        this.eventStart = eventStart;
-    }
-
-    public String getEventEnd() {
-        return eventEnd;
-    }
-
-    public void setEventEnd(String eventEnd) {
-        this.eventEnd = eventEnd;
+        this.eventStart_formated = eventStart;
     }
 
     public String getEventDeadline() {
-        return eventDeadline;
+        return eventDeadline_formated;
     }
 
     public void setEventDeadline(String eventDeadline) {
-        this.eventDeadline = eventDeadline;
+        this.eventDeadline_formated = eventDeadline;
     }
 
     public String getDescription() {

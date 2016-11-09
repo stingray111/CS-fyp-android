@@ -101,7 +101,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mGoogleMap  = googleMap;
+        mGoogleMap = googleMap;
         mGoogleMap.getUiSettings().setZoomControlsEnabled(false);
         mGoogleMap.getUiSettings().setAllGesturesEnabled(false);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -173,7 +173,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
             @Override
             public Event loadInBackground() {
                 //TODO: connect to the server
-                return new Event("My 4th Event", new LatLng(22.381419, 114.194298), "stingRay", 3, 10, "This is my fourth event");
+                return new Event("My 4th Event", 22.381419, 114.194298, "Tusen Wan", 2, 1, 3, 10, "This is my fourth event");
             }
         };
     }
@@ -182,8 +182,8 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     public void onLoadFinished(Loader<Event> loader, Event data) {
         mEventObj = data;
         mDataBinding.setEventObj(mEventObj);
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mEventObj.getPosition(), 12.0f));
-        mGoogleMap.addMarker(new MarkerOptions().position(mEventObj.getPosition()));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()), 12.0f));
+        mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude())));
     }
 
     @Override

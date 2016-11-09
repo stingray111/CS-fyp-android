@@ -49,6 +49,7 @@
                         android:layout_marginRight="8dp"/>
 
                     <EditText
+                        android:id="@+id/eventName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -177,6 +178,13 @@
                     </LinearLayout>
 
                 </LinearLayout>
+
+                <Button
+                    android:id="@+id/submitEvent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="create"/>
 
             </LinearLayout>
 

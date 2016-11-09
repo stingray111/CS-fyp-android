@@ -20,7 +20,7 @@ import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Login;
-import csfyp.cs_fyp_android.model.LoginStatus;
+import csfyp.cs_fyp_android.model.LoginRespond;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -81,11 +81,11 @@ public class FrgLogin extends CustomFragment{
 
                     HTTP httpService = HTTP.retrofit.create(HTTP.class);
                     Login login = new Login(strEmailOrUsername, strPassword, uuidInString);
-                    Call<LoginStatus> call = httpService.login(login);
+                    Call<LoginRespond> call = httpService.login(login);
 
-                    call.enqueue(new Callback<LoginStatus>() {
+                    call.enqueue(new Callback<LoginRespond>() {
                         @Override
-                        public void onResponse(Call<LoginStatus> call, Response<LoginStatus> response) {
+                        public void onResponse(Call<LoginRespond> call, Response<LoginRespond> response) {
                             if(response.isSuccessful()){
                                 if(response.body().isSuccessful()) {
 
@@ -105,7 +105,7 @@ public class FrgLogin extends CustomFragment{
                         }
 
                         @Override
-                        public void onFailure(Call<LoginStatus> call, Throwable t) {
+                        public void onFailure(Call<LoginRespond> call, Throwable t) {
 
                         }
                     });

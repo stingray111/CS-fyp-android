@@ -44,8 +44,10 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.getBinding().setHandlers(holder);
-        holder.getBinding().setItem(mEventList.get(position));
-        holder.getBinding().executePendingBindings();
+        if (mEventList != null) {
+            holder.getBinding().setItem(mEventList.get(position));
+            holder.getBinding().executePendingBindings();
+        }
     }
 
     public void setmEventList(List<Event> mEventList) {

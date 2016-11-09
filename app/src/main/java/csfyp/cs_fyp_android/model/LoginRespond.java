@@ -1,8 +1,9 @@
 package csfyp.cs_fyp_android.model;
 
-public class RegisterStatus {
+public class LoginRespond {
     private boolean isSuccessful;
     private String errorMsg;
+    private String token;
 
     public boolean isSuccessful() {
         return isSuccessful;
@@ -10,5 +11,10 @@ public class RegisterStatus {
 
     public String getErrorMsg() {
         return errorMsg;
+    }
+
+
+    public String getToken() {
+        return token;
     }
 }

@@ -55,7 +55,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import csfyp.cs_fyp_android.CustomFragment;
@@ -66,10 +65,15 @@ import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
 import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.history.FrgHistory;
 import csfyp.cs_fyp_android.lib.CustomLoader;
+import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.EventFilter;
+import csfyp.cs_fyp_android.model.EventRespond;
 import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
+import retrofit2.Call;
+import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -124,6 +128,9 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     // For Sliding Up Panel
     private SlidingUpPanelLayout mLayout;
 
+    // For HTTP
+    private Response<EventRespond> mEventRespond;
+
 
     public FrgHome() {
     }
@@ -141,9 +148,9 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         if (mData != null && mIsMapReady && mIsLoadFinished) {
             for (Event item : mData) {
                 mGoogleMap.addMarker(new MarkerOptions()
-                        .position(item.getPosition())
-                        .title(item.getEventName())
-                        .snippet(item.getHolderName() + "&" + item.getEventStart() + "&" + item.getCurrentPpl() + "&" + item.getMaxPpl())
+                        .position(new LatLng(item.getLatitude(), item.getLongitude()))
+                        .title(item.getName())
+                        .snippet(item.getHolderId() + "&" + item.getEventStart() + "&" + item.getCurrentPpl() + "&" + item.getMaxPpl())
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
             }
         }
@@ -278,9 +285,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
         mEventAdapter = new AdtEvent();
         mEventRecyclerView.setAdapter(mEventAdapter);
-
-        // Setting up loader
-        getLoaderManager().initLoader(HOME_LOADER_ID, null, this);
 
         // check location setting
         buildGoogleApiClient();
@@ -433,6 +437,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
+        getLoaderManager().restartLoader(HOME_LOADER_ID, null, this);
         if (!mIsSetToSelfLocation) {
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 11.0f));
             mIsSetToSelfLocation = true;
@@ -521,16 +526,34 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         return new CustomLoader<List<Event>>(getContext()) {
             @Override
             public List<Event> loadInBackground() {
-
-                // TODO: 3/11/2016 change to connect server 
-
-
-                List<Event> list = new ArrayList<>();
-                list.add(new Event("My 1st Event", new LatLng(22.363843, 114.121513), "ken31ee", 2, 10, "This is my first event"));
-                list.add(new Event("My 2nd Event", new LatLng(22.337171, 114.163399), "stingRay", 10, 20, "This is my second event"));
-                list.add(new Event("My 3rd Event", new LatLng(22.352991, 114.103489), "ken31ee", 3, 10, "This is my third event"));
-                list.add(new Event("My 4th Event", new LatLng(22.381419, 114.194298), "stingRay", 3, 10, "This is my fourth event"));
-                return list;
+                if(mCurrentLocation != null){
+                    HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                    Call<EventRespond> call = httpService.getEvents(new EventFilter(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1));
+                    try {
+                        mEventRespond = call.execute();
+                        if (mEventRespond.isSuccessful()) {
+                            if (mEventRespond.body().getErrorMsg() == null) {
+                                Log.i(TAG, "Success");
+                                Log.i(TAG, Integer.toString(mEventRespond.body().getEvents().size()));
+                                return mEventRespond.body().getEvents();
+                            } else {
+                                Toast.makeText(getContext(),mEventRespond.body().getErrorMsg(), Toast.LENGTH_LONG).show();
+                                return null;
+                            }
+                        } else {
+                            Toast.makeText(getContext(), "Not 200", Toast.LENGTH_LONG).show();
+                            return null;
+                        }
+                    } catch (Exception e) {
+                        return null;
+                    }
+                } else
+                    return null;
+//                List<EventPost> list = new ArrayList<>();
+//                list.add(new EventPost("My 1st Event", 22.363843, 114.121513, 1, 2, 10, "This is my first event"));
+//                list.add(new EventPost("My 2nd Event", 22.337171, 114.163399, 1, 10, 20, "This is my second event"));
+//                list.add(new EventPost("My 3rd Event", 22.352991, 114.103489, 1, 3, 10, "This is my third event"));
+//                list.add(new EventPost("My 4th Event", 22.381419, 114.194298, 1, 3, 10, "This is my fourth event"));
             }
         };
     }
