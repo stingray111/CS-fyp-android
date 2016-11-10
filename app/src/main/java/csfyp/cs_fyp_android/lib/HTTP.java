@@ -36,7 +36,7 @@ public interface HTTP {
     );
 
     Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://192.168.1.5:3000")
+            .baseUrl("http://172.18.1.91:3000")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 }

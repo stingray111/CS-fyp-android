@@ -47,83 +47,51 @@ public class Event {
         this.description = description;
     }
 
-    public String getName() {
-        return name;
+    public int getId() {
+        return id;
     }
 
-    public void setName(String eventName) {
-        this.name = eventName;
+    public String getName() {
+        return name;
     }
 
     public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
-        this.latitude = latitude;
-    }
-
     public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
+    public String getPlace() {
+        return place;
     }
 
     public int getHolderId() {
         return holderId;
     }
 
-    public void setHolderId(int holderId) {
-        this.holderId = holderId;
-    }
-
     public int getMaxPpl() {
         return maxPpl;
-    }
-
-    public void setMaxPpl(int maxPpl) {
-        this.maxPpl = maxPpl;
     }
 
     public int getMinPpl() {
         return minPpl;
     }
 
-    public void setMinPpl(int minPpl) {
-        this.minPpl = minPpl;
-    }
-
     public int getCurrentPpl() {
         return currentPpl;
     }
 
-    public void setCurrentPpl(int minPpl) {
-        this.currentPpl = minPpl;
-    }
-
-    public String getEventStart() {
+    public String getEventStart_formated() {
         return eventStart_formated;
     }
 
-    public void setEventStart(String eventStart) {
-        this.eventStart_formated = eventStart;
-    }
-
-    public String getEventDeadline() {
+    public String getEventDeadline_formated() {
         return eventDeadline_formated;
-    }
-
-    public void setEventDeadline(String eventDeadline) {
-        this.eventDeadline_formated = eventDeadline;
     }
 
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

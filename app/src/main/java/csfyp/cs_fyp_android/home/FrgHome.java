@@ -150,7 +150,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                 mGoogleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(item.getLatitude(), item.getLongitude()))
                         .title(item.getName())
-                        .snippet(item.getHolderId() + "&" + item.getEventStart() + "&" + item.getCurrentPpl() + "&" + item.getMaxPpl())
+                        .snippet(item.getHolderId() + "&" + item.getEventStart_formated() + "&" + item.getCurrentPpl() + "&" + item.getMaxPpl())
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
             }
         }
@@ -537,14 +537,17 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                                 Log.i(TAG, Integer.toString(mEventRespond.body().getEvents().size()));
                                 return mEventRespond.body().getEvents();
                             } else {
+                                Log.i(TAG, mEventRespond.body().getErrorMsg());
                                 Toast.makeText(getContext(),mEventRespond.body().getErrorMsg(), Toast.LENGTH_LONG).show();
                                 return null;
                             }
                         } else {
+                            Log.i(TAG, "Not 200");
                             Toast.makeText(getContext(), "Not 200", Toast.LENGTH_LONG).show();
                             return null;
                         }
                     } catch (Exception e) {
+                        Log.i(TAG, "Connect exception");
                         return null;
                     }
                 } else

@@ -156,7 +156,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:includeFontPadding="false"
-                android:text="@{item.eventStart}"
+                android:text="@{item.eventStart_formated}"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
@@ -181,7 +181,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="right"
                     android:includeFontPadding="false"
-                    android:text="@{item.eventDeadline}"
+                    android:text="@{item.eventDeadline_formated}"
                     android:textColor="#000000"
                     android:textSize="14sp" />
 
