@@ -1,34 +1,67 @@
 package csfyp.cs_fyp_android.register;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
-import csfyp.cs_fyp_android.CustomFragment;
-import csfyp.cs_fyp_android.R;
-import csfyp.cs_fyp_android.databinding.RegisterFrgBinding;
-import csfyp.cs_fyp_android.lib.HTTP;
-import csfyp.cs_fyp_android.model.RegisterRespond;
-import csfyp.cs_fyp_android.model.User;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.ConfirmPassword;
+import com.mobsandgeeks.saripaar.annotation.Email;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.mobsandgeeks.saripaar.annotation.Password;
+import com.mobsandgeeks.saripaar.annotation.Pattern;
 
-public class FrgRegister extends CustomFragment {
+import java.util.List;
+
+import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.MainActivity;
+import csfyp.cs_fyp_android.R;
+
+/**
+ * Created by ray on 6/11/2016.
+ */
+
+public class FrgRegister extends CustomFragment implements Validator.ValidationListener{
     public FrgRegister(){super();}
 
     public final static String TAG = "register";
     private Toolbar mToolBar;
+    private final String mRegexName = "^[a-zA-Z]{0,20}$";
+    private final String mRegexPhone = "^\\d{0,20}$";
+    @NotEmpty
+    @Email
+    private EditText mEmailField;
+    @Password(min = 4, scheme = Password.Scheme.ANY)
+    @NotEmpty
+    private EditText mPasswordField;
+    @ConfirmPassword
+    private EditText mSecondPasswordField;
+    @Pattern(regex = mRegexName)
+    private EditText mFirstNameField;
+    @NotEmpty
+    @Pattern(regex = mRegexName)
+    private EditText mLastNameField;
+    @Pattern(regex = mRegexName)
+    private EditText mNickNameField;
+    private RadioButton mMaleBtn;
+    private RadioButton mFemaleBtn;
+    @Pattern(regex = mRegexPhone)
+    private EditText mPhoneField;
+    private EditText mDescriptField;
     private Button mSubmitBtn;
-    private RegisterFrgBinding mDataBinding;
+    private Validator mValidator;
+
+
+
 
     public static FrgRegister newInstance() {
 
@@ -39,12 +72,13 @@ public class FrgRegister extends CustomFragment {
         return fragment;
     }
 
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater,container,savedInstanceState);
-        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.register_frg, container, false);
-        View v = mDataBinding.getRoot();
+        View v  =  inflater.inflate(R.layout.register_frg,container,false);
         mToolBar = (Toolbar) v.findViewById(R.id.registerToolBar);
         mToolBar.setTitle("New Account");
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
@@ -57,37 +91,49 @@ public class FrgRegister extends CustomFragment {
             }
         });
 
+        mValidator = new Validator(this);
+        mValidator.setValidationListener(this);
+        mEmailField = (EditText) v.findViewById(R.id.emailField);
+        mPasswordField = (EditText) v.findViewById(R.id.passwordField);
+        mSecondPasswordField = (EditText) v.findViewById(R.id.secondPasswordField);
+        mFirstNameField = (EditText) v.findViewById(R.id.firstNameField);
+        mLastNameField = (EditText) v.findViewById(R.id.lastNameField);
+        mNickNameField = (EditText) v.findViewById(R.id.nickNameField);
+        mMaleBtn = (RadioButton) v.findViewById(R.id.maleBtn);
+        mFemaleBtn = (RadioButton) v.findViewById(R.id.femaleBtn);
+        mPhoneField = (EditText) v.findViewById(R.id.phoneField);
+        mDescriptField = (EditText) v.findViewById(R.id.descriptField);
 
-        mDataBinding.submitBtn.setOnClickListener(new View.OnClickListener() {
+        mSubmitBtn = (Button) v.findViewById(R.id.submitBtn);
+        mSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-
-                HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                User user = new User("ken31ee", "321542431242", "Ken", "Tung", "hii", true, 1, 1, 1, "tungpakyin04@outlook.com", "61565916", "Good", 1);
-                Call<RegisterRespond> call = httpService.createUser(user);
-                call.enqueue(new Callback<RegisterRespond>() {
-                    @Override
-                    public void onResponse(Call<RegisterRespond> call, Response<RegisterRespond> response) {
-                        if(response.isSuccessful()) {
-                            if(!response.body().isSuccessful()) {
-                                Log.i(TAG, "200 but not success");
-                                Log.i(TAG, response.body().getErrorMsg());
-                                Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_LONG).show();
-                            } else
-                                Log.i(TAG, "sucess");
-                        } else
-                            Log.i(TAG, "not 200: " + response.body().getErrorMsg());
-                    }
-
-                    @Override
-                    public void onFailure(Call<RegisterRespond> call, Throwable t) {
-
-                    }
-                });
+            public void onClick(View v) {
+                mValidator.validate();
             }
         });
 
         return v;
+    }
+
+    @Override
+    public void onValidationSucceeded() {
+        //TODO: submit the form
+    }
+
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(parentActivity);
+
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(parentActivity,message,Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
 
