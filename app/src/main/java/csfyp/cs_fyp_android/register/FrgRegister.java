@@ -37,10 +37,14 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
     private Toolbar mToolBar;
     private final String mRegexName = "^[a-zA-Z]{0,20}$";
     private final String mRegexPhone = "^\\d{0,20}$";
+    private final String mRegexPwd= "^([a-zA-z0-9]){8,15}$";
+    @NotEmpty
+    @Pattern(regex = mRegexName)
+    private EditText mUsernameField;
     @NotEmpty
     @Email
     private EditText mEmailField;
-    @Password(min = 4, scheme = Password.Scheme.ANY)
+    @Password(min=8,scheme = Password.Scheme.ALPHA_NUMERIC)
     @NotEmpty
     private EditText mPasswordField;
     @ConfirmPassword
@@ -59,6 +63,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
     private EditText mDescriptField;
     private Button mSubmitBtn;
     private Validator mValidator;
+
 
 
 
@@ -93,6 +98,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
 
         mValidator = new Validator(this);
         mValidator.setValidationListener(this);
+        mUsernameField = (EditText) v.findViewById(R.id.usernameField);
         mEmailField = (EditText) v.findViewById(R.id.emailField);
         mPasswordField = (EditText) v.findViewById(R.id.passwordField);
         mSecondPasswordField = (EditText) v.findViewById(R.id.secondPasswordField);

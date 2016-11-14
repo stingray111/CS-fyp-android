@@ -36,7 +36,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_mail"/>
+                        android:src="@drawable/ic_user"/>
 
                 </LinearLayout>
                 <LinearLayout
@@ -48,7 +48,7 @@
                         android:id="@+id/inputEmailOrUsername"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="email address"
+                        android:hint="username / email"
                         android:padding="5dp"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -113,8 +113,17 @@
                 android:orientation="vertical"
                 android:paddingBottom="20dp"
                 android:layout_weight="1">
-
                 <TextView
+                    android:id="@+id/registerBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textColor="#0000EE"
+                    android:padding="4dp"
+                    android:textSize="15sp"
+                    android:text="Register"/>
+                <TextView
+                    android:id="@+id/contactBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
@@ -123,13 +132,14 @@
                     android:textSize="15sp"
                     android:text="Contact Us"/>
                 <TextView
+                    android:id="@+id/forgetPwdBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:textColor="#0000EE"
                     android:padding="4dp"
                     android:textSize="15sp"
-                    android:text="Forget Password?"/>
+                    android:text="Forget Password"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
