@@ -67,8 +67,8 @@ import csfyp.cs_fyp_android.history.FrgHistory;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
-import csfyp.cs_fyp_android.model.EventFilter;
-import csfyp.cs_fyp_android.model.EventRespond;
+import csfyp.cs_fyp_android.model.request.EventFilter;
+import csfyp.cs_fyp_android.model.respond.EventRespond;
 import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
@@ -150,7 +150,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                 mGoogleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(item.getLatitude(), item.getLongitude()))
                         .title(item.getName())
-                        .snippet(item.getHolderId() + "&" + item.getEventStart_formated() + "&" + item.getCurrentPpl() + "&" + item.getMaxPpl())
+                        .snippet(item.getHolder().getUserName() + "&" + item.getStartTime_formated() + "&" + item.getCurrentPpl() + "&" + item.getMaxPpl() + "&" + item.getId())
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
             }
         }
@@ -533,8 +533,8 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                         mEventRespond = call.execute();
                         if (mEventRespond.isSuccessful()) {
                             if (mEventRespond.body().getErrorMsg() == null) {
-                                Log.i(TAG, "Success");
-                                Log.i(TAG, Integer.toString(mEventRespond.body().getEvents().size()));
+                                Log.i(TAG, "Event list load Success");
+                                Log.i(TAG, mEventRespond.body().getEvents().get(0).getHolder().getUserName());
                                 return mEventRespond.body().getEvents();
                             } else {
                                 Log.i(TAG, mEventRespond.body().getErrorMsg());
@@ -552,11 +552,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                     }
                 } else
                     return null;
-//                List<EventPost> list = new ArrayList<>();
-//                list.add(new EventPost("My 1st Event", 22.363843, 114.121513, 1, 2, 10, "This is my first event"));
-//                list.add(new EventPost("My 2nd Event", 22.337171, 114.163399, 1, 10, 20, "This is my second event"));
-//                list.add(new EventPost("My 3rd Event", 22.352991, 114.103489, 1, 3, 10, "This is my third event"));
-//                list.add(new EventPost("My 4th Event", 22.381419, 114.194298, 1, 3, 10, "This is my fourth event"));
             }
         };
     }
@@ -577,10 +572,10 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        //TODO marker get id subsitude 123
+        String[] temp = marker.getSnippet().split("&");
         mLastTarget = mGoogleMap.getCameraPosition().target;
         mLastZoom = mGoogleMap.getCameraPosition().zoom;
-        switchFragment(FrgEvent.newInstance(123));
+        switchFragment(FrgEvent.newInstance(Integer.parseInt(temp[4])));
     }
 
     public void switchFragment(Fragment fragment) {

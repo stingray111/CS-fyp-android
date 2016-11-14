@@ -1,4 +1,4 @@
-package csfyp.cs_fyp_android.model;
+package csfyp.cs_fyp_android.model.request;
 
 public class EventFilter {
     private double latitude;

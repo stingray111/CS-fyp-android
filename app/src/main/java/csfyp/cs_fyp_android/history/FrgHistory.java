@@ -80,10 +80,10 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
             @Override
             public List<Event> loadInBackground() {
                 List<Event> list = new ArrayList<>();
-                list.add(new Event("My 1st Event", 22.363843, 114.121513, "Hong Kong", 1, 1, 2, 10, "This is my first event"));
-                list.add(new Event("My 2nd Event", 22.337171, 114.163399, "Hong Kong", 2, 1, 10, 20, "This is my second event"));
-                list.add(new Event("My 3rd Event", 22.352991, 114.103489, "Hong Kong", 1, 1, 3, 10, "This is my third event"));
-                list.add(new Event("My 4th Event", 22.381419, 114.194298, "Hong Kong", 2, 1, 3, 10, "This is my fourth event"));
+//                list.add(new Event("My 1st Event", 22.363843, 114.121513, "Hong Kong", 1, 1, 2, 10, "This is my first event"));
+//                list.add(new Event("My 2nd Event", 22.337171, 114.163399, "Hong Kong", 2, 1, 10, 20, "This is my second event"));
+//                list.add(new Event("My 3rd Event", 22.352991, 114.103489, "Hong Kong", 1, 1, 3, 10, "This is my third event"));
+//                list.add(new Event("My 4th Event", 22.381419, 114.194298, "Hong Kong", 2, 1, 3, 10, "This is my fourth event"));
                 return list;
             }
         };

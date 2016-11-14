@@ -9,6 +9,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -29,12 +29,15 @@ import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.EventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
+import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.request.EventId;
+import retrofit2.Call;
+import retrofit2.Response;
 
 
 public class FrgEvent extends CustomFragment implements OnMapReadyCallback,LoaderManager.LoaderCallbacks<Event>{
     public FrgEvent() {
-        super();
     }
     private static final int EVENT_LOADER_ID  = 2;
     private static final String TAG = "EventFragment";
@@ -44,20 +47,14 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     private MapView mMapView;
     private EventFrgBinding mDataBinding;
     private int mEventId;
+    private Response<Event> mEventRespond;
     private Event mEventObj;
 
-    // TODO: 27/10/2016 fix constructor to use putParam
-    public FrgEvent(int id){
-        this.mEventId = id;
-    }
-
-
     public static FrgEvent newInstance(int id) {
-        //TODO: give id to the fragment
-        
+        FrgEvent fragment = new FrgEvent();
+
         Bundle args = new Bundle();
-        
-        FrgEvent fragment = new FrgEvent(id);
+        args.putInt("eventId", id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -72,6 +69,10 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         super.onCreateView(inflater, container, savedInstanceState);
+
+        Bundle args = getArguments();
+        mEventId = args.getInt("eventId");
+
         mDataBinding = DataBindingUtil.inflate(inflater,R.layout.event_frg, container,false);
         mDataBinding.setHandlers(this);
         View v  = mDataBinding.getRoot();
@@ -172,8 +173,19 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         return new CustomLoader<Event>(getContext()) {
             @Override
             public Event loadInBackground() {
-                //TODO: connect to the server
-                return new Event("My 4th Event", 22.381419, 114.194298, "Tusen Wan", 2, 1, 3, 10, "This is my fourth event");
+                HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                Call<Event> call = httpService.getEvent(new EventId(mEventId));
+                try {
+                    mEventRespond = call.execute();
+                    if(mEventRespond.isSuccessful()){
+                        Log.i(TAG, "Event load Success");
+                        return mEventRespond.body();
+                    } else
+                        return null;
+                } catch (Exception e) {
+                    return null;
+                    // todo excpetion handling
+                }
             }
         };
     }
@@ -181,9 +193,11 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     @Override
     public void onLoadFinished(Loader<Event> loader, Event data) {
         mEventObj = data;
-        mDataBinding.setEventObj(mEventObj);
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()), 12.0f));
-        mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude())));
+        if(mEventObj != null){
+            mDataBinding.setEventObj(mEventObj);
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()), 12.0f));
+            mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude())));
+        }
     }
 
     @Override

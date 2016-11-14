@@ -1,6 +1,8 @@
-package csfyp.cs_fyp_android.model;
+package csfyp.cs_fyp_android.model.respond;
 
 import java.util.List;
+
+import csfyp.cs_fyp_android.model.Event;
 
 public class EventRespond {
     String errorMsg;

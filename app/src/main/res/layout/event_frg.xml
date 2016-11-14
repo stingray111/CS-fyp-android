@@ -72,7 +72,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="right"
-                        android:text="TODO: temp location"
+                        android:text="@{eventObj.place}"
                         android:textSize="16sp"/>
 
                     <ImageView
@@ -101,7 +101,7 @@
                         android:layout_height="24dp"
                         android:layout_weight="3"
                         android:gravity="center_vertical"
-                        android:text="@{eventObj.holderId}"
+                        android:text="@{eventObj.holder.userName}"
                         android:textSize="16sp"/>
 
 
@@ -159,7 +159,7 @@
                         android:layout_height="16dp"
                         android:layout_weight="1"
                         android:layout_gravity="center_vertical"
-                        android:text="@{eventObj.eventStart_formated}" />
+                        android:text="@{eventObj.startTime_formated}" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -180,7 +180,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="right"
-                            android:text="@{eventObj.eventDeadline_formated}"/>
+                            android:text="@{eventObj.deadlineTime_formated}"/>
 
                     </LinearLayout>
 

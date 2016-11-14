@@ -1,4 +1,4 @@
-package csfyp.cs_fyp_android.model;
+package csfyp.cs_fyp_android.model.request;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;

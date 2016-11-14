@@ -20,7 +20,7 @@ import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Login;
-import csfyp.cs_fyp_android.model.LoginRespond;
+import csfyp.cs_fyp_android.model.respond.LoginRespond;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

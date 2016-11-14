@@ -1,4 +1,4 @@
-package csfyp.cs_fyp_android.model;
+package csfyp.cs_fyp_android.model.respond;
 
 public class ErrorMsgOnly {
     private String errorMsg;

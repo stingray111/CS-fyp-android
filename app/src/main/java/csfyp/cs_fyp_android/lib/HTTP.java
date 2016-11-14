@@ -1,12 +1,14 @@
 package csfyp.cs_fyp_android.lib;
 
-import csfyp.cs_fyp_android.model.ErrorMsgOnly;
-import csfyp.cs_fyp_android.model.EventFilter;
-import csfyp.cs_fyp_android.model.EventPost;
-import csfyp.cs_fyp_android.model.EventRespond;
+import csfyp.cs_fyp_android.model.request.EventId;
+import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
+import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.request.EventFilter;
+import csfyp.cs_fyp_android.model.request.EventPost;
+import csfyp.cs_fyp_android.model.respond.EventRespond;
 import csfyp.cs_fyp_android.model.Login;
-import csfyp.cs_fyp_android.model.LoginRespond;
-import csfyp.cs_fyp_android.model.RegisterRespond;
+import csfyp.cs_fyp_android.model.respond.LoginRespond;
+import csfyp.cs_fyp_android.model.respond.RegisterRespond;
 import csfyp.cs_fyp_android.model.User;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -30,13 +32,18 @@ public interface HTTP {
             @Body EventPost eventPost
     );
 
+    @POST("/api/get-event")
+    Call<Event> getEvent (
+            @Body EventId eventId
+            );
+
     @POST("/api/get-events")
     Call<EventRespond> getEvents (
             @Body EventFilter eventFilter
     );
 
     Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://172.18.1.91:3000")
+            .baseUrl("http://192.168.1.5:3000")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 }
