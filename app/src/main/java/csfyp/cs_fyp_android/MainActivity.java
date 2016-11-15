@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         if (token.isEmpty()) {
             // user not login
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.parent_fragment_container, FrgLogin.newInstance());
+            ft.replace(R.id.parent_fragment_container, FrgHome.newInstance());
             ft.commit();
         } else {
 
