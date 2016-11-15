@@ -38,23 +38,80 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_event"
+                    android:orientation="vertical"
                     android:layout_margin="4dp"
-                    android:padding="8dp"
-                    android:gravity="center_vertical">
+                    android:padding="8dp" >
 
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_about"
-                        android:layout_marginRight="8dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="wrap_content">
 
-                    <EditText
-                        android:id="@+id/eventName"
-                        android:layout_width="0dp"
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_about"
+                            android:layout_marginRight="10dp"
+                            android:id="@+id/imageView7" />
+
+                        <EditText
+                            android:id="@+id/eventName"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="10"
+                            android:hint="Event Name"
+                            android:textSize="16sp"/>
+
+                    </LinearLayout>
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="1dp"
+                        android:background="#23000000"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="Event Name"
-                        android:textSize="16sp"/>
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="25dp"
+                            android:src="@drawable/ic_venue"
+                            android:layout_marginRight="10dp"
+                            android:id="@+id/imageView6" />
+
+                        <EditText
+                            android:layout_width="0dp"
+                            android:textSize="16sp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="10"
+                            android:id="@+id/eventLocation"
+                            android:hint="Venue"/>
+                    </LinearLayout>
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="1dp"
+                        android:background="#23000000"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="25dp"
+                            android:layout_weight="1"
+                            android:src="@drawable/ic_description"
+                            android:layout_marginRight="10dp"
+                            />
+                        <EditText
+                            android:layout_width="0dp"
+                            android:layout_weight="10"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:id="@+id/eventDescription"
+                            android:hint="Description"/>
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -178,6 +235,8 @@
                     </LinearLayout>
 
                 </LinearLayout>
+
+
 
                 <Button
                     android:id="@+id/submitEvent"
