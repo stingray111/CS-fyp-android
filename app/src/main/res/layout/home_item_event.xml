@@ -95,7 +95,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:includeFontPadding="false"
-                    android:text="@{Integer.toString(item.currentPpl)}"
+                    android:text="@{Integer.toString(item.currentPpl+1)}"
                     android:textColor="#000000"
                     android:textSize="16sp" />
 

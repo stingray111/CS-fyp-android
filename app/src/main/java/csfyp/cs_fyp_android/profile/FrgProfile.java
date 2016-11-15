@@ -20,19 +20,16 @@ import csfyp.cs_fyp_android.model.User;
 public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCallbacks<User>{
     public static final String TAG = "ProfileFragment";
     private Toolbar mToolBar;
-    public FrgProfile() { super(); }
-    private int mUserID;
+    private int mUserId;
     private User mUserObj;
     private ProfileFrgBinding mDatabinding;
 
-    public FrgProfile(int id){ this.mUserID = id;}
+    public FrgProfile(){}
 
     public static FrgProfile newInstance(int id) {
-        //TODO: give id to the fragment
-
+        FrgProfile fragment = new FrgProfile();
         Bundle args = new Bundle();
-
-        FrgProfile fragment = new FrgProfile(id);
+        args.putInt("userId", id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -41,6 +38,9 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+
+        Bundle args = getArguments();
+        mUserId = args.getInt("userId");
 
         mDatabinding = DataBindingUtil.inflate(inflater, R.layout.profile_frg, container, false);
         View v  = mDatabinding.getRoot();

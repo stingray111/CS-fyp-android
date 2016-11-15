@@ -146,11 +146,12 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
 
     private void populateMapMarker() {
         if (mData != null && mIsMapReady && mIsLoadFinished) {
+            mGoogleMap.clear();
             for (Event item : mData) {
                 mGoogleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(item.getLatitude(), item.getLongitude()))
                         .title(item.getName())
-                        .snippet(item.getHolder().getUserName() + "&" + item.getStartTime_formated() + "&" + item.getCurrentPpl() + "&" + item.getMaxPpl() + "&" + item.getId())
+                        .snippet(item.getHolder().getUserName() + "&" + item.getStartTime_formated() + "&" + (item.getCurrentPpl()+1) + "&" + item.getMaxPpl() + "&" + item.getId())
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
             }
         }
