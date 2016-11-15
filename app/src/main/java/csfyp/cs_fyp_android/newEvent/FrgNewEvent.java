@@ -175,10 +175,17 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
         minPplSpinnerAdapter.add("9"); minPplSpinnerAdapter.add("10"); minPplSpinnerAdapter.add("Min People");
         mMinPplSpinner.setAdapter(minPplSpinnerAdapter);
         mMinPplSpinner.setSelection(minPplSpinnerAdapter.getCount());
-        mMinPplSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mMinPplSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mMinPpl = Integer.parseInt((String) adapterView.getItemAtPosition(i));
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(!(position == 10)) {
+                    mMinPpl = Integer.parseInt((String) parent.getItemAtPosition(position));
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
@@ -208,10 +215,17 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
         maxPplSpinnerAdapter.add("14"); maxPplSpinnerAdapter.add("15"); maxPplSpinnerAdapter.add("Max People");
         mMaxPplSpinner.setAdapter(maxPplSpinnerAdapter);
         mMaxPplSpinner.setSelection(maxPplSpinnerAdapter.getCount());
-        mMaxPplSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mMaxPplSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mMaxPpl = Integer.parseInt((String) adapterView.getItemAtPosition(i));
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(!(position ==14)) {
+                    mMaxPpl = Integer.parseInt((String) parent.getItemAtPosition(position));
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
