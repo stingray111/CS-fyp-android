@@ -15,7 +15,13 @@ import csfyp.cs_fyp_android.login.FrgLogin;
 
 public class MainActivity extends AppCompatActivity {
 
-    FrgHome mHome;
+    private FrgHome mHome;
+    private String mToken;
+    private int mUserId;
+
+    public int getmUserId() {
+        return mUserId;
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -39,12 +45,13 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        String token = sharedPref.getString("userToken", "");
+        mToken = sharedPref.getString("userToken", "");
+        mUserId = sharedPref.getInt("userId", 0);
 
-        if (token.isEmpty()) {
+        if (mToken.isEmpty()) {
             // user not login
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.parent_fragment_container, FrgHome.newInstance());
+            ft.replace(R.id.parent_fragment_container, FrgLogin.newInstance());
             ft.commit();
         } else {
 

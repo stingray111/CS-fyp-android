@@ -26,7 +26,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -50,6 +49,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
     private MapView mMapView;
     private GoogleMap mGoogleMap;
     private GoogleApiClient mClient;
+    private MarkerOptions mMarker;
 
     private DatePickerDialog mStartDatePickerDialog;
     private TimePickerDialog mStartTimePickerDialog;
@@ -71,22 +71,38 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
     private int mDeadlineEventHour;
     private int mDeadlineEventMin;
 
+    private double mCurrentLatitude;
+    private double mCurrentLongitude;
+
     public FrgNewEvent() {
 
     }
 
     public static FrgNewEvent newInstance() {
-
-        Bundle args = new Bundle();
-
         FrgNewEvent fragment = new FrgNewEvent();
+        return fragment;
+    }
+
+    public static FrgNewEvent newInstance(double latitude, double longitude) {
+        Bundle args = new Bundle();
+        FrgNewEvent fragment = new FrgNewEvent();
+        args.putDouble("currentLatitude", latitude);
+        args.putDouble("currentLongitude", longitude);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        Bundle args = getArguments();
+        if(args != null){
+            mCurrentLatitude = args.getDouble("currentLatitude");
+            mCurrentLongitude = args.getDouble("currentLongitude");
+        }
+
         mClient = new GoogleApiClient.Builder(getContext()).addApi(AppIndex.API).build();
         if(savedInstanceState != null) {
             mNewEventYear = savedInstanceState.getInt("newEventYear");
@@ -181,7 +197,6 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
                 if(!(position == 10)) {
                     mMinPpl = Integer.parseInt((String) parent.getItemAtPosition(position));
                 }
-
             }
 
             @Override
@@ -292,7 +307,11 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
                 {
 
                     HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                    //httpService.pushEvent(new EventPost(mDataBinding.eventName.getText().toString(), mLat, mLong, "Hong Kong", mHolderId, mMaxPpl, mMinPpl, mDesciption));
+                    LatLng position = mMarker.getPosition();
+                    // how to use postion
+                    // position.latitude;
+                    // position.longitude;
+                    // httpService.pushEvent(new EventPost(mDataBinding.eventName.getText().toString(), mLat, mLong, "Hong Kong", mHolderId, mMaxPpl, mMinPpl, mDesciption));
                 }
 
             }
@@ -354,11 +373,21 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
 
-        mGoogleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(22.25, 114.1667))
-                .title("You")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_self_marker)));
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
+        if (mCurrentLatitude != 0.0 && mCurrentLongitude != 0.0){
+             mMarker = new MarkerOptions()
+                    .position(new LatLng(mCurrentLatitude, mCurrentLongitude))
+                    .draggable(true)
+                    .title("Choose where the event take place");
+            mGoogleMap.addMarker(mMarker);
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLatitude, mCurrentLongitude), 12.0f));
+        } else {
+            mMarker = new MarkerOptions()
+                    .position(new LatLng(22.25, 114.1667))
+                    .draggable(true)
+                    .title("Choose where the event take place");
+            mGoogleMap.addMarker(mMarker);
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
+        }
     }
 
     public Action getIndexApiAction() {

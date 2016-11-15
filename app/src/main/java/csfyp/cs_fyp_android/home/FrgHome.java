@@ -585,7 +585,8 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     }
 
     public void onClickNewEvent(View view) {
-        switchFragment(FrgNewEvent.newInstance());
+        if(mCurrentLocation != null)
+            switchFragment(FrgNewEvent.newInstance(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
     }
 
     public void onClickJoined(View view){

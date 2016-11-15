@@ -23,8 +23,13 @@ import com.mobsandgeeks.saripaar.annotation.Pattern;
 import java.util.List;
 
 import csfyp.cs_fyp_android.CustomFragment;
-import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.model.User;
+import csfyp.cs_fyp_android.model.respond.RegisterRespond;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by ray on 6/11/2016.
@@ -35,7 +40,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
 
     public final static String TAG = "register";
     private Toolbar mToolBar;
-    private final String mRegexName = "^[a-zA-Z]{0,20}$";
+    private final String mRegexName = "^[a-zA-Z0-9]{0,20}$";
     private final String mRegexPhone = "^\\d{0,20}$";
     private final String mRegexPwd= "^([a-zA-z0-9]){8,15}$";
     @NotEmpty
@@ -123,7 +128,34 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
 
     @Override
     public void onValidationSucceeded() {
-        //TODO: submit the form
+        HTTP httpService = HTTP.retrofit.create(HTTP.class);
+        User user = new User(mUsernameField.getText().toString()
+                , mPasswordField.getText().toString()
+                , mFirstNameField.getText().toString(),
+                mLastNameField.getText().toString()
+                , mNickNameField.getText().toString()
+                , true, 0, 0, 0
+                , mEmailField.getText().toString(),
+                mPhoneField.getText().toString(),
+                mDescriptField.getText().toString(), 1);
+        Call<RegisterRespond> call = httpService.createUser(user);
+        call.enqueue(new Callback<RegisterRespond>() {
+            @Override
+            public void onResponse(Call<RegisterRespond> call, Response<RegisterRespond> response) {
+                if(response.isSuccessful()) {
+                    if(response.body().isSuccessful()) {
+                        Toast.makeText(getContext(), "Register Sucessful!!" , Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RegisterRespond> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override

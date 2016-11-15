@@ -22,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -196,7 +197,9 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         if(mEventObj != null){
             mDataBinding.setEventObj(mEventObj);
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()), 12.0f));
-            mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude())));
+            mGoogleMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_self_marker)));
         }
     }
 
