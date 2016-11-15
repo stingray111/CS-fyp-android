@@ -20,7 +20,6 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
     private List<Event> mEventList;
 
     public AdtEvent() {
-
     }
 
     @Override

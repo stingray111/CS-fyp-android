@@ -12,14 +12,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.home.AdtEvent;
 import csfyp.cs_fyp_android.lib.CustomLoader;
+import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.request.EventFilter;
+import csfyp.cs_fyp_android.model.respond.EventRespond;
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class FrgCurrentEvent extends CustomFragment implements LoaderManager.LoaderCallbacks<List<Event>>{
     public static final String TAG = "CurrentEvent";
@@ -30,6 +35,7 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
     private AdtEvent mEventAdapter;
     private RecyclerView.LayoutManager mEventLayoutManager;
     private List<Event> mData;
+    private Response<EventRespond> mEventRespond;
 
 
     public FrgCurrentEvent() {
@@ -76,21 +82,28 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
         return new CustomLoader<List<Event>>(getContext()) {
             @Override
             public List<Event> loadInBackground() {
-                List<Event> list = new ArrayList<>();
-//                list.add(new Event("My 1st Event", 22.363843, 114.121513, "Hong Kong", 1, 1, 2, 10, "This is my first event"));
-//                list.add(new Event("My 2nd Event", 22.337171, 114.163399, "Hong Kong", 2, 1, 10, 20, "This is my second event"));
-//                list.add(new Event("My 3rd Event", 22.352991, 114.103489, "Hong Kong", 1, 1, 3, 10, "This is my third event"));
-//                list.add(new Event("My 4th Event", 22.381419, 114.194298, "Hong Kong", 2, 1, 3, 10, "This is my fourth event"));
-                return list;
+                HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                Call<EventRespond> call = httpService.getEvents(new EventFilter(((MainActivity)getActivity()).getmUserId(), 3));
+                try {
+                    mEventRespond = call.execute();
+                    if(mEventRespond.isSuccessful() && mEventRespond.body().getErrorMsg() == null) {
+                        return mEventRespond.body().getEvents();
+                    } else
+                        return null;
+                } catch(Exception e) {
+                    return null;
+                }
             }
         };
     }
 
     @Override
     public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
-        mEventAdapter.setmEventList(data);
         mData = data;
-        mEventAdapter.notifyDataSetChanged();
+        if(mData != null) {
+            mEventAdapter.setmEventList(data);
+            mEventAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

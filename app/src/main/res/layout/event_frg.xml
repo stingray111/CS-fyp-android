@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <layout>
     <data>
         <variable
@@ -115,7 +113,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{Integer.toString(eventObj.currentPpl)}"
+                            android:text="@{Integer.toString(eventObj.currentPpl+1)}"
                             android:textSize="16sp"/>
 
                         <TextView
@@ -248,7 +246,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="5"
+                            android:text="@{Integer.toString(eventObj.currentPpl+1)}"
                             android:textSize="16sp"/>
 
                         <TextView
@@ -260,7 +258,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="8"
+                            android:text="@{Integer.toString(eventObj.maxPpl)}"
                             android:textSize="16sp"/>
 
                     </LinearLayout>
@@ -272,177 +270,36 @@
                         android:src="@drawable/ic_people_3"
                         android:id="@+id/imageView3" />
                 </LinearLayout>
+
                 <LinearLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="8dp">
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginRight="4dp"
-                            android:src="@drawable/ic_star"/>
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="24dp"
-                            android:layout_weight="3"
-                            android:gravity="center_vertical"
-                            android:text="username"
-                            android:textSize="16sp"
-                            android:textColor="#000000"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingTop="0dp"
-                        >
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="(Event Holder)"
-                            android:gravity="right"/>
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginRight="4dp"
-                            android:src="@drawable/ic_people_1"/>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="24dp"
-                            android:layout_weight="3"
-                            android:gravity="center_vertical"
-                            android:text="username"
-                            android:textSize="16sp"
-                            android:textColor="#000000"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        >
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:gravity="right"/>
-                    </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginRight="4dp"
-                            android:src="@drawable/ic_people_1"/>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="24dp"
-                            android:layout_weight="3"
-                            android:gravity="center_vertical"
-                            android:text="username"
-                            android:textSize="16sp"
-                            android:textColor="#000000"/>
-                    </LinearLayout>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text=""
-                        android:gravity="right"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginRight="4dp"
-                            android:src="@drawable/ic_people_1"/>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="24dp"
-                            android:layout_weight="3"
-                            android:gravity="center_vertical"
-                            android:text="username"
-                            android:textSize="16sp"
-                            android:textColor="#000000"/>
-                    </LinearLayout>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text=""
-                        android:gravity="right"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginRight="4dp"
-                            android:src="@drawable/ic_people_1"/>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="24dp"
-                            android:layout_weight="3"
-                            android:gravity="center_vertical"
-                            android:text="username"
-                            android:textSize="16sp"
-                            android:textColor="#000000"/>
-                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginRight="4dp"
+                        android:src="@drawable/ic_star" />
 
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text=""
-                        android:gravity="right"
-                        android:id="@+id/textView2" />
+                        android:layout_height="24dp"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical"
+                        android:text="@{eventObj.holder.userName}"
+                        android:textColor="#000000"
+                        android:textSize="16sp" />
+
                 </LinearLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rvUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -99,7 +99,7 @@
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:layout_margin="8dp"
-                    android:src="#FFFFFF"
+                    android:src="@drawable/ic_people_1"
                     android:clickable="false"/>
 
                 <TextView

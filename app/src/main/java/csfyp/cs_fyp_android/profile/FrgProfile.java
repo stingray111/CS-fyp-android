@@ -1,5 +1,6 @@
 package csfyp.cs_fyp_android.profile;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -40,7 +41,10 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View v  = inflater.inflate(R.layout.profile_frg, container, false);
+
+        mDatabinding = DataBindingUtil.inflate(inflater, R.layout.profile_frg, container, false);
+        View v  = mDatabinding.getRoot();
+
         mToolBar = (Toolbar) v.findViewById(R.id.profileToolBar);
         mToolBar.setTitle("username");
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
