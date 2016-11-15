@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,11 +29,12 @@ import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Login;
-import csfyp.cs_fyp_android.model.LoginRespond;
+import csfyp.cs_fyp_android.model.respond.LoginRespond;
 import csfyp.cs_fyp_android.register.FrgRegister;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 public class FrgLogin extends CustomFragment implements Validator.ValidationListener{
     public FrgLogin(){
