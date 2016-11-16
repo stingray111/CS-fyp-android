@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.Calendar;
 
 import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.CustomScrollView;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.NewEventFrgBinding;
 import csfyp.cs_fyp_android.lib.HTTP;
@@ -159,13 +160,17 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
         });
 
         // Setting up Google Map
-        mMapView = (MapView) mDataBinding.newEventMap;
         if (savedInstanceState != null)
             mMapState = savedInstanceState.getBundle("newEventMapSaveInstanceState");
         else
             mMapState = null;
+        mMapView = mDataBinding.newEventMap;
         mMapView.onCreate(mMapState);
         mMapView.getMapAsync(this);
+
+        // scroll view
+
+        ((CustomScrollView) v.findViewById(R.id.customScrollView)).addInterceptScrollView(mMapView);
 
         // Setting up Spinners
         mMinPplSpinner = mDataBinding.minPplSpinner;
