@@ -300,6 +300,8 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
             @Override
             public void onClick(View view) {
                 if (!mDataBinding.eventName.getText().toString().matches("")
+                        && !mDataBinding.eventDescription.getText().toString().matches("")
+                        && !mDataBinding.eventLocation.getText().toString().matches("")
                         && mMaxPpl != 0
                         && mMinPpl != 0
                         && !mDataBinding.eventDeadlineText.getText().toString().matches("Click to set time")
