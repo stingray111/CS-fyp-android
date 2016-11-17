@@ -43,9 +43,8 @@ import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.NewEventFrgBinding;
 import csfyp.cs_fyp_android.lib.HTTP;
-import csfyp.cs_fyp_android.model.request.EventPost;
+import csfyp.cs_fyp_android.model.request.EventCreateRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
-import csfyp.cs_fyp_android.model.respond.EventRespond;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -366,7 +365,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 LatLng position = mMarker.getPosition();
                 MainActivity parentActivity = (MainActivity) getActivity();
-                EventPost event = new EventPost(
+                EventCreateRequest event = new EventCreateRequest(
                         mDataBinding.eventName.getText().toString(),
                         position.latitude,
                         position.longitude,
