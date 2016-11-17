@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +54,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.List;
@@ -89,6 +91,11 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     public static final int HOME_LOCATION_SETTING_CALLBACK = 2;
     public static final int HOME_PERMISSION_CALLBACK = 1;
     public static final String TAG = "HomeFragment";
+
+    @NotEmpty
+    private EditText mEventName;
+    @NotEmpty
+    private EditText mLocation;
 
     private boolean mIsPanelExpanded;
     private boolean mIsPanelAnchored;
@@ -226,6 +233,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.home_frg, container, false);
         mDataBinding.setHandlers(this);
         View v = mDataBinding.getRoot();
@@ -279,6 +287,9 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
 
         mMapView.getMapAsync(this);
 
+        //setting up edit text
+        mEventName = (EditText) v.findViewById(R.id.eventName);
+        mLocation = (EditText) v.findViewById(R.id.eventLocation);
 
         // Setting up RcyclerView for event
         mEventRecyclerView = mDataBinding.rvEvent;
