@@ -1,6 +1,6 @@
 package csfyp.cs_fyp_android.model.request;
 
-public class EventFilter {
+public class EventListRequest {
     private double latitude;
     private double longitude;
     private double userId;
@@ -9,13 +9,13 @@ public class EventFilter {
     // 2 for history
     // 3 for joined on going
 
-    public EventFilter(double latitude, double longitude, int mode){
+    public EventListRequest(double latitude, double longitude, int mode){
         this.latitude = latitude;
         this.longitude = longitude;
         this.mode = mode;
     }
 
-    public EventFilter(int userId, int mode) {
+    public EventListRequest(int userId, int mode) {
         this.userId = userId;
         this.mode = mode;
     }

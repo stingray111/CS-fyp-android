@@ -1,9 +1,9 @@
 package csfyp.cs_fyp_android.model.request;
 
-public class EventId {
+public class EventRequest {
     int id;
 
-    public EventId(int id){
+    public EventRequest(int id){
         this.id = id;
     };
 }

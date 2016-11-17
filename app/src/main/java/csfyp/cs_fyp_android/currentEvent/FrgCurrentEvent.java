@@ -21,8 +21,8 @@ import csfyp.cs_fyp_android.home.AdtEvent;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
-import csfyp.cs_fyp_android.model.request.EventFilter;
-import csfyp.cs_fyp_android.model.respond.EventRespond;
+import csfyp.cs_fyp_android.model.request.EventListRequest;
+import csfyp.cs_fyp_android.model.respond.EventListRespond;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -35,7 +35,7 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
     private AdtEvent mEventAdapter;
     private RecyclerView.LayoutManager mEventLayoutManager;
     private List<Event> mData;
-    private Response<EventRespond> mEventRespond;
+    private Response<EventListRespond> mEventRespond;
 
 
     public FrgCurrentEvent() {
@@ -55,7 +55,7 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
         super.onCreateView(inflater, container, savedInstanceState);
         View v  = inflater.inflate(R.layout.current_event_frg, container, false);
         mToolBar = (Toolbar) v.findViewById(R.id.currentEventToolBar);
-        mToolBar.setTitle("Current Event");
+        mToolBar.setTitle("On-going Event");
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);
@@ -83,7 +83,7 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
             @Override
             public List<Event> loadInBackground() {
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                Call<EventRespond> call = httpService.getEvents(new EventFilter(((MainActivity)getActivity()).getmUserId(), 3));
+                Call<EventListRespond> call = httpService.getEvents(new EventListRequest(((MainActivity)getActivity()).getmUserId(), 3));
                 try {
                     mEventRespond = call.execute();
                     if(mEventRespond.isSuccessful() && mEventRespond.body().getErrorMsg() == null) {

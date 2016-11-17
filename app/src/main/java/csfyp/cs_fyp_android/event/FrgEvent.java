@@ -37,7 +37,7 @@ import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
-import csfyp.cs_fyp_android.model.request.EventId;
+import csfyp.cs_fyp_android.model.request.EventRequest;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -195,7 +195,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
             @Override
             public Event loadInBackground() {
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                Call<Event> call = httpService.getEvent(new EventId(mEventId));
+                Call<Event> call = httpService.getEvent(new EventRequest(mEventId));
                 try {
                     mEventRespond = call.execute();
                     if(mEventRespond.isSuccessful()){

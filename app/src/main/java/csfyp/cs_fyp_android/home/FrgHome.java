@@ -58,6 +58,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import java.util.List;
 
 import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.about.FrgAbout;
 import csfyp.cs_fyp_android.currentEvent.FrgCurrentEvent;
@@ -67,8 +68,8 @@ import csfyp.cs_fyp_android.history.FrgHistory;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
-import csfyp.cs_fyp_android.model.request.EventFilter;
-import csfyp.cs_fyp_android.model.respond.EventRespond;
+import csfyp.cs_fyp_android.model.request.EventListRequest;
+import csfyp.cs_fyp_android.model.respond.EventListRespond;
 import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
@@ -129,7 +130,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     private SlidingUpPanelLayout mLayout;
 
     // For HTTP
-    private Response<EventRespond> mEventRespond;
+    private Response<EventListRespond> mEventRespond;
 
 
     public FrgHome() {
@@ -214,10 +215,11 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundle mapState = new Bundle();
-        mMapView.onSaveInstanceState(mapState);  // TODO: 21/10/2016 fix mapState
+        if (mMapView != null)
+            mMapView.onSaveInstanceState(mapState);  // TODO: 21/10/2016 fix mapState
         outState.putParcelable("lastTarget", mLastTarget);
         outState.putFloat("lastZoom", mLastZoom);
-        outState.putBundle("mapSaveInstanceState", mapState); //// TODO: 19/10/2016 change key
+        outState.putBundle("mapSaveInstanceState", mapState);
         outState.putBoolean("isPanelExpanded", mIsPanelExpanded);
         outState.putBoolean("isSetToSelfLocation", mIsSetToSelfLocation);
     }
@@ -529,7 +531,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
             public List<Event> loadInBackground() {
                 if(mCurrentLocation != null){
                     HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                    Call<EventRespond> call = httpService.getEvents(new EventFilter(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1));
+                    Call<EventListRespond> call = httpService.getEvents(new EventListRequest(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1));
                     try {
                         mEventRespond = call.execute();
                         if (mEventRespond.isSuccessful()) {
@@ -559,11 +561,15 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
-        mEventAdapter.setmEventList(data);
         mData = data;
-        mIsLoadFinished = true;
-        mEventAdapter.notifyDataSetChanged();
-        populateMapMarker();
+        if (mData != null) {
+            mEventAdapter.setmEventList(data);
+            mIsLoadFinished = true;
+            mEventAdapter.notifyDataSetChanged();
+            populateMapMarker();
+        }
+
+        mDataBinding.slideProgessBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -597,8 +603,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     public void onClickSetting(View view){ switchFragment(FrgSetting.newInstance());}
 
     public void onClickProfile(View view) {
-        //TODO marker get id subsitude 123
-        switchFragment(FrgProfile.newInstance(123));
+        switchFragment(FrgProfile.newInstance(((MainActivity) getActivity()).getmUserId()));
     }
 
     public void onClickAbout(View view) {

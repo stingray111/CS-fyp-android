@@ -21,8 +21,8 @@ import csfyp.cs_fyp_android.home.AdtEvent;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
-import csfyp.cs_fyp_android.model.request.EventFilter;
-import csfyp.cs_fyp_android.model.respond.EventRespond;
+import csfyp.cs_fyp_android.model.request.EventListRequest;
+import csfyp.cs_fyp_android.model.respond.EventListRespond;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -37,7 +37,7 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
     private AdtEvent mEventAdapter;
     private RecyclerView.LayoutManager mEventLayoutManager;
     private List<Event> mData;
-    private Response<EventRespond> mEventRespond;
+    private Response<EventListRespond> mEventRespond;
 
 
     public FrgHistory(){
@@ -87,7 +87,7 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
             @Override
             public List<Event> loadInBackground() {
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                Call<EventRespond> call = httpService.getEvents(new EventFilter(((MainActivity)getActivity()).getmUserId(), 2));
+                Call<EventListRespond> call = httpService.getEvents(new EventListRequest(((MainActivity)getActivity()).getmUserId(), 2));
                 try {
                     mEventRespond = call.execute();
                     if(mEventRespond.isSuccessful() && mEventRespond.body().getErrorMsg() == null) {

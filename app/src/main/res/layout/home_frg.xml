@@ -62,6 +62,19 @@
                     android:layout_height="56dp"
                     android:elevation="4dp"/>
 
+                <LinearLayout
+                    android:id="@+id/slideProgessBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@android:style/Widget.ProgressBar.Inverse" />
+
+                </LinearLayout>
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rvEvent"
                     android:layout_width="match_parent"
@@ -164,7 +177,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
-                    android:text="Joined Event"
+                    android:text="On-going Event"
                     android:textSize="16sp"
                     android:includeFontPadding="false"
                     android:gravity="center_vertical" />

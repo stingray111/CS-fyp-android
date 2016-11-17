@@ -74,7 +74,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@{userObj.level}"
+                                android:text="@{Integer.toString(userObj.level)}"
                                 android:textSize="16sp" />
                         </LinearLayout>
 
@@ -166,7 +166,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{userObj.missingEventNum}"
+                            android:text="@{Integer.toString(userObj.missingEventNum)}"
                             android:textColor="#000000"
                             android:textSize="14sp" />
                     </LinearLayout>

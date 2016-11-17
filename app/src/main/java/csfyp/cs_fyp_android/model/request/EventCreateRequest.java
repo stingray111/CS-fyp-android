@@ -3,7 +3,7 @@ package csfyp.cs_fyp_android.model.request;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
-public class EventPost {
+public class EventCreateRequest {
     private String name;
     private double latitude;
     private double longitude;
@@ -15,7 +15,7 @@ public class EventPost {
     private String eventDeadline;
     private String description;
 
-    public EventPost(String name, double latitude, double longitude, String place, int holderId, int maxPpl, int minPpl, String description) {
+    public EventCreateRequest(String name, double latitude, double longitude, String place, int holderId, int maxPpl, int minPpl, String description) {
         SimpleDateFormat df = new SimpleDateFormat("dd/MM HH:mm");
         this.name = name;
         this.latitude = latitude;

@@ -318,7 +318,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
                     // how to use postion
                     // position.latitude;
                     // position.longitude;
-                    // httpService.pushEvent(new EventPost(mDataBinding.eventName.getText().toString(), mLat, mLong, "Hong Kong", mHolderId, mMaxPpl, mMinPpl, mDesciption));
+                    // httpService.pushEvent(new EventCreateRequest(mDataBinding.eventName.getText().toString(), mLat, mLong, "Hong Kong", mHolderId, mMaxPpl, mMinPpl, mDesciption));
                 }
 
             }
