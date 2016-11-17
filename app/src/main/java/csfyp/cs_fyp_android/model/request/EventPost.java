@@ -24,8 +24,8 @@ public class EventPost {
         this.holderId = holderId;
         this.maxPpl = maxPpl;
         this.minPpl = minPpl;
-        this.eventStart = df.format(new Timestamp(System.currentTimeMillis()));
-        this.eventDeadline = df.format(new Timestamp(System.currentTimeMillis()));
+        this.eventStart = df.format(new Timestamp(System.currentTimeMillis()+1000000000));
+        this.eventDeadline = df.format(new Timestamp(System.currentTimeMillis()+100000000));
         this.description = description;
     }
 
