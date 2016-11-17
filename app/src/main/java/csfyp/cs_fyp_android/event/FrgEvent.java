@@ -223,6 +223,8 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
             mGoogleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_self_marker)));
+
+            mDataBinding.eventProgessBar.setVisibility(View.GONE);
         }
     }
 

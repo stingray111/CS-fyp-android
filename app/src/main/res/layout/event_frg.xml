@@ -21,6 +21,19 @@
         android:id="@+id/eventToolBar"/>
 
         <LinearLayout
+            android:id="@+id/eventProgessBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@android:style/Widget.ProgressBar.Inverse" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:elevation="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
