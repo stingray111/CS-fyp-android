@@ -14,9 +14,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -28,16 +30,27 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 
 import java.util.Calendar;
+import java.util.List;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.CustomScrollView;
+import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.NewEventFrgBinding;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.model.request.EventPost;
+import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
+import csfyp.cs_fyp_android.model.respond.EventRespond;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
+public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Validator.ValidationListener {
 
     private static final String TAG = "NewEventFragment";
     private NewEventFrgBinding mDataBinding;
@@ -56,6 +69,12 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
     private TimePickerDialog mStartTimePickerDialog;
     private DatePickerDialog mDeadlineDatePickerDialog;
     private TimePickerDialog mDeadlineTimePickerDialog;
+
+    @NotEmpty
+    private EditText mEventName;
+    @NotEmpty
+    private EditText mLocation;
+    private Validator mValidator;
 
     private int mMinPpl;
     private int mMaxPpl;
@@ -167,6 +186,12 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
         mMapView = mDataBinding.newEventMap;
         mMapView.onCreate(mMapState);
         mMapView.getMapAsync(this);
+
+        //setting up edit text
+        mEventName = (EditText) v.findViewById(R.id.eventName);
+        mLocation = (EditText) v.findViewById(R.id.eventLocation);
+        mValidator= new Validator(this);
+        mValidator.setValidationListener(this);
 
         // scroll view
 
@@ -303,30 +328,69 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback {
 
         mDataBinding.submitEvent.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if (!mDataBinding.eventName.getText().toString().matches("")
-                        && !mDataBinding.eventDescription.getText().toString().matches("")
-                        && !mDataBinding.eventLocation.getText().toString().matches("")
-                        && mMaxPpl != 0
-                        && mMinPpl != 0
-                        && !mDataBinding.eventDeadlineText.getText().toString().matches("Click to set time")
-                        && !mDataBinding.eventStartText.getText().toString().matches("Click to set time"))
-                {
-
-                    HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                    LatLng position = mMarker.getPosition();
-                    // how to use postion
-                    // position.latitude;
-                    // position.longitude;
-                    // httpService.pushEvent(new EventCreateRequest(mDataBinding.eventName.getText().toString(), mLat, mLong, "Hong Kong", mHolderId, mMaxPpl, mMinPpl, mDesciption));
-                }
-
+            public void onClick(View v) {
+                mValidator.validate();
             }
+
         });
 
-
-
         return v;
+    }
+
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(parentActivity);
+
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(parentActivity,message,Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    public void onValidationSucceeded() {
+            if (!mDataBinding.eventName.getText().toString().matches("")
+                    /*&& !mDataBinding.eventDescription.getText().toString().matches("")*/
+                    && !mDataBinding.eventLocation.getText().toString().matches("")
+                    && mMaxPpl != 0
+                    && mMinPpl != 0
+                    && !mDataBinding.eventDeadlineText.getText().toString().matches("Click to set time")
+                    && !mDataBinding.eventStartText.getText().toString().matches("Click to set time"))
+            {
+                HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                LatLng position = mMarker.getPosition();
+                MainActivity parentActivity = (MainActivity) getActivity();
+                EventPost event = new EventPost(
+                        mDataBinding.eventName.getText().toString(),
+                        position.latitude,
+                        position.longitude,
+                        mDataBinding.eventLocation.getText().toString(),
+                        1,
+                        mMaxPpl,
+                        mMinPpl,
+                        mDataBinding.eventDescription.getText().toString());
+                Call<ErrorMsgOnly> call = httpService.pushEvent(event);
+                call.enqueue(new Callback<ErrorMsgOnly>() {
+                    @Override
+                    public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
+                        if(response.isSuccessful()) {
+                            Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
+                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
     }
 
     @Override
