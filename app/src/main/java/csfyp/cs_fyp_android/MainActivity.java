@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
         return mUserId;
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FrgHome.HOME_LOCATION_SETTING_CALLBACK){
