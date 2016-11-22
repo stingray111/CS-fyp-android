@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -31,14 +32,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
 import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.EventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
+import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventRequest;
+import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 
@@ -49,6 +54,8 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     private static final String TAG = "EventFragment";
     private EventFrgBinding mDataBinding;
     private Event mEventObj;
+    private boolean mIsSelfHold = false;
+    private boolean mIsJoined = false;
 
     private Toolbar mToolBar;
 
@@ -74,6 +81,17 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("isSelfHold", mIsSelfHold);
+        outState.putBoolean("isJoined", mIsJoined);
+    }
+
+    private void resetLoader(){
+        getLoaderManager().restartLoader(EVENT_LOADER_ID, null, this);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         client = new GoogleApiClient.Builder(getContext()).addApi(AppIndex.API).build();
@@ -87,6 +105,11 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         Bundle args = getArguments();
         mEventId = args.getInt("eventId");
 
+        if (savedInstanceState != null) {
+            mIsSelfHold = savedInstanceState.getBoolean("isSelfHold");
+            mIsJoined = savedInstanceState.getBoolean("isJoined");
+        }
+
         mDataBinding = DataBindingUtil.inflate(inflater,R.layout.event_frg, container,false);
         mDataBinding.setHandlers(this);
         View v  = mDataBinding.getRoot();
@@ -98,7 +121,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         mUserAdapter = new AdtUser();
         mUserRecyclerView.setAdapter(mUserAdapter);
 
-        //Tool Bar
+        // Tool Bar
         mToolBar = mDataBinding.eventToolBar;
         mToolBar.setTitle("username");
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
@@ -111,9 +134,80 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
             }
         });
 
+        // Google map
         mMapView = mDataBinding.eventMap;
         mMapView.onCreate(null);
         mMapView.getMapAsync(this);
+
+        // join button
+        mDataBinding.joinEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                Call<ErrorMsgOnly> call = httpService.joinEvent(new EventJoinQuitRequest(mEventId, ((MainActivity) getActivity()).getmUserId()));
+                mDataBinding.eventProgessBar.setVisibility(View.VISIBLE);
+                call.enqueue(new Callback<ErrorMsgOnly>() {
+                    @Override
+                    public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
+                        if (response.isSuccessful()) {
+                            if (response.body().getErrorMsg() == null) {
+                                Toast.makeText(getContext(), "Joined successfully", Toast.LENGTH_SHORT).show();
+                                mIsJoined = true;
+                                resetLoader();
+                            }
+                            else
+                                Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
+                        Toast.makeText(getContext(), "Cannot join event: unknown err", Toast.LENGTH_SHORT);
+                    }
+                });
+            }
+        });
+
+        mDataBinding.quitEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                Call<ErrorMsgOnly> call = httpService.quitEvent(new EventJoinQuitRequest(mEventId, ((MainActivity) getActivity()).getmUserId()));
+                mDataBinding.eventProgessBar.setVisibility(View.VISIBLE);
+                call.enqueue(new Callback<ErrorMsgOnly>() {
+                    @Override
+                    public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
+                        if (response.isSuccessful()) {
+                            if (response.body().getErrorMsg() == null) {
+                                Toast.makeText(getContext(), "Quited successfully", Toast.LENGTH_SHORT).show();
+                                mIsJoined = false;
+                                resetLoader();
+                            }
+                            else
+                                Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
+                        Toast.makeText(getContext(), "Cannot quit event: unknown err", Toast.LENGTH_SHORT);
+                    }
+                });
+            }
+        });
+
+        if (mIsSelfHold) {
+            mDataBinding.joinEvent.setVisibility(View.GONE);
+            mDataBinding.quitEvent.setVisibility(View.GONE);
+        }
+
+        if (mIsJoined) {
+            mDataBinding.joinEvent.setVisibility(View.GONE);
+            mDataBinding.quitEvent.setVisibility(View.VISIBLE);
+        } else {
+            mDataBinding.joinEvent.setVisibility(View.VISIBLE);
+            mDataBinding.quitEvent.setVisibility(View.GONE);
+        }
 
         getLoaderManager().initLoader(EVENT_LOADER_ID, null, this);
 
@@ -224,7 +318,32 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                     .position(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_self_marker)));
 
+            int selfId = ((MainActivity)getActivity()).getmUserId();
             mDataBinding.eventProgessBar.setVisibility(View.GONE);
+            if (selfId == data.getHolderId()){
+                mIsSelfHold = true;
+                mDataBinding.joinEvent.setVisibility(View.GONE);
+                return;
+            }
+
+            if (mIsJoined) {
+                mDataBinding.joinEvent.setVisibility(View.GONE);
+                mDataBinding.quitEvent.setVisibility(View.VISIBLE);
+                return;
+            }
+
+            for (User item: data.getParticipantList()) {
+                if(item.getId() == selfId)
+                    mIsJoined = true;
+            }
+            
+            if (mIsJoined) {
+                mDataBinding.joinEvent.setVisibility(View.GONE);
+                mDataBinding.quitEvent.setVisibility(View.VISIBLE);
+            } else {
+                mDataBinding.joinEvent.setVisibility(View.VISIBLE);
+                mDataBinding.quitEvent.setVisibility(View.GONE);
+            }
         }
     }
 

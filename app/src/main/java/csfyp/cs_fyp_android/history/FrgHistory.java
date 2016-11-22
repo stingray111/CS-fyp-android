@@ -1,5 +1,6 @@
 package csfyp.cs_fyp_android.history;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -17,6 +18,7 @@ import java.util.List;
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.databinding.HistoryFrgBinding;
 import csfyp.cs_fyp_android.home.AdtEvent;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
@@ -38,6 +40,7 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
     private RecyclerView.LayoutManager mEventLayoutManager;
     private List<Event> mData;
     private Response<EventListRespond> mEventRespond;
+    private HistoryFrgBinding mDatabinding;
 
 
     public FrgHistory(){
@@ -57,8 +60,9 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View v  = inflater.inflate(R.layout.history_frg, container, false);
-        mToolBar = (Toolbar) v.findViewById(R.id.historyToolBar);
+        mDatabinding = DataBindingUtil.inflate(inflater, R.layout.history_frg, container, false);
+        View v  = mDatabinding.getRoot();
+        mToolBar = mDatabinding.historyToolBar;
         mToolBar.setTitle("History");
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
         parentActivity.setSupportActionBar(mToolBar);
@@ -70,7 +74,7 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
             }
         });
 
-        mEventRecyclerView = (RecyclerView) v.findViewById(R.id.rvHistory);
+        mEventRecyclerView = mDatabinding.rvHistory;
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
         mEventAdapter = new AdtEvent();
@@ -107,6 +111,10 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
         if(mData != null) {
             mEventAdapter.setmEventList(data);
             mEventAdapter.notifyDataSetChanged();
+            mDatabinding.historyProgessBar.setVisibility(View.GONE);
+            if (mData.size() == 0) {
+                mDatabinding.historyEmptyMsg.setVisibility(View.VISIBLE);
+            }
         }
     }
 

@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import csfyp.cs_fyp_android.databinding.ActivityMainBinding;
-import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.login.FrgLogin;
 
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         if (mToken.isEmpty()) {
             // user not login
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.parent_fragment_container, FrgHome.newInstance());
+            ft.replace(R.id.parent_fragment_container, FrgLogin.newInstance());
             ft.commit();
         } else {
 

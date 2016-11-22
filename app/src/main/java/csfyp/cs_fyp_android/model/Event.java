@@ -9,6 +9,7 @@ public class Event {
     private double longitude;
     private String place;
     private User holder;
+    private int holderId;
     private int maxPpl;
     private int minPpl;
     private int currentPpl;   // not in DB
@@ -36,6 +37,10 @@ public class Event {
 
     public String getPlace() {
         return place;
+    }
+
+    public int getHolderId() {
+        return holderId;
     }
 
     public User getHolder() {

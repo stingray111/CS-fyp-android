@@ -1,5 +1,7 @@
 package csfyp.cs_fyp_android.register;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -21,11 +23,15 @@ import com.mobsandgeeks.saripaar.annotation.Password;
 import com.mobsandgeeks.saripaar.annotation.Pattern;
 
 import java.util.List;
+import java.util.UUID;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
+import csfyp.cs_fyp_android.model.respond.LoginRespond;
 import csfyp.cs_fyp_android.model.respond.RegisterRespond;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -128,7 +134,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
 
     @Override
     public void onValidationSucceeded() {
-        HTTP httpService = HTTP.retrofit.create(HTTP.class);
+        final HTTP httpService = HTTP.retrofit.create(HTTP.class);
         User user = new User(mUsernameField.getText().toString()
                 , mPasswordField.getText().toString()
                 , mFirstNameField.getText().toString(),
@@ -144,7 +150,24 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
             public void onResponse(Call<RegisterRespond> call, Response<RegisterRespond> response) {
                 if(response.isSuccessful()) {
                     if(response.body().isSuccessful()) {
-                        Toast.makeText(getContext(), "Register Sucessful!!" , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Register Successful!!" , Toast.LENGTH_SHORT).show();
+                        String uuidInString = UUID.randomUUID().toString();
+                        Call<LoginRespond> loginCall = httpService.login(new Login(mUsernameField.getText().toString(), mPasswordField.getText().toString(), uuidInString));
+                        try {
+                            Response<LoginRespond> loginRespond = loginCall.execute();
+                            if(loginRespond.isSuccessful() && loginRespond.body().isSuccessful()) {
+                                // save token to cache
+                                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putString("userToken", loginRespond.body().getToken());
+                                editor.putInt("userId", loginRespond.body().getUserId());
+                                editor.commit();
+
+                                replaceFragment(FrgHome.newInstance());
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(getContext(), "Register successful but cannot login!!" , Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
                     }

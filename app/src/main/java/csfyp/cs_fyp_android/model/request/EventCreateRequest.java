@@ -15,6 +15,19 @@ public class EventCreateRequest {
     private String eventDeadline;
     private String description;
 
+    public EventCreateRequest(String name, double latitude, double longitude, String place, int holderId, int maxPpl, int minPpl, String eventStart, String eventDeadline, String description) {
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.place = place;
+        this.holderId = holderId;
+        this.maxPpl = maxPpl;
+        this.minPpl = minPpl;
+        this.eventStart = eventStart;
+        this.eventDeadline = eventDeadline;
+        this.description = description;
+    }
+
     public EventCreateRequest(String name, double latitude, double longitude, String place, int holderId, int maxPpl, int minPpl, String description) {
         SimpleDateFormat df = new SimpleDateFormat("dd/MM HH:mm");
         this.name = name;

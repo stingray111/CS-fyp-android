@@ -360,6 +360,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     @Override
     public void onResume() {
         super.onResume();
+        getLoaderManager().restartLoader(HOME_LOADER_ID, null, this);
         if (mMapView != null)
             mMapView.onResume();
         if (client.isConnected()) {
@@ -369,6 +370,8 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onPause() {
+
+        // TODO: 22/11/2016 pause network 
         super.onPause();
         mMapView.onPause();
         if (client.isConnected())
@@ -471,7 +474,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == HOME_PERMISSION_CALLBACK) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(getContext(),"Permission Granted", Toast.LENGTH_LONG).show();
                 mIsPermissionGranted = true;
                 startLocationUpdate();
             }
@@ -483,7 +485,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         // result for location setting prompt
         if (requestCode == HOME_LOCATION_SETTING_CALLBACK) {
             if (resultCode == RESULT_OK) {
-                Toast.makeText(getContext(),"Location Setting Enabled", Toast.LENGTH_LONG).show();
                 mIsLocationSettingEnable = true;
                 startLocationUpdate();
             } else {
@@ -505,12 +506,10 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
             } else {
-                Toast.makeText(getContext(),"Try Get Permission", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, HOME_PERMISSION_CALLBACK);
             }
         } else {
             // permission granted
-            Toast.makeText(getContext(),"Permission Granted in connected", Toast.LENGTH_LONG).show();
             mIsPermissionGranted = true;
             startLocationUpdate();
         }

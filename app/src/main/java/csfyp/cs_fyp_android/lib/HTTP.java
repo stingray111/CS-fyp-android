@@ -1,6 +1,7 @@
 package csfyp.cs_fyp_android.lib;
 
 import csfyp.cs_fyp_android.model.request.EventCreateRequest;
+import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventRequest;
 import csfyp.cs_fyp_android.model.request.UserRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
@@ -49,9 +50,19 @@ public interface HTTP {
             @Body EventListRequest eventFilter
     );
 
+    @POST("/api/join-event")
+    Call<ErrorMsgOnly> joinEvent (
+            @Body EventJoinQuitRequest join
+    );
+
+    @POST("/api/quit-event")
+    Call<ErrorMsgOnly> quitEvent (
+            @Body EventJoinQuitRequest quit
+    );
+
     Retrofit retrofit = new Retrofit.Builder()
-            //.baseUrl("http://192.168.1.5:3000")
-            .baseUrl("http://54.179.174.239:3000")
+            .baseUrl("http://192.168.1.5:3000")
+            //.baseUrl("http://54.179.174.239:3000")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 }

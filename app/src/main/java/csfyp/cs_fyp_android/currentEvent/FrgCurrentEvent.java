@@ -1,5 +1,6 @@
 package csfyp.cs_fyp_android.currentEvent;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -17,6 +18,7 @@ import java.util.List;
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.databinding.CurrentEventFrgBinding;
 import csfyp.cs_fyp_android.home.AdtEvent;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
@@ -36,6 +38,7 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
     private RecyclerView.LayoutManager mEventLayoutManager;
     private List<Event> mData;
     private Response<EventListRespond> mEventRespond;
+    private CurrentEventFrgBinding mDatabinding;
 
 
     public FrgCurrentEvent() {
@@ -53,8 +56,9 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         super.onCreateView(inflater, container, savedInstanceState);
-        View v  = inflater.inflate(R.layout.current_event_frg, container, false);
-        mToolBar = (Toolbar) v.findViewById(R.id.currentEventToolBar);
+        mDatabinding = DataBindingUtil.inflate(inflater, R.layout.current_event_frg, container, false);
+        View v = mDatabinding.getRoot();
+        mToolBar = mDatabinding.currentEventToolBar;
         mToolBar.setTitle("On-going Event");
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
         parentActivity.setSupportActionBar(mToolBar);
@@ -66,7 +70,7 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
             }
         });
 
-        mEventRecyclerView = (RecyclerView) v.findViewById(R.id.currentEventRV);
+        mEventRecyclerView = mDatabinding.currentEventRV;
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
         mEventAdapter = new AdtEvent();
@@ -103,6 +107,9 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
         if(mData != null) {
             mEventAdapter.setmEventList(data);
             mEventAdapter.notifyDataSetChanged();
+            mDatabinding.currentEventProgessBar.setVisibility(View.GONE);
+            if (mData.size() == 0)
+                mDatabinding.currentEventEmptyMsg.setVisibility(View.VISIBLE);
         }
     }
 

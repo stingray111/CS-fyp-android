@@ -29,6 +29,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -49,7 +50,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Validator.ValidationListener {
+public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Validator.ValidationListener,GoogleMap.OnMarkerDragListener {
 
     private static final String TAG = "NewEventFragment";
     private NewEventFrgBinding mDataBinding;
@@ -62,7 +63,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
     private MapView mMapView;
     private GoogleMap mGoogleMap;
     private GoogleApiClient mClient;
-    private MarkerOptions mMarker;
+    private Marker mMarker;
 
     private DatePickerDialog mStartDatePickerDialog;
     private TimePickerDialog mStartTimePickerDialog;
@@ -92,6 +93,8 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
 
     private double mCurrentLatitude;
     private double mCurrentLongitude;
+    private String mEventDeadlineString;
+    private String mEventStartString;
 
     public FrgNewEvent() {
 
@@ -291,7 +294,8 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
                         mNewEventHour = i;
                         mNewEventMin = i1;
-                        mDataBinding.eventStartText.setText(mNewEventYear + "/" + mNewEventMonth + "/" + mNewEventDay + " " + mNewEventHour + ":" + mNewEventMin);
+                        mEventStartString = mNewEventYear + "/" + String.format("%02d", mNewEventMonth) + "/" + String.format("%02d", mNewEventDay) + " " + String.format("%02d", mNewEventHour) +  ":" + String.format("%02d", mNewEventMin);
+                        mDataBinding.eventStartText.setText(mEventStartString);
                     }
                 }, hour, min, false);
                 mStartTimePickerDialog.show();
@@ -312,7 +316,8 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
                         mDeadlineEventHour = i;
                         mDeadlineEventMin = i1;
-                        mDataBinding.eventDeadlineText.setText(mDeadlineEventYear + "/" + mDeadlineEventMonth + "/" + mDeadlineEventDay + " " + mDeadlineEventHour + ":" + mDeadlineEventMin);
+                        mEventDeadlineString = mDeadlineEventYear + "/" + String.format("%02d", mDeadlineEventMonth) + "/" + String.format("%02d", mDeadlineEventDay) + " " + String.format("%02d", mDeadlineEventHour) + ":" + String.format("%02d", mDeadlineEventMin);
+                        mDataBinding.eventDeadlineText.setText(mEventDeadlineString);
                     }
                 }, hour, min, false);
                 mDeadlineTimePickerDialog.show();
@@ -320,8 +325,8 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
         }, year, month, day);
 
         if(savedInstanceState != null) {
-            mDataBinding.eventStartText.setText(mNewEventYear + "/" + mNewEventMonth + "/" + mNewEventDay + " " + mNewEventHour + ":" + mNewEventMin);
-            mDataBinding.eventDeadlineText.setText(mDeadlineEventYear + "/" + mDeadlineEventMonth + "/" + mDeadlineEventDay + " " + mDeadlineEventHour + ":" + mDeadlineEventMin);
+            mDataBinding.eventStartText.setText(mNewEventYear + "/" + String.format("%02d", mNewEventMonth) + "/" + String.format("%02d", mNewEventDay) + " " + String.format("%02d", mNewEventHour) + ":" + String.format("%02d", mNewEventMin));
+            mDataBinding.eventDeadlineText.setText(mDeadlineEventYear + "/" + String.format("%02d", mDeadlineEventMonth) + "/" + String.format("%02d", mDeadlineEventDay) + " " + String.format("%02d", mDeadlineEventHour) + ":" + String.format("%02d", mDeadlineEventMin));
         }
 
 
@@ -370,9 +375,11 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
                         position.latitude,
                         position.longitude,
                         mDataBinding.eventLocation.getText().toString(),
-                        1,
+                        ((MainActivity) getActivity()).getmUserId(),
                         mMaxPpl,
                         mMinPpl,
+                        mEventStartString,
+                        mEventDeadlineString,
                         mDataBinding.eventDescription.getText().toString());
                 Call<ErrorMsgOnly> call = httpService.pushEvent(event);
                 call.enqueue(new Callback<ErrorMsgOnly>() {
@@ -380,6 +387,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
                     public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
                         if(response.isSuccessful()) {
                             Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+                            onBack(null);
                         }else{
                             Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
                         }
@@ -442,20 +450,21 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
+        mGoogleMap.setOnMarkerDragListener(this);
 
         if (mCurrentLatitude != 0.0 && mCurrentLongitude != 0.0){
-             mMarker = new MarkerOptions()
+            mMarker = mGoogleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(mCurrentLatitude, mCurrentLongitude))
                     .draggable(true)
-                    .title("Choose where the event take place");
-            mGoogleMap.addMarker(mMarker);
+                    .title("Choose where the event take place")
+            );
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLatitude, mCurrentLongitude), 12.0f));
         } else {
-            mMarker = new MarkerOptions()
+            mMarker = mGoogleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(22.25, 114.1667))
                     .draggable(true)
-                    .title("Choose where the event take place");
-            mGoogleMap.addMarker(mMarker);
+                    .title("Choose where the event take place")
+            );
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
         }
     }
@@ -478,5 +487,20 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
 
     public void onClickSetEventDeadline(View view) {
         mDeadlineDatePickerDialog.show();
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        mMarker = marker;
     }
 }
