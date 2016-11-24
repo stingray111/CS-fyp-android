@@ -25,7 +25,7 @@
             android:elevation="6dp" />
 
         <LinearLayout
-            android:id="@+id/eventProgessBar"
+            android:id="@+id/eventProgressBar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center">
@@ -201,22 +201,53 @@
 
                     </LinearLayout>
 
-                    <Button
-                        android:id="@+id/joinEvent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:padding="15dp"
-                        android:text="Join This EvEnt" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_margin="8dp"
+                        android:orientation="horizontal"
+                        android:gravity="center">
 
-                    <Button
-                        android:visibility="gone"
-                        android:id="@+id/quitEvent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:padding="15dp"
-                        android:text="Quit This EvEnt" />
+                        <ProgressBar
+                            android:id="@+id/joinQuitProgressBar"
+                            android:visibility="gone"
+                            style="@android:style/Widget.Holo.Light.ProgressBar.Inverse"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <Button
+                            android:id="@+id/joinEvent"
+                            android:background="@drawable/bg_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center"
+                            android:padding="8dp"
+                            android:text="Join This Event"
+                            android:textColor="#FFF"/>
+
+                        <Button
+                            android:visibility="gone"
+                            android:id="@+id/quitEvent"
+                            android:background="@drawable/bg_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center"
+                            android:padding="8dp"
+                            android:text="Quit This Event"
+                            android:textColor="#FFF"/>
+
+                        <Button
+                            android:visibility="gone"
+                            android:id="@+id/deleteEvent"
+                            android:background="@drawable/bg_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center"
+                            android:padding="8dp"
+                            android:text="Delete This Event"
+                            android:textColor="#FFF"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -246,8 +277,8 @@
                         android:text="@{eventObj.description}"
                         android:textColor="#000000"
                         android:textSize="15sp" />
-                </LinearLayout>
 
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

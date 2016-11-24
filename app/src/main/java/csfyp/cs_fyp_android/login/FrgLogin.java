@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +51,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     private EditText mInputPassword;
     private TextView mRegisterBtn;
     private Validator mValidator;
+    private ProgressBar mProgressBar;
 
     public static FrgLogin newInstance() {
 
@@ -69,16 +71,14 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View v = inflater.inflate(R.layout.login_frg,container,false);
-        mToolBar = (Toolbar) v.findViewById(R.id.loginToolBar);
-        mToolBar.setTitle("Login");
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
-        parentActivity.setSupportActionBar(mToolBar);
 
         mLoginBtn = (Button) v.findViewById(R.id.loginBtn);
         mInputEmailOrUsername = (EditText) v.findViewById(R.id.inputEmailOrUsername);
 
         mValidator = new Validator(this);
         mValidator.setValidationListener(this);
+        mProgressBar = (ProgressBar) v.findViewById(R.id.loginProgressBar);
         mInputPassword = (EditText) v.findViewById(R.id.inputPassword);
         mRegisterBtn = (TextView) v.findViewById(R.id.registerBtn);
         mRegisterBtn.setOnClickListener(new View.OnClickListener() {
@@ -103,10 +103,11 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
             String strPassword = mInputPassword.getText().toString();
 
             if (!strEmailOrUsername.matches("") && !strPassword.matches("")) {
-                Log.i(TAG, strEmailOrUsername);
-                Log.i(TAG, strPassword);
 
                 String uuidInString = UUID.randomUUID().toString();
+
+                mProgressBar.setVisibility(View.VISIBLE);
+                mLoginBtn.setVisibility(View.GONE);
 
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 Login login = new Login(strEmailOrUsername, strPassword, uuidInString);
@@ -129,7 +130,13 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
                             } else {
                                 // TODO: 6/11/2016 print error msg to user
+                                if (response.body().getErrorMsg().matches("passwordWrong"))
+                                    mInputPassword.setError("Wrong Password");
+                                if (response.body().getErrorMsg().matches("userNotfound"))
+                                    mInputEmailOrUsername.setError("User Not Found");
                                 Log.i(TAG, response.body().getErrorMsg());
+                                mProgressBar.setVisibility(View.GONE);
+                                mLoginBtn.setVisibility(View.VISIBLE);
                             }
                         }
                     }

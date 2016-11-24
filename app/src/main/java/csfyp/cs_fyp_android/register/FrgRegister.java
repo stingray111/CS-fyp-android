@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
@@ -75,8 +76,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
     private Button mSubmitBtn;
     private Validator mValidator;
 
-
-
+    private ProgressBar mProgressBar;
 
 
     public static FrgRegister newInstance() {
@@ -109,6 +109,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
 
         mValidator = new Validator(this);
         mValidator.setValidationListener(this);
+        mProgressBar = (ProgressBar) v.findViewById(R.id.registerProgressBar);
         mUsernameField = (EditText) v.findViewById(R.id.usernameField);
         mEmailField = (EditText) v.findViewById(R.id.emailField);
         mPasswordField = (EditText) v.findViewById(R.id.passwordField);
@@ -145,12 +146,16 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                 mPhoneField.getText().toString(),
                 mDescriptField.getText().toString(), 1);
         Call<RegisterRespond> call = httpService.createUser(user);
+        mProgressBar.setVisibility(View.VISIBLE);
+        mSubmitBtn.setVisibility(View.GONE);
         call.enqueue(new Callback<RegisterRespond>() {
             @Override
             public void onResponse(Call<RegisterRespond> call, Response<RegisterRespond> response) {
                 if(response.isSuccessful()) {
                     if(response.body().isSuccessful()) {
                         Toast.makeText(getContext(), "Register Successful!!" , Toast.LENGTH_SHORT).show();
+                        mProgressBar.setVisibility(View.GONE);
+                        mSubmitBtn.setVisibility(View.VISIBLE);
                         String uuidInString = UUID.randomUUID().toString();
                         Call<LoginRespond> loginCall = httpService.login(new Login(mUsernameField.getText().toString(), mPasswordField.getText().toString(), uuidInString));
                         try {
@@ -167,9 +172,13 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                             }
                         } catch (Exception e) {
                             Toast.makeText(getContext(), "Register successful but cannot login!!" , Toast.LENGTH_SHORT).show();
+                            mProgressBar.setVisibility(View.GONE);
+                            mSubmitBtn.setVisibility(View.VISIBLE);
                         }
                     } else {
                         Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
+                        mProgressBar.setVisibility(View.GONE);
+                        mSubmitBtn.setVisibility(View.VISIBLE);
                     }
                 }
             }

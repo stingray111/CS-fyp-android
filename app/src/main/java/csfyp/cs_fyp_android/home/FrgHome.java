@@ -360,7 +360,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     @Override
     public void onResume() {
         super.onResume();
-        getLoaderManager().restartLoader(HOME_LOADER_ID, null, this);
         if (mMapView != null)
             mMapView.onResume();
         if (client.isConnected()) {
@@ -574,6 +573,16 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     @Override
     public void onLoaderReset(Loader<List<Event>> loader) {
 
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden){
+            getLoaderManager().destroyLoader(HOME_LOADER_ID);
+        } else {
+            getLoaderManager().restartLoader(HOME_LOADER_ID, null, this);
+        }
     }
 
     @Override

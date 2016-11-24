@@ -87,7 +87,8 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         outState.putBoolean("isJoined", mIsJoined);
     }
 
-    private void resetLoader(){
+    private void resetLoader() {
+        Log.i(TAG, "get event again");
         getLoaderManager().restartLoader(EVENT_LOADER_ID, null, this);
     }
 
@@ -99,7 +100,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         Bundle args = getArguments();
@@ -145,13 +146,15 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
             public void onClick(View view) {
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 Call<ErrorMsgOnly> call = httpService.joinEvent(new EventJoinQuitRequest(mEventId, ((MainActivity) getActivity()).getmUserId()));
-                mDataBinding.eventProgessBar.setVisibility(View.VISIBLE);
+                mDataBinding.joinQuitProgressBar.setVisibility(View.VISIBLE);
+                mDataBinding.joinEvent.setVisibility(View.GONE);
                 call.enqueue(new Callback<ErrorMsgOnly>() {
                     @Override
                     public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
                         if (response.isSuccessful()) {
                             if (response.body().getErrorMsg() == null) {
                                 Toast.makeText(getContext(), "Joined successfully", Toast.LENGTH_SHORT).show();
+                                Log.i(TAG, "Joined successfully");
                                 mIsJoined = true;
                                 resetLoader();
                             }
@@ -173,7 +176,8 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
             public void onClick(View view) {
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 Call<ErrorMsgOnly> call = httpService.quitEvent(new EventJoinQuitRequest(mEventId, ((MainActivity) getActivity()).getmUserId()));
-                mDataBinding.eventProgessBar.setVisibility(View.VISIBLE);
+                mDataBinding.joinQuitProgressBar.setVisibility(View.VISIBLE);
+                mDataBinding.quitEvent.setVisibility(View.GONE);
                 call.enqueue(new Callback<ErrorMsgOnly>() {
                     @Override
                     public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
@@ -314,15 +318,20 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
 
             mDataBinding.setEventObj(mEventObj);
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()), 12.0f));
+            mGoogleMap.clear();
             mGoogleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_self_marker)));
 
             int selfId = ((MainActivity)getActivity()).getmUserId();
-            mDataBinding.eventProgessBar.setVisibility(View.GONE);
+
+            mDataBinding.eventProgressBar.setVisibility(View.GONE);
+            mDataBinding.joinQuitProgressBar.setVisibility(View.GONE);
+
             if (selfId == data.getHolderId()){
                 mIsSelfHold = true;
                 mDataBinding.joinEvent.setVisibility(View.GONE);
+                mDataBinding.deleteEvent.se a n tVisibility(View.VISIBLE);
                 return;
             }
 
@@ -336,7 +345,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                 if(item.getId() == selfId)
                     mIsJoined = true;
             }
-            
+
             if (mIsJoined) {
                 mDataBinding.joinEvent.setVisibility(View.GONE);
                 mDataBinding.quitEvent.setVisibility(View.VISIBLE);
