@@ -47,11 +47,12 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
 
     public final static String TAG = "register";
     private Toolbar mToolBar;
-    private final String mRegexName = "^[a-zA-Z0-9]{0,20}$";
+    private final String mRegexName = "^[a-zA-Z0-9 ]{0,20}$";
+    private final String mRegexUserName = "^[a-zA-Z0-9]{5,20}$";
     private final String mRegexPhone = "^\\d{0,20}$";
     private final String mRegexPwd= "^([a-zA-z0-9]){8,15}$";
     @NotEmpty
-    @Pattern(regex = mRegexName)
+    @Pattern(regex = mRegexUserName)
     private EditText mUsernameField;
     @NotEmpty
     @Email
