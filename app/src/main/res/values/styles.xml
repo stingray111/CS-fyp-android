@@ -6,6 +6,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="android:windowBackground">@layout/app_launch</item>-->
+    </style>
+
+    <style name="AppThemeLauncher" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/app_launch</item>
+        <item name="android:scaleType">fitCenter</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">

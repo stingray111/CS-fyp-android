@@ -80,16 +80,44 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         return fragment;
     }
 
+    private void resetLoader() {
+        Log.i(TAG, "get event again");
+        getLoaderManager().restartLoader(EVENT_LOADER_ID, null, this);
+    }
+
+    private void showJoin() {
+        mDataBinding.joinQuitProgressBar.setVisibility(View.GONE);
+        mDataBinding.deleteEvent.setVisibility(View.GONE);
+        mDataBinding.joinEvent.setVisibility(View.VISIBLE);
+        mDataBinding.quitEvent.setVisibility(View.GONE);
+    }
+
+    private void showQuit() {
+        mDataBinding.joinQuitProgressBar.setVisibility(View.GONE);
+        mDataBinding.deleteEvent.setVisibility(View.GONE);
+        mDataBinding.joinEvent.setVisibility(View.GONE);
+        mDataBinding.quitEvent.setVisibility(View.VISIBLE);
+    }
+
+    private void showDelete() {
+        mDataBinding.joinQuitProgressBar.setVisibility(View.GONE);
+        mDataBinding.deleteEvent.setVisibility(View.VISIBLE);
+        mDataBinding.joinEvent.setVisibility(View.GONE);
+        mDataBinding.quitEvent.setVisibility(View.GONE);
+    }
+
+    private void showProgress() {
+        mDataBinding.joinQuitProgressBar.setVisibility(View.VISIBLE);
+        mDataBinding.deleteEvent.setVisibility(View.GONE);
+        mDataBinding.joinEvent.setVisibility(View.GONE);
+        mDataBinding.quitEvent.setVisibility(View.GONE);
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("isSelfHold", mIsSelfHold);
         outState.putBoolean("isJoined", mIsJoined);
-    }
-
-    private void resetLoader() {
-        Log.i(TAG, "get event again");
-        getLoaderManager().restartLoader(EVENT_LOADER_ID, null, this);
     }
 
     @Override
@@ -146,8 +174,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
             public void onClick(View view) {
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 Call<ErrorMsgOnly> call = httpService.joinEvent(new EventJoinQuitRequest(mEventId, ((MainActivity) getActivity()).getmUserId()));
-                mDataBinding.joinQuitProgressBar.setVisibility(View.VISIBLE);
-                mDataBinding.joinEvent.setVisibility(View.GONE);
+                showProgress();
                 call.enqueue(new Callback<ErrorMsgOnly>() {
                     @Override
                     public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
@@ -201,16 +228,13 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         });
 
         if (mIsSelfHold) {
-            mDataBinding.joinEvent.setVisibility(View.GONE);
-            mDataBinding.quitEvent.setVisibility(View.GONE);
+            showDelete();
         }
 
         if (mIsJoined) {
-            mDataBinding.joinEvent.setVisibility(View.GONE);
-            mDataBinding.quitEvent.setVisibility(View.VISIBLE);
+            showQuit();
         } else {
-            mDataBinding.joinEvent.setVisibility(View.VISIBLE);
-            mDataBinding.quitEvent.setVisibility(View.GONE);
+            showJoin();
         }
 
         getLoaderManager().initLoader(EVENT_LOADER_ID, null, this);
@@ -326,18 +350,15 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
             int selfId = ((MainActivity)getActivity()).getmUserId();
 
             mDataBinding.eventProgressBar.setVisibility(View.GONE);
-            mDataBinding.joinQuitProgressBar.setVisibility(View.GONE);
 
             if (selfId == data.getHolderId()){
                 mIsSelfHold = true;
-                mDataBinding.joinEvent.setVisibility(View.GONE);
-                mDataBinding.deleteEvent.se a n tVisibility(View.VISIBLE);
+                showDelete();
                 return;
             }
 
             if (mIsJoined) {
-                mDataBinding.joinEvent.setVisibility(View.GONE);
-                mDataBinding.quitEvent.setVisibility(View.VISIBLE);
+                showQuit();
                 return;
             }
 
@@ -347,11 +368,9 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
             }
 
             if (mIsJoined) {
-                mDataBinding.joinEvent.setVisibility(View.GONE);
-                mDataBinding.quitEvent.setVisibility(View.VISIBLE);
+                showQuit();
             } else {
-                mDataBinding.joinEvent.setVisibility(View.VISIBLE);
-                mDataBinding.quitEvent.setVisibility(View.GONE);
+                showJoin();
             }
         }
     }

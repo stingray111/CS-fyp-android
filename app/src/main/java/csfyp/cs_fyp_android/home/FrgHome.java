@@ -535,7 +535,6 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
                         if (mEventRespond.isSuccessful()) {
                             if (mEventRespond.body().getErrorMsg() == null) {
                                 Log.i(TAG, "Event list load Success");
-                                Log.i(TAG, mEventRespond.body().getEvents().get(0).getHolder().getUserName());
                                 return mEventRespond.body().getEvents();
                             } else {
                                 Log.i(TAG, mEventRespond.body().getErrorMsg());

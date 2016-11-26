@@ -146,16 +146,16 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                 mPhoneField.getText().toString(),
                 mDescriptField.getText().toString(), 1);
         Call<RegisterRespond> call = httpService.createUser(user);
+
         mProgressBar.setVisibility(View.VISIBLE);
         mSubmitBtn.setVisibility(View.GONE);
+
         call.enqueue(new Callback<RegisterRespond>() {
             @Override
             public void onResponse(Call<RegisterRespond> call, Response<RegisterRespond> response) {
                 if(response.isSuccessful()) {
                     if(response.body().isSuccessful()) {
                         Toast.makeText(getContext(), "Register Successful!!" , Toast.LENGTH_SHORT).show();
-                        mProgressBar.setVisibility(View.GONE);
-                        mSubmitBtn.setVisibility(View.VISIBLE);
                         String uuidInString = UUID.randomUUID().toString();
                         Call<LoginRespond> loginCall = httpService.login(new Login(mUsernameField.getText().toString(), mPasswordField.getText().toString(), uuidInString));
                         try {
