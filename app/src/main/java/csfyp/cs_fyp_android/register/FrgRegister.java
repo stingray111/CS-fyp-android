@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -52,26 +53,26 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
     private final String mRegexPhone = "^\\d{0,20}$";
     private final String mRegexPwd= "^([a-zA-z0-9]){8,15}$";
     @NotEmpty
-    @Pattern(regex = mRegexUserName)
+    @Pattern(regex = mRegexUserName, message = "Username should be numbers or letters with length 5 to 20.")
     private EditText mUsernameField;
     @NotEmpty
     @Email
     private EditText mEmailField;
-    @Password(min=8,scheme = Password.Scheme.ALPHA_NUMERIC)
+    @Password(min=8,scheme = Password.Scheme.ALPHA_NUMERIC,message = "Password should contain numbers and letters with length 8 to 20.")
     @NotEmpty
     private EditText mPasswordField;
     @ConfirmPassword
     private EditText mSecondPasswordField;
-    @Pattern(regex = mRegexName)
+    @Pattern(regex = mRegexName,message = "Symbols are not allowed. Maximum length is 20")
     private EditText mFirstNameField;
     @NotEmpty
-    @Pattern(regex = mRegexName)
+    @Pattern(regex = mRegexName,message = "Symbols are not allowed. Maximum length is 20")
     private EditText mLastNameField;
-    @Pattern(regex = mRegexName)
+    @Pattern(regex = mRegexName,message = "Symbols are not allowed. Maximum length is 20")
     private EditText mNickNameField;
     private RadioButton mMaleBtn;
     private RadioButton mFemaleBtn;
-    @Pattern(regex = mRegexPhone)
+    @Pattern(regex = mRegexPhone,message = "Invalid Phone Number")
     private EditText mPhoneField;
     private EditText mDescriptField;
     private Button mSubmitBtn;
@@ -136,13 +137,32 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
 
     @Override
     public void onValidationSucceeded() {
+        //close the keyboard
+        View currentView = getActivity().getCurrentFocus();
+        if(currentView!=null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(currentView.getWindowToken(),0);
+        }
+        //validate the gender
+        if(!mMaleBtn.isChecked() && !mFemaleBtn.isChecked()){
+            Toast.makeText(getContext(), "Please Choose a gender." , Toast.LENGTH_SHORT).show();
+            return;
+        }
+        //check password length
+        if(mPasswordField.getText().toString().length() > 20){
+            Toast.makeText(getContext(), "Password should be within 20 characters." , Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean isMale = mMaleBtn.isChecked();
+
         final HTTP httpService = HTTP.retrofit.create(HTTP.class);
         User user = new User(mUsernameField.getText().toString()
                 , mPasswordField.getText().toString()
                 , mFirstNameField.getText().toString(),
                 mLastNameField.getText().toString()
                 , mNickNameField.getText().toString()
-                , true, 0, 0, 0
+                , isMale, 0, 0, 0
                 , mEmailField.getText().toString(),
                 mPhoneField.getText().toString(),
                 mDescriptField.getText().toString(), 1);
