@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
@@ -189,7 +191,13 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                                     SharedPreferences.Editor editor = sharedPref.edit();
                                     editor.putString("userToken", response.body().getToken());
                                     editor.putInt("userId", response.body().getUserId());
+                                    editor.putString("username", response.body().getUsername());
+                                    Log.d(TAG, "onResponse: "+response.body().getUserId());
                                     editor.commit();
+                                    MainActivity parent = (MainActivity)getActivity();
+                                    parent.setmToken(response.body().getToken());
+                                    parent.setmUserId(response.body().getUserId());
+                                    parent.setmUsername(response.body().getUsername());
 
                                     replaceFragment(FrgHome.newInstance());
                                 }

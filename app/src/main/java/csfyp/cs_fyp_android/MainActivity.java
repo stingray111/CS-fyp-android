@@ -17,6 +17,11 @@ public class MainActivity extends AppCompatActivity {
     private int mUserId;
     private String mUsername;
 
+    public void setmUserId(int userId){mUserId = userId;}
+    public void setmToken(String token){mToken= token;}
+    public void setmUsername(String username){mUsername= username;}
+
+
     public int getmUserId() {
         return mUserId;
     }

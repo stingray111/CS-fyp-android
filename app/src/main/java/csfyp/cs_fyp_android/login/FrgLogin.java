@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
@@ -127,6 +128,10 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                                 editor.putString("username", response.body().getUsername());
                                 editor.commit();
 
+                                MainActivity parent = (MainActivity)getActivity();
+                                parent.setmToken(response.body().getToken());
+                                parent.setmUserId(response.body().getUserId());
+                                parent.setmUsername(response.body().getUsername());
                                 replaceFragment(FrgHome.newInstance());
 
                             } else {
