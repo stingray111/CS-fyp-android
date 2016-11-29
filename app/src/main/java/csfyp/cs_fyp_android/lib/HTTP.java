@@ -66,8 +66,8 @@ public interface HTTP {
     );
 
     Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://192.168.1.5:3000")
-            //.baseUrl("http://54.179.174.239:3000")
+            //.baseUrl("http://192.168.1.5:3000")
+            .baseUrl("http://54.179.174.239:3000")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 }

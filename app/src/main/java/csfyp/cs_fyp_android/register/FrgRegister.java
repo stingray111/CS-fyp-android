@@ -179,23 +179,27 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                         Toast.makeText(getContext(), "Register Successful!!" , Toast.LENGTH_SHORT).show();
                         String uuidInString = UUID.randomUUID().toString();
                         Call<LoginRespond> loginCall = httpService.login(new Login(mUsernameField.getText().toString(), mPasswordField.getText().toString(), uuidInString));
-                        try {
-                            Response<LoginRespond> loginRespond = loginCall.execute();
-                            if(loginRespond.isSuccessful() && loginRespond.body().isSuccessful()) {
-                                // save token to cache
-                                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPref.edit();
-                                editor.putString("userToken", loginRespond.body().getToken());
-                                editor.putInt("userId", loginRespond.body().getUserId());
-                                editor.commit();
+                        loginCall.enqueue(new Callback<LoginRespond>() {
+                            @Override
+                            public void onResponse(Call<LoginRespond> call, Response<LoginRespond> response) {
+                                if(response.isSuccessful() && response.body().isSuccessful()){
 
-                                replaceFragment(FrgHome.newInstance());
+                                    // save token to cache
+                                    SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPref.edit();
+                                    editor.putString("userToken", response.body().getToken());
+                                    editor.putInt("userId", response.body().getUserId());
+                                    editor.commit();
+
+                                    replaceFragment(FrgHome.newInstance());
+                                }
                             }
-                        } catch (Exception e) {
-                            Toast.makeText(getContext(), "Register successful but cannot login!!" , Toast.LENGTH_SHORT).show();
-                            mProgressBar.setVisibility(View.GONE);
-                            mSubmitBtn.setVisibility(View.VISIBLE);
-                        }
+
+                            @Override
+                            public void onFailure(Call<LoginRespond> call, Throwable t) {
+                                Toast.makeText(getContext(), t.toString() , Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     } else {
                         Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
                         mProgressBar.setVisibility(View.GONE);
