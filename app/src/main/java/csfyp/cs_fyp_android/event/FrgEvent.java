@@ -153,7 +153,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
 
         // Tool Bar
         mToolBar = mDataBinding.eventToolBar;
-        mToolBar.setTitle("username");
+        mToolBar.setTitle("Event");
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);

@@ -34,6 +34,19 @@ public class User {
         this.level = level;
     }
 
+    public String getDisplayName(){
+        if(nickName != null && firstName!=null){
+            return firstName+" "+lastName+" ("+nickName+")";
+        }
+        else if(nickName!=null){
+            return lastName+" ("+nickName+")";
+        }
+        else if(firstName!=null){
+            return firstName+" "+lastName;
+        }
+        return lastName;
+    }
+
     public int getId() {
         return id;
     }
