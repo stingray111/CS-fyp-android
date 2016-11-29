@@ -14,7 +14,6 @@ public class User {
     private String email;
     private String phone;
     private String description;
-    private String fullName;
     private int level;
 
     public User(String userName, String password, String firstName, String lastName, String nickName, boolean isMale, int attendEventNum, int missingEventNum, int holdingEventNum, String email, String phone, String description, int level) {
@@ -30,11 +29,10 @@ public class User {
         this.email = email;
         this.phone = phone;
         this.description = description;
-        this.fullName = firstName + " " + lastName + " (" + nickName + ") ";
         this.level = level;
     }
 
-    public String getDisplayName(){
+    public String getFullName(){
         if(nickName != null && firstName!=null){
             return firstName+" "+lastName+" ("+nickName+")";
         }
@@ -93,10 +91,6 @@ public class User {
 
     public String getDescription() {
         return this.description;
-    }
-
-    public String getFullName() {
-        return this.fullName;
     }
 
     public int getLevel() {
