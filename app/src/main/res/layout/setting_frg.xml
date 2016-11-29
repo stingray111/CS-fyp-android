@@ -44,38 +44,6 @@
                 android:text="English"
                 android:textSize="20dp"
                 android:clickable="true" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="字型大小"
-                android:paddingTop="30dp"
-                android:textSize="14sp"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#000000"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="大"
-                android:paddingTop="15dp"
-                android:textSize="20dp"
-                android:clickable="true"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="中"
-                android:paddingTop="15dp"
-                android:textSize="20dp"
-                android:clickable="true"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="小"
-                android:paddingTop="15dp"
-                android:textSize="20dp"
-                android:clickable="true"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

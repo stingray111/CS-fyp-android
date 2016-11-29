@@ -31,17 +31,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="code 8"
-                    android:textSize="14sp"
+                    android:textSize="20sp"
                     android:textColor="#99999999"
                     />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="18dp"
+                    android:textSize="14dp"
                     android:textColor="#000000"
                     android:id="@+id/icon8Link"
                     />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,7 +61,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Umano"
-                    android:textSize="14sp"
+                    android:textSize="20sp"
                     android:textColor="#99999999"
                     />
 
@@ -69,7 +70,7 @@
                     android:layout_weight="2.27"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="18dp"
+                    android:textSize="14dp"
                     android:textColor="#000000"
                     android:text="Licensed under the Apache License, Version 2.0 (the 'License'); you may not use this work except in compliance with the License. You may obtain a copy of the License in the LICENSE file, or at:
 
@@ -78,6 +79,37 @@ http://www.apache.org/licenses/LICENSE-2.0
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License."
                     />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingBottom="10dp"
+                android:paddingTop="20dp"
+                android:background="@drawable/bg_event"
+                android:elevation="2dp"
+                android:paddingLeft="20dp"
+                android:layout_margin="4dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Retrofit"
+                    android:textSize="20sp"
+                    android:textColor="#99999999"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14dp"
+                    android:textColor="#000000"
+                    android:id="@+id/retrofitText"
+                    android:text="Copyright 2013 Square, Inc.\nLicensed under the Apache License, Version 2.0 (the 'License'); you may not use this file except in compliance with the License. You may obtain a copy of the License at\nhttp://www.apache.org/licenses/LICENSE-2.0\nUnless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License."
+                    />
+            </LinearLayout>
+
+
 
         </LinearLayout>
     </ScrollView>
