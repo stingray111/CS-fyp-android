@@ -28,6 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -35,7 +36,9 @@ import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import csfyp.cs_fyp_android.CustomFragment;
@@ -49,6 +52,7 @@ import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Validator.ValidationListener,GoogleMap.OnMarkerDragListener {
 
@@ -359,6 +363,35 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
 
     @Override
     public void onValidationSucceeded() {
+            if(mMinPpl == 0 ){
+                Toast.makeText(getContext(), "Please choose the minimum participant", Toast.LENGTH_SHORT).show();
+                return ;
+            }
+            if(mMaxPpl == 0 ){
+                Toast.makeText(getContext(), "Please choose the maximum participant", Toast.LENGTH_SHORT).show();
+                return ;
+            }
+            if(mMaxPpl<mMinPpl) {
+                Toast.makeText(getContext(), "Number of Maximum people must be bigger then number of minimum people", Toast.LENGTH_SHORT).show();
+                return ;
+            }
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+                Date start = format.parse(mDataBinding.eventStartText.getText().toString());
+                Date ddl = format.parse(mDataBinding.eventDeadlineText.getText().toString());
+                if(start.after(ddl)||start.equals(ddl)){
+                    //Pass
+                }
+                else {
+                    Toast.makeText(getContext(), "Please set the deadline time before the start time.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }catch (Exception e){
+                Toast.makeText(getContext(), "Please choose the date and time.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+
             if (!mDataBinding.eventName.getText().toString().matches("")
                     /*&& !mDataBinding.eventDescription.getText().toString().matches("")*/
                     && !mDataBinding.eventLocation.getText().toString().matches("")
@@ -456,6 +489,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
             mMarker = mGoogleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(mCurrentLatitude, mCurrentLongitude))
                     .draggable(true)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker))
                     .title("Choose where the event take place")
             );
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLatitude, mCurrentLongitude), 12.0f));
