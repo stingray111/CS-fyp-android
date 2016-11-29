@@ -18,6 +18,19 @@
             android:background="#FFFFFFFF"
             android:elevation="4dp" />
 
+        <LinearLayout
+            android:id="@+id/profileProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <ProgressBar
+                style="@android:style/Widget.Holo.Light.ProgressBar.Inverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

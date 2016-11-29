@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,7 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-//        holder.getBinding().setHandlers(holder);
+        holder.getBinding().setHandlers(holder);
         if (mUserList != null) {
             holder.getBinding().setItem(mUserList.get(position));
             holder.getBinding().executePendingBindings();
@@ -66,7 +67,9 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
 
         // each data item is just a string in this case
         public void onClickUserItem(View view) {
-            FragmentTransaction ft = ((AppCompatActivity)binding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
+            Log.i("hi", "CLick");
+
+            FragmentTransaction ft = ((AppCompatActivity) binding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
                     .add(R.id.parent_fragment_container, FrgProfile.newInstance(binding.getItem().getId()))
                     .hide(mFragment)

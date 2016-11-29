@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         mToken = sharedPref.getString("userToken", "");
         mUserId = sharedPref.getInt("userId", 0);
-        mUsername = sharedPref.getString("username", "");
+        mUsername = sharedPref.getString("username", "user");
 
         if (mToken.isEmpty()) {
             // user not login

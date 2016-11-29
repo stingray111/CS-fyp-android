@@ -292,7 +292,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         buildGoogleApiClient();
 
         // set self user
-        mDataBinding.homeUsername.setText(parentActivity.getmUsername());
+        mDataBinding.homeUsername.setText(((MainActivity)getActivity()).getmUsername());
 
         return v;
     }

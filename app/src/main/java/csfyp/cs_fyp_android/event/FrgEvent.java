@@ -42,6 +42,7 @@ import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
+import csfyp.cs_fyp_android.profile.FrgProfile;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -279,7 +280,6 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
 
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -404,6 +404,10 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     @Override
     public void onLoaderReset(Loader<Event> loader) {
 
+    }
+
+    public void onClickHolder(View v) {
+        switchFragment(this, FrgProfile.newInstance(mEventObj.getHolder().getId()));
     }
 }
 

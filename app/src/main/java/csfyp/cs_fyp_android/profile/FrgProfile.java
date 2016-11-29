@@ -75,6 +75,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
             @Override
             public User loadInBackground() {
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                Log.i(TAG, mUserId+"");
                 Call<UserRespond> call = httpService.getUser(new UserRequest(mUserId));
                 try {
                     mUserRespond = call.execute();
@@ -97,6 +98,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
         if (mUserObj != null) {
             mToolBar.setTitle(mUserObj.getUserName());
             mDatabinding.setUserObj(mUserObj);
+            mDatabinding.profileProgressBar.setVisibility(View.GONE);
         }
     }
 

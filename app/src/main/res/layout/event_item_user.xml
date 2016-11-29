@@ -1,20 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
 <layout>
     <data>
         <variable
-            name="handlers"
-            type="csfyp.cs_fyp_android.event.AdtUser.ViewHolder" />
-        <variable
             name="item"
             type="csfyp.cs_fyp_android.model.User" />
+        <variable
+            name="handlers"
+            type="csfyp.cs_fyp_android.event.AdtUser.ViewHolder" />
     </data>
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:onClick="@{handlers::onClickUserItem}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:onClick="@{handlers::onClickUserItem}"
         android:padding="8dp">
 
         <ImageView
@@ -33,4 +34,5 @@
             android:textSize="16sp" />
 
     </LinearLayout>
+
 </layout>
