@@ -147,7 +147,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         mUserRecyclerView = mDataBinding.rvUser;
         mUserLayoutManager = new LinearLayoutManager(getContext());
         mUserRecyclerView.setLayoutManager(mUserLayoutManager);
-        mUserAdapter = new AdtUser();
+        mUserAdapter = new AdtUser(this);
         mUserRecyclerView.setAdapter(mUserAdapter);
 
         // Tool Bar
@@ -222,6 +222,32 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                     @Override
                     public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
                         Toast.makeText(getContext(), "Cannot quit event: unknown err", Toast.LENGTH_SHORT);
+                    }
+                });
+            }
+        });
+
+        mDataBinding.deleteEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                Call<ErrorMsgOnly> call = httpService.deleteEvent(new EventJoinQuitRequest(mEventId, ((MainActivity) getActivity()).getmUserId()));
+                call.enqueue(new Callback<ErrorMsgOnly>() {
+                    @Override
+                    public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
+                        if (response.isSuccessful()) {
+                            if (response.body().getErrorMsg() == null) {
+                                Toast.makeText(getContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
+                                onBack(null);
+                            }
+                            else
+                                Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
+
                     }
                 });
             }

@@ -4,6 +4,7 @@ public class LoginRespond {
     private boolean isSuccessful;
     private String errorMsg;
     private int userId;
+    private String username;
     private String token;
 
     public boolean isSuccessful() {
@@ -16,6 +17,10 @@ public class LoginRespond {
 
     public int getUserId() {
         return userId;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getToken() {

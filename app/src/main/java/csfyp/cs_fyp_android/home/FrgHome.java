@@ -19,7 +19,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -231,7 +230,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.home_frg, container, false);
         mDataBinding.setHandlers(this);
         View v = mDataBinding.getRoot();
-        AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
+        MainActivity parentActivity = (MainActivity) getActivity();
 
         // Setting up Action Bar
         mToolBar = mDataBinding.homeToolbar;
@@ -286,11 +285,14 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
         mEventRecyclerView = mDataBinding.rvEvent;
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
-        mEventAdapter = new AdtEvent();
+        mEventAdapter = new AdtEvent(this);
         mEventRecyclerView.setAdapter(mEventAdapter);
 
         // check location setting
         buildGoogleApiClient();
+
+        // set self user
+        mDataBinding.homeUsername.setText(parentActivity.getmUsername());
 
         return v;
     }

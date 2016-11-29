@@ -15,9 +15,14 @@ public class MainActivity extends AppCompatActivity {
     private FrgHome mHome;
     private String mToken;
     private int mUserId;
+    private String mUsername;
 
     public int getmUserId() {
         return mUserId;
+    }
+
+    public String getmUsername() {
+        return mUsername;
     }
 
     @Override
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         mToken = sharedPref.getString("userToken", "");
         mUserId = sharedPref.getInt("userId", 0);
+        mUsername = sharedPref.getString("username", "");
 
         if (mToken.isEmpty()) {
             // user not login

@@ -1,6 +1,9 @@
 package csfyp.cs_fyp_android.event;
 
 import android.databinding.DataBindingUtil;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,13 +14,16 @@ import java.util.List;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.EventItemUserBinding;
 import csfyp.cs_fyp_android.model.User;
+import csfyp.cs_fyp_android.profile.FrgProfile;
 
 
 public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
 
     private List<User> mUserList;
+    private Fragment mFragment;
 
-    public AdtUser() {
+    public AdtUser(Fragment fragment) {
+        mFragment = fragment;
     }
 
     @Override
@@ -58,14 +64,15 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
             super(itemView);
         }
 
-//        // each data item is just a string in this case
-//        public void onClickEventItem(View view) {
-//            FragmentTransaction ft = ((AppCompatActivity)binding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
-//            ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
-//                    .replace(R.id.parent_fragment_container, FrgEvent.newInstance(binding.getItem().getId()))
-//                    .addToBackStack(null)
-//                    .commit();
-//        }
+        // each data item is just a string in this case
+        public void onClickUserItem(View view) {
+            FragmentTransaction ft = ((AppCompatActivity)binding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
+            ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
+                    .add(R.id.parent_fragment_container, FrgProfile.newInstance(binding.getItem().getId()))
+                    .hide(mFragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
 
         public EventItemUserBinding getBinding() {
             return binding;

@@ -124,6 +124,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("userToken", response.body().getToken());
                                 editor.putInt("userId", response.body().getUserId());
+                                editor.putString("userName", response.body().getUsername());
                                 editor.commit();
 
                                 replaceFragment(FrgHome.newInstance());

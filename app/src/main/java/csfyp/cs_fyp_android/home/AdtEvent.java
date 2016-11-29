@@ -1,6 +1,7 @@
 package csfyp.cs_fyp_android.home;
 
 import android.databinding.DataBindingUtil;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -18,8 +19,10 @@ import csfyp.cs_fyp_android.model.Event;
 public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
 
     private List<Event> mEventList;
+    private Fragment mFragment;
 
-    public AdtEvent() {
+    public AdtEvent(Fragment fragment) {
+        mFragment = fragment;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
         this.mEventList = mEventList;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         private HomeItemEventBinding binding;
 
@@ -65,7 +68,8 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
         public void onClickEventItem(View view) {
             FragmentTransaction ft = ((AppCompatActivity)binding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
             ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
-                    .replace(R.id.parent_fragment_container, FrgEvent.newInstance(binding.getItem().getId()))
+                    .add(R.id.parent_fragment_container, FrgEvent.newInstance(binding.getItem().getId()))
+                    .hide(mFragment)
                     .addToBackStack(null)
                     .commit();
         }

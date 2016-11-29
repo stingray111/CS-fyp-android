@@ -77,7 +77,7 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
         mEventRecyclerView = mDatabinding.rvHistory;
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
-        mEventAdapter = new AdtEvent();
+        mEventAdapter = new AdtEvent(this);
         mEventRecyclerView.setAdapter(mEventAdapter);
 
         getLoaderManager().initLoader(HISTORY_LOADER_ID, null, this);

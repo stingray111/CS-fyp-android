@@ -73,7 +73,7 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
         mEventRecyclerView = mDatabinding.currentEventRV;
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
-        mEventAdapter = new AdtEvent();
+        mEventAdapter = new AdtEvent(this);
         mEventRecyclerView.setAdapter(mEventAdapter);
 
         getLoaderManager().initLoader(CURRENT_EVENT_LOADER_ID, null, this);
