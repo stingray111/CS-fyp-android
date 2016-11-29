@@ -33,13 +33,13 @@ public class User {
     }
 
     public String getFullName(){
-        if(nickName != null && firstName!=null){
+        if(nickName != "" && nickName != null && firstName!=null && firstName != ""){
             return firstName+" "+lastName+" ("+nickName+")";
         }
-        else if(nickName!=null){
+        else if(nickName!=null && nickName!=""){
             return lastName+" ("+nickName+")";
         }
-        else if(firstName!=null){
+        else if(firstName!=null && lastName!=""){
             return firstName+" "+lastName;
         }
         return lastName;
