@@ -127,7 +127,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="5dp"
-                        android:text="往績"
+                        android:text="Record"
                         android:textColor="#777777"
                         android:textSize="18sp" />
 
@@ -139,7 +139,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="曾報名活動: "
+                            android:text="Joined Event: "
                             android:textColor="#000000"
                             android:textSize="14sp" />
 
@@ -159,7 +159,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="曾走數活動: "
+                            android:text="Missed Event: "
                             android:textColor="#000000"
                             android:textSize="14sp" />
 
@@ -189,7 +189,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="5dp"
-                        android:text="電話"
+                        android:text="Phone"
                         android:textColor="#777777"
                         android:textSize="18sp" />
 
@@ -217,7 +217,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="5dp"
-                        android:text="電郵"
+                        android:text="Email"
                         android:textColor="#777777"
                         android:textSize="18sp" />
 
