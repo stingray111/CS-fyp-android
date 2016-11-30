@@ -230,7 +230,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
         mMinPplSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(!(position == 10)) {
+                if(!(position == 8)) {
                     mMinPpl = Integer.parseInt((String) parent.getItemAtPosition(position));
                 }
             }
@@ -269,7 +269,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
         mMaxPplSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(!(position ==14)) {
+                if(!(position ==13)) {
                     mMaxPpl = Integer.parseInt((String) parent.getItemAtPosition(position));
                 }
             }
