@@ -251,7 +251,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:gravity="start"
-                        android:hint="Descripe your self"
+                        android:hint="Describe yourself"
                         android:inputType="textMultiLine"
                         android:textSize="15sp" />
 

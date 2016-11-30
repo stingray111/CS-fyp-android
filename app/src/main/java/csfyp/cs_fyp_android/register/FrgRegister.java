@@ -41,10 +41,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by ray on 6/11/2016.
- */
-
 public class FrgRegister extends CustomFragment implements Validator.ValidationListener{
     public FrgRegister(){super();}
 
@@ -63,7 +59,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
     @Password(min=8,scheme = Password.Scheme.ALPHA_NUMERIC,message = "Password should contain numbers and letters with length 8 to 20.")
     @NotEmpty
     private EditText mPasswordField;
-    @ConfirmPassword
+    @ConfirmPassword(message = "Password doesn't match")
     private EditText mSecondPasswordField;
     @Pattern(regex = mRegexName,message = "Symbols are not allowed. Maximum length is 20")
     private EditText mFirstNameField;
