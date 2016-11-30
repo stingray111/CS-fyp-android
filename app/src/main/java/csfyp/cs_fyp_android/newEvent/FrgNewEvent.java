@@ -222,7 +222,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
             }
         };
         minPplSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        minPplSpinnerAdapter.add("1"); minPplSpinnerAdapter.add("2"); minPplSpinnerAdapter.add("3"); minPplSpinnerAdapter.add("4");
+        minPplSpinnerAdapter.add("3"); minPplSpinnerAdapter.add("4");
         minPplSpinnerAdapter.add("5"); minPplSpinnerAdapter.add("6"); minPplSpinnerAdapter.add("7"); minPplSpinnerAdapter.add("8");
         minPplSpinnerAdapter.add("9"); minPplSpinnerAdapter.add("10"); minPplSpinnerAdapter.add("Min People");
         mMinPplSpinner.setAdapter(minPplSpinnerAdapter);
@@ -260,7 +260,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
 
         };
         maxPplSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        maxPplSpinnerAdapter.add("2"); maxPplSpinnerAdapter.add("3"); maxPplSpinnerAdapter.add("4"); maxPplSpinnerAdapter.add("5");
+        maxPplSpinnerAdapter.add("3"); maxPplSpinnerAdapter.add("4"); maxPplSpinnerAdapter.add("5");
         maxPplSpinnerAdapter.add("6"); maxPplSpinnerAdapter.add("7"); maxPplSpinnerAdapter.add("8"); maxPplSpinnerAdapter.add("9");
         maxPplSpinnerAdapter.add("10"); maxPplSpinnerAdapter.add("11"); maxPplSpinnerAdapter.add("12"); maxPplSpinnerAdapter.add("13");
         maxPplSpinnerAdapter.add("14"); maxPplSpinnerAdapter.add("15"); maxPplSpinnerAdapter.add("Max People");
