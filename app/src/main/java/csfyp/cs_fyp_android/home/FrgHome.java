@@ -213,12 +213,8 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Bundle mapState = new Bundle();
-        if (mMapView != null)
-            mMapView.onSaveInstanceState(mapState);  // TODO: 21/10/2016 fix mapState
         outState.putParcelable("lastTarget", mLastTarget);
         outState.putFloat("lastZoom", mLastZoom);
-        outState.putBundle("mapSaveInstanceState", mapState);
         outState.putBoolean("isPanelExpanded", mIsPanelExpanded);
         outState.putBoolean("isSetToSelfLocation", mIsSetToSelfLocation);
     }

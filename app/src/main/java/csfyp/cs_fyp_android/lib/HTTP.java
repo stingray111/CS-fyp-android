@@ -1,17 +1,18 @@
 package csfyp.cs_fyp_android.lib;
 
+import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.Login;
+import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.EventCreateRequest;
 import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
+import csfyp.cs_fyp_android.model.request.EventListRequest;
 import csfyp.cs_fyp_android.model.request.EventRequest;
 import csfyp.cs_fyp_android.model.request.UserRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
-import csfyp.cs_fyp_android.model.Event;
-import csfyp.cs_fyp_android.model.request.EventListRequest;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
-import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
+import csfyp.cs_fyp_android.model.respond.Logout;
 import csfyp.cs_fyp_android.model.respond.RegisterRespond;
-import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.respond.UserRespond;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -28,6 +29,11 @@ public interface HTTP {
     @POST("/api/login")
     Call<LoginRespond> login (
             @Body Login login
+    );
+
+    @POST("/api/logout")
+    Call<ErrorMsgOnly> logout (
+            @Body Logout logout
     );
 
     @POST("/api/get-user")
@@ -66,8 +72,9 @@ public interface HTTP {
     );
 
     Retrofit retrofit = new Retrofit.Builder()
-            //.baseUrl("http://192.168.1.5:3000")
-            .baseUrl("http://54.179.174.239:3000")
+            //.baseUrl("http://172.18.6.87:3000")
+            .baseUrl("http://192.168.1.5:3000")
+            //.baseUrl("http://54.179.174.239:3000")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 }

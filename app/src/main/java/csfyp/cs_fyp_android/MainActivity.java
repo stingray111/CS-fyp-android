@@ -18,17 +18,24 @@ public class MainActivity extends AppCompatActivity {
     private String mUsername;
 
     public void setmUserId(int userId){mUserId = userId;}
-    public void setmToken(String token){mToken= token;}
-    public void setmUsername(String username){mUsername= username;}
 
+    public void setmToken(String token){mToken= token;}
+
+    public void setmUsername(String username){mUsername= username;}
 
     public int getmUserId() {
         return mUserId;
+
+    }
+
+    public String getmToken() {
+        return mToken;
     }
 
     public String getmUsername() {
         return mUsername;
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
