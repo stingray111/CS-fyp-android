@@ -74,6 +74,12 @@ public class FrgSetting extends CustomFragment{
                                 editor.remove("userId");
                                 editor.remove("username");
                                 editor.commit();
+                                ((MainActivity) getActivity()).setmHome(null);
+//                                FragmentManager fm = getActivity().getSupportFragmentManager();
+//                                for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+//                                    fm.popBackStack();
+//                                }
+
                                 replaceFragment(FrgLogin.newInstance());
                             } else
                                 Toast.makeText(getContext(), "Logout fail", Toast.LENGTH_SHORT).show();

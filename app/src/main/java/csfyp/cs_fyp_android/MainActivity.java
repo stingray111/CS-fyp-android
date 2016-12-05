@@ -40,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
         return mHome;
     }
 
+    public void setmHome(FrgHome mHome) {
+        this.mHome = mHome;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FrgHome.HOME_LOCATION_SETTING_CALLBACK) {
