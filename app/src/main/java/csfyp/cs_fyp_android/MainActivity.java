@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         mUserId = sharedPref.getInt("userId", 0);
         mUsername = sharedPref.getString("username", "user");
 
+        mHome = FrgHome.newInstance();
+
         if (mToken.isEmpty()) {
             // user not login
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -75,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
             // TODO: 6/11/2016 verify token 
             // user login
-            mHome = FrgHome.newInstance();
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.parent_fragment_container, mHome);
