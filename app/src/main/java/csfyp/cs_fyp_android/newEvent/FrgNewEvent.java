@@ -291,7 +291,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
                 int hour = c.get(Calendar.HOUR_OF_DAY);
                 int min = c.get(Calendar.MINUTE);
                 mNewEventYear = i;
-                mNewEventMonth = i1;
+                mNewEventMonth = i1 + 1;
                 mNewEventDay = i2;
                 mStartTimePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
@@ -313,7 +313,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
                 int hour = c.get(Calendar.HOUR_OF_DAY);
                 int min = c.get(Calendar.MINUTE);
                 mDeadlineEventYear = i;
-                mDeadlineEventMonth = i1;
+                mDeadlineEventMonth = i1 + 1 ;
                 mDeadlineEventDay = i2;
                 mDeadlineTimePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
