@@ -28,7 +28,6 @@ import java.util.UUID;
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
-import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
@@ -132,7 +131,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                                 parent.setmToken(response.body().getToken());
                                 parent.setmUserId(response.body().getUserId());
                                 parent.setmUsername(response.body().getUsername());
-                                replaceFragment(FrgHome.newInstance());
+                                replaceFragment(((MainActivity) getActivity()).getmHome());
 
                             } else {
                                 // TODO: 6/11/2016 print error msg to user

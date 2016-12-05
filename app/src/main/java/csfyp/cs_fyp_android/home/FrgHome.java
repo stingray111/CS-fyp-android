@@ -1,7 +1,6 @@
 package csfyp.cs_fyp_android.home;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -187,7 +186,7 @@ public class FrgHome extends CustomFragment implements LoaderManager.LoaderCallb
     }
 
     private void startLocationUpdate() {
-        if (ActivityCompat.checkSelfPermission((Activity)getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission((Activity)getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (mIsLocationSettingEnable && mIsPermissionGranted) {
                 LocationServices.FusedLocationApi.requestLocationUpdates(client, mLocationRequest, this);
             }

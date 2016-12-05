@@ -36,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
         return mUsername;
     }
 
+    public FrgHome getmHome() {
+        return mHome;
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

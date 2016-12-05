@@ -31,7 +31,6 @@ import java.util.UUID;
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
-import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
@@ -195,7 +194,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                                     parent.setmUserId(response.body().getUserId());
                                     parent.setmUsername(response.body().getUsername());
 
-                                    replaceFragment(FrgHome.newInstance());
+                                    replaceFragment(((MainActivity) getActivity()).getmHome());
                                 }
                             }
 
