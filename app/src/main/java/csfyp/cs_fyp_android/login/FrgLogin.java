@@ -148,7 +148,10 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
                     @Override
                     public void onFailure(Call<LoginRespond> call, Throwable t) {
-
+                        Log.i(TAG, "Connect exception:" + t.getMessage());
+                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                        mProgressBar.setVisibility(View.GONE);
+                        mLoginBtn.setVisibility(View.VISIBLE);
                     }
                 });
             }
