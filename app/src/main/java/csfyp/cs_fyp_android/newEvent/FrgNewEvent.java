@@ -3,7 +3,6 @@ package csfyp.cs_fyp_android.newEvent;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -20,14 +19,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -41,7 +34,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.CustomMapFragment;
 import csfyp.cs_fyp_android.CustomScrollView;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
@@ -54,20 +47,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Validator.ValidationListener,GoogleMap.OnMarkerDragListener {
+public class FrgNewEvent extends CustomMapFragment implements Validator.ValidationListener, GoogleMap.OnMarkerDragListener {
 
     private static final String TAG = "NewEventFragment";
     private NewEventFrgBinding mDataBinding;
     private Toolbar mToolBar;
 
+    private Marker mMarker;
+
     private Spinner mMinPplSpinner;
     private Spinner mMaxPplSpinner;
-
-    private Bundle mMapState;
-    private MapView mMapView;
-    private GoogleMap mGoogleMap;
-    private GoogleApiClient mClient;
-    private Marker mMarker;
 
     private DatePickerDialog mStartDatePickerDialog;
     private TimePickerDialog mStartTimePickerDialog;
@@ -100,9 +89,7 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
     private String mEventDeadlineString;
     private String mEventStartString;
 
-    public FrgNewEvent() {
-
-    }
+    public FrgNewEvent() {}
 
     public static FrgNewEvent newInstance() {
         FrgNewEvent fragment = new FrgNewEvent();
@@ -120,7 +107,8 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-
+        
+        isUseLocationService = true;
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
@@ -129,7 +117,6 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
             mCurrentLongitude = args.getDouble("currentLongitude");
         }
 
-        mClient = new GoogleApiClient.Builder(getContext()).addApi(AppIndex.API).build();
         if(savedInstanceState != null) {
             mNewEventYear = savedInstanceState.getInt("newEventYear");
             mNewEventMonth = savedInstanceState.getInt("newEventMonth");
@@ -165,12 +152,13 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.new_event_frg, container, false);
         mDataBinding.setHandlers(this);
         View v = mDataBinding.getRoot();
-
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
+
+        mMapView = mDataBinding.newEventMap;
+        super.onCreateView(inflater, container, savedInstanceState);
 
         // Setting up Action Bar
         mToolBar = mDataBinding.newEventToolbar;
@@ -183,15 +171,6 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
                 onBack(null);
             }
         });
-
-        // Setting up Google Map
-        if (savedInstanceState != null)
-            mMapState = savedInstanceState.getBundle("newEventMapSaveInstanceState");
-        else
-            mMapState = null;
-        mMapView = mDataBinding.newEventMap;
-        mMapView.onCreate(mMapState);
-        mMapView.getMapAsync(this);
 
         //setting up edit text
         mEventName = (EditText) v.findViewById(R.id.eventName);
@@ -433,57 +412,17 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
             }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        mClient.connect();
-        AppIndex.AppIndexApi.start(mClient, getIndexApiAction());
+    public void onClickSetEventStart(View view) {
+        mStartDatePickerDialog.show();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(mClient, getIndexApiAction());
-        mClient.disconnect();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mMapView.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mMapView.onPause();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mMapView.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mMapView.onLowMemory();
+    public void onClickSetEventDeadline(View view) {
+        mDeadlineDatePickerDialog.show();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mGoogleMap = googleMap;
-        mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
-        mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
-        mGoogleMap.setOnMarkerDragListener(this);
+        super.onMapReady(googleMap);
 
         if (mCurrentLatitude != 0.0 && mCurrentLongitude != 0.0){
             mMarker = mGoogleMap.addMarker(new MarkerOptions()
@@ -503,35 +442,11 @@ public class FrgNewEvent extends CustomFragment implements OnMapReadyCallback,Va
         }
     }
 
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("New Event") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
-
-    public void onClickSetEventStart(View view) {
-        mStartDatePickerDialog.show();
-    }
-
-    public void onClickSetEventDeadline(View view) {
-        mDeadlineDatePickerDialog.show();
-    }
+    @Override
+    public void onMarkerDragStart(Marker marker) {}
 
     @Override
-    public void onMarkerDragStart(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDrag(Marker marker) {
-
-    }
+    public void onMarkerDrag(Marker marker) {}
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
