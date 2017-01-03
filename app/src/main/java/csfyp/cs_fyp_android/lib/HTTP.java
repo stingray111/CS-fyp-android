@@ -1,5 +1,7 @@
 package csfyp.cs_fyp_android.lib;
 
+import java.util.concurrent.TimeUnit;
+
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
@@ -14,6 +16,7 @@ import csfyp.cs_fyp_android.model.respond.LoginRespond;
 import csfyp.cs_fyp_android.model.respond.Logout;
 import csfyp.cs_fyp_android.model.respond.RegisterRespond;
 import csfyp.cs_fyp_android.model.respond.UserRespond;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -71,10 +74,16 @@ public interface HTTP {
             @Body EventJoinQuitRequest delete
     );
 
+    final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .readTimeout(10, TimeUnit.SECONDS)
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .build();
+
     Retrofit retrofit = new Retrofit.Builder()
             //.baseUrl("http://172.18.6.87:3000")
             //.baseUrl("http://192.168.1.5:3000")
             .baseUrl("http://54.179.174.239:3000")
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 }
