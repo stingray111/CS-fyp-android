@@ -46,7 +46,6 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         GoogleMap.OnInfoWindowClickListener,
-        GoogleMap.OnMarkerDragListener,
         LocationListener {
 
 
@@ -71,7 +70,7 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
     protected boolean mIsMapReady = false;
 
     // location setting
-    private boolean isUseLocationService = false;
+    protected boolean isUseLocationService = false;
 
     // map ui setting
     protected boolean isZoomControlsEnabled = true; // zoom button
@@ -82,15 +81,14 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLastTarget = savedInstanceState.getParcelable("lastTarget");
-        mLastZoom = savedInstanceState.getFloat("lastZoom");
-        mIsSetToInitLocation = savedInstanceState.getBoolean("isSetToInitLocation");
-
+        if (savedInstanceState != null) {
+            mLastTarget = savedInstanceState.getParcelable("lastTarget");
+            mLastZoom = savedInstanceState.getFloat("lastZoom");
+            mIsSetToInitLocation = savedInstanceState.getBoolean("isSetToInitLocation");
+        }
         // check location setting
         if (isUseLocationService)
             buildGoogleApiClient();
-
-
     }
 
     @Nullable
@@ -122,15 +120,19 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
     @Override
     public void onStart() {
         super.onStart();
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+        if (client != null) {
+            client.connect();
+            AppIndex.AppIndexApi.start(client, getIndexApiAction());
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
+        if (client != null) {
+            AppIndex.AppIndexApi.end(client, getIndexApiAction());
+            client.disconnect();
+        }
     }
 
     @Override
@@ -202,24 +204,7 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
         mLastZoom = mGoogleMap.getCameraPosition().zoom;
     }
 
-    // method for marker dragging
-    @Override
-    public void onMarkerDragStart(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDrag(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDragEnd(Marker marker) {
-
-    }
-
     //method for location
-
     private void buildGoogleApiClient() {
         client = new GoogleApiClient.Builder(getContext())
                 .addConnectionCallbacks(this)
@@ -309,25 +294,6 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
 
     // permission result callback
     @Override
-    public void onResult(@NonNull Result result) {
-        final Status status = result.getStatus();
-        switch (status.getStatusCode()) {
-            case LocationSettingsStatusCodes.SUCCESS:
-                mIsLocationSettingEnable = true;
-                startLocationUpdate();
-                break;
-            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                try {
-                    status.startResolutionForResult(getActivity(), HOME_LOCATION_SETTING_CALLBACK);
-                } catch (IntentSender.SendIntentException e) {
-                    // TODO: 27/10/2016 ignore?
-                    Toast.makeText(getContext(),"Try get Location fail", Toast.LENGTH_LONG).show();
-                }
-                break;
-        }
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == HOME_PERMISSION_CALLBACK) {
@@ -340,6 +306,26 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
 
     // setting result callback
     @Override
+    public void onResult(@NonNull Result result) {
+        final Status status = result.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                mIsLocationSettingEnable = true;
+                startLocationUpdate();
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                try {
+                    Toast.makeText(getContext(),"Try get Location jklsd", Toast.LENGTH_LONG).show();
+                    status.startResolutionForResult(getActivity(), HOME_LOCATION_SETTING_CALLBACK);
+                } catch (IntentSender.SendIntentException e) {
+                    // TODO: 27/10/2016 ignore?
+                    Toast.makeText(getContext(),"Try get Location fail", Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // result for location setting prompt
         if (requestCode == HOME_LOCATION_SETTING_CALLBACK) {
@@ -347,8 +333,7 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
                 mIsLocationSettingEnable = true;
                 startLocationUpdate();
             } else {
-                LocationServices.SettingsApi.checkLocationSettings(client, mLocationSettingsRequest)
-                        .setResultCallback(this);
+                checkLocationSettings();
             }
         }
     }
