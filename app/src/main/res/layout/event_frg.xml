@@ -219,35 +219,29 @@
                         <Button
                             android:visibility="gone"
                             android:id="@+id/joinEvent"
-                            android:background="@drawable/bg_button"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_gravity="center"
-                            android:padding="8dp"
                             android:text="Join This Event"
-                            android:textColor="#FFF"/>
+                            style="@style/DefaultButton"/>
 
                         <Button
                             android:visibility="gone"
                             android:id="@+id/quitEvent"
-                            android:background="@drawable/bg_button"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_gravity="center"
-                            android:padding="8dp"
                             android:text="Quit This Event"
-                            android:textColor="#FFF"/>
+                            style="@style/DefaultButton"/>
 
                         <Button
                             android:visibility="gone"
                             android:id="@+id/deleteEvent"
-                            android:background="@drawable/bg_button"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_gravity="center"
-                            android:padding="8dp"
                             android:text="Delete This Event"
-                            android:textColor="#FFF"/>
+                            style="@style/DefaultButton"/>
 
                     </LinearLayout>
 

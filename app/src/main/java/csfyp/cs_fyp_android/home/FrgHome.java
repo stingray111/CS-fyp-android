@@ -336,12 +336,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         switchFragment(FrgEvent.newInstance(Integer.parseInt(temp[4])));
     }
 
-    public void switchFragment(Fragment fragment) {
-        mLastTarget = mGoogleMap.getCameraPosition().target;
-        mLastZoom = mGoogleMap.getCameraPosition().zoom;
-        super.switchFragment(this, fragment);
-    } // TODO: 3/1/2017 remove
-
     public void onClickNewEvent(View view) {
         if(mCurrentLocation != null)
             switchFragment(FrgNewEvent.newInstance(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
@@ -363,5 +357,4 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
     public void onClickHistory(View view){ switchFragment(FrgHistory.newInstance());}
 }
-
 

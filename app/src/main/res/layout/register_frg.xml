@@ -63,7 +63,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/MyEditText">
+                    android:theme="@style/EditText">
 
                     <EditText
                         android:id="@+id/usernameField"
@@ -79,7 +79,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/MyEditText">
+                    android:theme="@style/EditText">
 
                     <EditText
                         android:id="@+id/emailField"
@@ -96,7 +96,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/MyEditText">
+                    android:theme="@style/EditText">
 
                     <EditText
                         android:id="@+id/passwordField"
@@ -111,7 +111,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/MyEditText">
+                    android:theme="@style/EditText">
 
                     <EditText
                         android:id="@+id/secondPasswordField"
@@ -147,7 +147,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/MyEditText">
+                    android:theme="@style/EditText">
 
                     <EditText
                         android:id="@+id/firstNameField"
@@ -163,7 +163,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/MyEditText">
+                    android:theme="@style/EditText">
 
                     <EditText
                         android:id="@+id/lastNameField"
@@ -179,7 +179,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/MyEditText">
+                    android:theme="@style/EditText">
 
                     <EditText
                         android:id="@+id/nickNameField"
@@ -228,7 +228,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/MyEditText">
+                    android:theme="@style/EditText">
 
                     <EditText
                         android:id="@+id/phoneField"
@@ -244,7 +244,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/MyEditText">
+                    android:theme="@style/EditText">
 
                     <EditText
                         android:id="@+id/descriptField"
@@ -275,9 +275,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:layout_margin="15dp"
-                        android:background="@drawable/bg_button"
                         android:text="Submit"
-                        android:textColor="#FFF" />
+                        style="@style/DefaultButton" />
 
                 </LinearLayout>
 

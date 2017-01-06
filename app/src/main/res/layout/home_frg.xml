@@ -151,9 +151,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
                     android:text="Create Event"
-                    android:textSize="16sp"
-                    android:includeFontPadding="false"
-                    android:gravity="center_vertical" />
+                    style="@style/HomeNavBarItemText" />
 
             </LinearLayout>
 
@@ -184,9 +182,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
                     android:text="On-going Event"
-                    android:textSize="16sp"
-                    android:includeFontPadding="false"
-                    android:gravity="center_vertical" />
+                    style="@style/HomeNavBarItemText" />
 
             </LinearLayout>
 
@@ -217,9 +213,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
                     android:text="History"
-                    android:textSize="16sp"
-                    android:includeFontPadding="false"
-                    android:gravity="center_vertical"/>
+                    style="@style/HomeNavBarItemText"/>
 
             </LinearLayout>
 
@@ -250,9 +244,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
                     android:text="Setting"
-                    android:textSize="16sp"
-                    android:includeFontPadding="false"
-                    android:gravity="center_vertical"/>
+                    style="@style/HomeNavBarItemText"/>
 
             </LinearLayout>
 
@@ -284,9 +276,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
                     android:text="About"
-                    android:textSize="16sp"
-                    android:includeFontPadding="false"
-                    android:gravity="center_vertical"/>
+                    style="@style/HomeNavBarItemText"/>
 
             </LinearLayout>
 

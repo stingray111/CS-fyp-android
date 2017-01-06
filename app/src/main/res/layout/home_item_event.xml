@@ -32,8 +32,21 @@
                 android:layout_weight="3"
                 android:padding="8dp"
                 android:text="@{item.name}"
-                android:textColor="#202020"
-                android:textSize="20sp" />
+                style="@style/EventCardTitleText" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#36000000" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            android:padding="10dp">
 
             <ImageView
                 android:id="@+id/imageView5"
@@ -47,17 +60,10 @@
                 android:layout_height="16dp"
                 android:layout_weight="1"
                 android:gravity="left"
-                android:includeFontPadding="false"
                 android:text="@{item.place}"
-                android:textColor="#000000"
-                android:textSize="14sp" />
+                style="@style/EventCardSmallText"/>
 
         </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#36000000" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -78,10 +84,8 @@
                 android:layout_height="20dp"
                 android:layout_weight="2"
                 android:gravity="center_vertical"
-                android:includeFontPadding="false"
                 android:text="@{item.holder.userName}"
-                android:textColor="#000000"
-                android:textSize="16sp" />
+                style="@style/EventCardText" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -93,26 +97,20 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:includeFontPadding="false"
                     android:text="@{Integer.toString(item.currentPpl+1)}"
-                    android:textColor="#000000"
-                    android:textSize="16sp" />
+                    style="@style/EventCardText" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:includeFontPadding="false"
                     android:text="/"
-                    android:textColor="#000000"
-                    android:textSize="16dp" />
+                    style="@style/EventCardText" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:includeFontPadding="false"
                     android:text="@{Integer.toString(item.maxPpl)}"
-                    android:textColor="#000000"
-                    android:textSize="16dp" />
+                    style="@style/EventCardText" />
 
             </LinearLayout>
 
@@ -126,14 +124,14 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/textView6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:text="@{item.description}"
             android:textColor="#202020"
-            android:textSize="16dp"
-            android:id="@+id/textView6" />
+            android:textSize="16dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -154,10 +152,8 @@
                 android:layout_height="16dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:includeFontPadding="false"
                 android:text="@{item.startTime_formated}"
-                android:textColor="#000000"
-                android:textSize="14sp" />
+                style="@style/EventCardSmallText" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -170,19 +166,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="3dp"
-                    android:includeFontPadding="false"
                     android:text="Deadline"
                     android:textColor="#666666"
-                    android:textSize="14dp" />
+                    style="@style/EventCardSmallText" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="right"
-                    android:includeFontPadding="false"
                     android:text="@{item.deadlineTime_formated}"
-                    android:textColor="#000000"
-                    android:textSize="14sp" />
+                    style="@style/EventCardSmallText" />
 
             </LinearLayout>
 

@@ -107,7 +107,7 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        
+
         isUseLocationService = true;
         super.onCreate(savedInstanceState);
 
