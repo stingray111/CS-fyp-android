@@ -5,12 +5,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+
+import com.akexorcist.localizationactivity.LocalizationActivity;
 
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.login.FrgLogin;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends LocalizationActivity {
 
     private FrgHome mHome;
     private String mToken;
@@ -53,8 +54,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        finish();
+//        Intent refresh = new Intent(this, MainActivity.class);
+//        startActivity(refresh);
+//    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
 
         setTheme(R.style.AppTheme);
 
@@ -75,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         mHome = FrgHome.newInstance();
 
-        if (mToken.isEmpty()) {
+        if (!mToken.isEmpty()) {
             // user not login
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.parent_fragment_container, FrgLogin.newInstance());

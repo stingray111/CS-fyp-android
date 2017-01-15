@@ -222,7 +222,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_gravity="center"
-                            android:text="Join This Event"
+                            android:text="@string/btn_join"
                             style="@style/DefaultButton"/>
 
                         <Button
@@ -231,7 +231,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_gravity="center"
-                            android:text="Quit This Event"
+                            android:text="@string/btn_quit"
                             style="@style/DefaultButton"/>
 
                         <Button
@@ -240,7 +240,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_gravity="center"
-                            android:text="Delete This Event"
+                            android:text="@string/btn_delete"
                             style="@style/DefaultButton"/>
 
                     </LinearLayout>

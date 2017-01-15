@@ -162,7 +162,7 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
 
         // Setting up Action Bar
         mToolBar = mDataBinding.newEventToolbar;
-        mToolBar.setTitle("Create New Event");
+        mToolBar.setTitle(R.string.title_new_event);
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -203,7 +203,7 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
         minPplSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         minPplSpinnerAdapter.add("3"); minPplSpinnerAdapter.add("4");
         minPplSpinnerAdapter.add("5"); minPplSpinnerAdapter.add("6"); minPplSpinnerAdapter.add("7"); minPplSpinnerAdapter.add("8");
-        minPplSpinnerAdapter.add("9"); minPplSpinnerAdapter.add("10"); minPplSpinnerAdapter.add("Min People");
+        minPplSpinnerAdapter.add("9"); minPplSpinnerAdapter.add("10"); minPplSpinnerAdapter.add(getResources().getString(R.string.new_event_minppl_hint));
         mMinPplSpinner.setAdapter(minPplSpinnerAdapter);
         mMinPplSpinner.setSelection(minPplSpinnerAdapter.getCount());
         mMinPplSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -242,7 +242,7 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
         maxPplSpinnerAdapter.add("3"); maxPplSpinnerAdapter.add("4"); maxPplSpinnerAdapter.add("5");
         maxPplSpinnerAdapter.add("6"); maxPplSpinnerAdapter.add("7"); maxPplSpinnerAdapter.add("8"); maxPplSpinnerAdapter.add("9");
         maxPplSpinnerAdapter.add("10"); maxPplSpinnerAdapter.add("11"); maxPplSpinnerAdapter.add("12"); maxPplSpinnerAdapter.add("13");
-        maxPplSpinnerAdapter.add("14"); maxPplSpinnerAdapter.add("15"); maxPplSpinnerAdapter.add("Max People");
+        maxPplSpinnerAdapter.add("14"); maxPplSpinnerAdapter.add("15"); maxPplSpinnerAdapter.add(getResources().getString(R.string.new_event_maxppl_hint));
         mMaxPplSpinner.setAdapter(maxPplSpinnerAdapter);
         mMaxPplSpinner.setSelection(maxPplSpinnerAdapter.getCount());
         mMaxPplSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

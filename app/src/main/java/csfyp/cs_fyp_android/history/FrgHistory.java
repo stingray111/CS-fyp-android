@@ -63,7 +63,7 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
         mDatabinding = DataBindingUtil.inflate(inflater, R.layout.history_frg, container, false);
         View v  = mDatabinding.getRoot();
         mToolBar = mDatabinding.historyToolBar;
-        mToolBar.setTitle("History");
+        mToolBar.setTitle(R.string.title_history);
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);

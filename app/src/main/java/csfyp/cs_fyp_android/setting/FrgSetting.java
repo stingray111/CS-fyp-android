@@ -2,6 +2,7 @@ package csfyp.cs_fyp_android.setting;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.databinding.SettingFrgBinding;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
@@ -23,15 +25,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by ray on 19/10/2016.
- */
-
 public class FrgSetting extends CustomFragment{
     public FrgSetting(){super();}
     public static final String TAG = "Setting";
     private Toolbar mToolBar;
     private Button mlogoutBtn;
+    private SettingFrgBinding mBinding;
 
     public static FrgSetting newInstance() {
         Bundle args = new Bundle();
@@ -44,9 +43,12 @@ public class FrgSetting extends CustomFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater,container,savedInstanceState);
-        View v = inflater.inflate(R.layout.setting_frg,container,false);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.setting_frg, container, false);
+        mBinding.setHandlers(this);
+
+        View v = mBinding.getRoot();
         mToolBar = (Toolbar) v.findViewById(R.id.settingToolBar);
-        mToolBar.setTitle("Setting");
+        mToolBar.setTitle(R.string.title_setting);
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);
@@ -96,7 +98,18 @@ public class FrgSetting extends CustomFragment{
             }
         });
 
-
         return v;
+    }
+
+    public void onClickChinese(View view) {
+        Toast.makeText(getContext(), "set Chinese", Toast.LENGTH_SHORT).show();
+        //setLocale("zh");
+        ((MainActivity)getActivity()).setLanguage("zh");
+    }
+
+    public void onClickEnglish(View view) {
+        Toast.makeText(getContext(), "set English", Toast.LENGTH_SHORT).show();
+        //setLocale("en");
+        ((MainActivity)getActivity()).setLanguage("en");
     }
 }

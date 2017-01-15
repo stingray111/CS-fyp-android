@@ -62,7 +62,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="10"
-                            android:hint="Event Name"
+                            android:hint="@string/new_event_name_hint"
                             android:inputType="text"
                             android:textSize="16sp"/>
 
@@ -92,31 +92,35 @@
                             android:layout_weight="10"
                             android:id="@+id/eventLocation"
                             android:inputType="text"
-                            android:hint="Venue"/>
+                            android:hint="@string/new_event_venue_hint"/>
                     </LinearLayout>
+
                     <View
                         android:layout_width="wrap_content"
                         android:layout_height="1dp"
                         android:background="#23000000"/>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical">
+
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="25dp"
                             android:layout_weight="1"
                             android:src="@drawable/ic_description"
-                            android:layout_marginRight="10dp"
-                            />
+                            android:layout_marginRight="10dp" />
+
                         <EditText
                             android:layout_width="0dp"
                             android:layout_weight="10"
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:id="@+id/eventDescription"
-                            android:hint="Description"
+                            android:hint="@string/new_event_description_hint"
                             android:inputType="textMultiLine"/>
+
                     </LinearLayout>
 
                 </LinearLayout>
@@ -198,7 +202,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Set Event Start Time"
+                            android:text="@string/new_event_start_time"
                             style="@style/DefaultText"/>
 
                         <TextView
@@ -206,7 +210,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingLeft="2dp"
-                            android:text="Click to set time"/>
+                            android:text="@string/new_event_start_time_hint"/>
 
                     </LinearLayout>
 
@@ -226,7 +230,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Set Event Joining Deadline"
+                            android:text="@string/new_event_deadline_time"
                             style="@style/DefaultText"/>
 
                         <TextView
@@ -234,7 +238,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingLeft="2dp"
-                            android:text="Click to set time"/>
+                            android:text="@string/new_event_deadline_time_hint"/>
 
                     </LinearLayout>
 
@@ -245,7 +249,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_gravity="center"
-                    android:text="create"
+                    android:text="@string/btn_create"
                     style="@style/DefaultButton"/>
 
             </LinearLayout>

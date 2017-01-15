@@ -9,16 +9,12 @@
         app:showAsAction="always" >
 
         <menu>
-
             <item
-                android:title="Sort by Distance" />
-
+                android:title="@string/sort_menu_by_distance" />
             <item
-                android:title="Sort by Popularity" />
-
+                android:title="@string/sort_menu_by_popularity" />
             <item
-                android:title="Sort by Name" />
-
+                android:title="@string/sort_menu_by_name" />
         </menu>
 
     </item>

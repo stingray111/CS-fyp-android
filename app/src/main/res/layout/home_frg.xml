@@ -150,7 +150,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
-                    android:text="Create Event"
+                    android:text="@string/navbar_new_event"
                     style="@style/HomeNavBarItemText" />
 
             </LinearLayout>
@@ -181,7 +181,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
-                    android:text="On-going Event"
+                    android:text="@string/navbar_ongoing_event"
                     style="@style/HomeNavBarItemText" />
 
             </LinearLayout>
@@ -212,7 +212,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
-                    android:text="History"
+                    android:text="@string/navbar_history"
                     style="@style/HomeNavBarItemText"/>
 
             </LinearLayout>
@@ -243,7 +243,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
-                    android:text="Setting"
+                    android:text="@string/navbar_setting"
                     style="@style/HomeNavBarItemText"/>
 
             </LinearLayout>
@@ -275,7 +275,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
-                    android:text="About"
+                    android:text="@string/navbar_about"
                     style="@style/HomeNavBarItemText"/>
 
             </LinearLayout>

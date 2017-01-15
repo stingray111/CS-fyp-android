@@ -47,7 +47,8 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeLauncher">
+            android:theme="@style/AppThemeLauncher"
+        >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -11,14 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
-
-/**
- * Created by ray on 18/10/2016.
- */
 
 public class FrgAbout extends CustomFragment{
     public FrgAbout(){ super();}
@@ -39,7 +33,7 @@ public class FrgAbout extends CustomFragment{
         super.onCreateView(inflater,container,savedInstanceState);
         View v = inflater.inflate(R.layout.about_frg,container,false);
         mToolBar = (Toolbar) v.findViewById(R.id.aboutToolBar);
-        mToolBar.setTitle("About");
+        mToolBar.setTitle(R.string.title_about);
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);

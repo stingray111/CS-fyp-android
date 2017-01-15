@@ -35,7 +35,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
 
 import static android.app.Activity.RESULT_OK;
 import static csfyp.cs_fyp_android.home.FrgHome.HOME_LOCATION_SETTING_CALLBACK;
@@ -45,13 +46,14 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
         ResultCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        GoogleMap.OnInfoWindowClickListener,
+        ClusterManager.OnClusterItemInfoWindowClickListener,
         LocationListener {
 
 
     protected GoogleMap mGoogleMap;
     protected MapView mMapView;
     private GoogleApiClient client;
+    protected ClusterManager<ClusterableMarker> mClusterManager;
 
     protected LatLng mLastTarget;
     protected float mLastZoom;
@@ -184,7 +186,12 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
         mGoogleMap.getUiSettings().setAllGesturesEnabled(isAllGesturesEnabled);
         mGoogleMap.getUiSettings().setMapToolbarEnabled(isMapToolbarEnabled);
 
-        mGoogleMap.setOnInfoWindowClickListener(this);
+        mClusterManager = new ClusterManager<ClusterableMarker>(getContext(), mGoogleMap);
+
+        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+
+        mGoogleMap.setOnCameraIdleListener(mClusterManager);
+        mGoogleMap.setOnMarkerClickListener(mClusterManager);
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mGoogleMap.setMyLocationEnabled(true);
@@ -199,7 +206,7 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
 
     // method for info window
     @Override
-    public void onInfoWindowClick(Marker marker) {
+    public void onClusterItemInfoWindowClick(ClusterItem clusterItem) {
         mLastTarget = mGoogleMap.getCameraPosition().target;
         mLastZoom = mGoogleMap.getCameraPosition().zoom;
     }

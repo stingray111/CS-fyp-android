@@ -3,14 +3,14 @@
     <string name="title_activity_main">MeetUs</string>
 
     <string name="title_new_event">Create Event</string>
-    <string name="title_history">History</string>
-    <string name="title_ongoing_event">Ongoing Event</string>
+    <string name="title_history">Create</string>
+    <string name="title_ongoing_event">Joined Event</string>
     <string name="title_setting">Setting</string>
     <string name="title_about">About</string>
 
     <string name="navbar_new_event">Create Event</string>
     <string name="navbar_history">History</string>
-    <string name="navbar_ongoing_event">Ongoing Event</string>
+    <string name="navbar_ongoing_event">Joined Event</string>
     <string name="navbar_setting">Setting</string>
     <string name="navbar_about">About</string>
 
@@ -23,16 +23,10 @@
     <string name="new_event_description_hint">Description</string>
     <string name="new_event_minppl_hint">Min People</string>
     <string name="new_event_maxppl_hint">Max People</string>
-    <string name="new_event_start_time">Event Start Time</string>
+    <string name="new_event_start_time">Set Event Start Time</string>
     <string name="new_event_start_time_hint">Click to set time</string>
-    <string name="new_event_deadline_time">Event Deadline Time</string>
+    <string name="new_event_deadline_time">Set Event Deadline Time</string>
     <string name="new_event_deadline_time_hint">Click to set time</string>
-
-    <string name="btn_create">Create</string>
-    <string name="btn_join">Join this Event</string>
-    <string name="btn_quit">Quit this Event</string>
-    <string name="btn_delete">Cancel this Event</string>
-
-    <string name="setting_language_item">Language</string>
+    <string name="new_event_create_button">Create</string>
 
 </resources>

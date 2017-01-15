@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">MeetUs</string>
+    <string name="title_activity_main">MeetUs</string>
+
+    <string name="title_new_event">建立活動</string>
+    <string name="title_history">歷史記錄</string>
+    <string name="title_ongoing_event">進行中的活動</string>
+    <string name="title_setting">設定</string>
+    <string name="title_about">關於MeetUs</string>
+
+    <string name="navbar_new_event">建立活動</string>
+    <string name="navbar_history">歷史記錄</string>
+    <string name="navbar_ongoing_event">進行中的活動</string>
+    <string name="navbar_setting">設定</string>
+    <string name="navbar_about">關於MeetUs</string>
+
+    <string name="sort_menu_by_distance">距離</string>
+    <string name="sort_menu_by_popularity">熱門</string>
+    <string name="sort_menu_by_name">名稱</string>
+
+    <string name="new_event_name_hint">活動名稱</string>
+    <string name="new_event_venue_hint">地點</string>
+    <string name="new_event_description_hint">活動簡介</string>
+    <string name="new_event_minppl_hint">人數下限</string>
+    <string name="new_event_maxppl_hint">人數上限</string>
+    <string name="new_event_start_time">開始時間</string>
+    <string name="new_event_start_time_hint">按此設定時間</string>
+    <string name="new_event_deadline_time">死線</string>
+    <string name="new_event_deadline_time_hint">按此設定時間</string>
+
+    <string name="btn_create">建立</string>
+    <string name="btn_join">加入活動</string>
+    <string name="btn_quit">退出活動</string>
+    <string name="btn_delete">取消活動</string>
+
+    <string name="setting_language_item">語言</string>
+
+</resources>

@@ -24,13 +24,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.ClusterItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.List;
 
+import csfyp.cs_fyp_android.ClusterableMarker;
+import csfyp.cs_fyp_android.ClusterableMarkerRenderer;
 import csfyp.cs_fyp_android.CustomMapFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
@@ -97,13 +98,11 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
     private void populateMapMarker() {
         if (mData != null && mIsMapReady && mIsLoadFinished) {
-            mGoogleMap.clear();
+            mClusterManager.clearItems();
             for (Event item : mData) {
-                mGoogleMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                        .title(item.getName())
-                        .snippet(item.getHolder().getUserName() + "&" + item.getStartTime_formated() + "&" + (item.getCurrentPpl()+1) + "&" + item.getMaxPpl() + "&" + item.getId())
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker)));
+                ClusterableMarker marker = new ClusterableMarker(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker), item.getLatitude(), item.getLongitude(), item.getName(), item.getHolder().getUserName() + "&" + item.getStartTime_formated() + "&" + (item.getCurrentPpl()+1) + "&" + item.getMaxPpl() + "&" + item.getId());
+                mClusterManager.setRenderer(new ClusterableMarkerRenderer(getContext(), mGoogleMap, mClusterManager));
+                mClusterManager.addItem(marker);
             }
         }
     }
@@ -329,10 +328,10 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         }
     }
 
-    @Override // TODO: 3/1/2017 override super here
-    public void onInfoWindowClick(Marker marker) {
-        super.onInfoWindowClick(marker);
-        String[] temp = marker.getSnippet().split("&");
+    @Override
+    public void onClusterItemInfoWindowClick(ClusterItem clusterItem) {
+        super.onClusterItemInfoWindowClick(clusterItem);
+        String[] temp = ((ClusterableMarker)clusterItem).getSnippet().split("&");
         switchFragment(FrgEvent.newInstance(Integer.parseInt(temp[4])));
     }
 

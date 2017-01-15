@@ -59,7 +59,7 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
         mDatabinding = DataBindingUtil.inflate(inflater, R.layout.current_event_frg, container, false);
         View v = mDatabinding.getRoot();
         mToolBar = mDatabinding.currentEventToolBar;
-        mToolBar.setTitle("On-going Event");
+        mToolBar.setTitle(R.string.title_ongoing_event);
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);
