@@ -82,7 +82,7 @@ public interface HTTP {
     Retrofit retrofit = new Retrofit.Builder()
             //.baseUrl("http://172.18.6.87:3000")
             //.baseUrl("http://192.168.1.5:3000")
-            .baseUrl("http://54.179.174.239:3000")
+            .baseUrl("http://stingray.space:3001")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
