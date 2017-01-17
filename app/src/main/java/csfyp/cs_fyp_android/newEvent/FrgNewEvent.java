@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import csfyp.cs_fyp_android.CustomMapFragment;
 import csfyp.cs_fyp_android.CustomScrollView;
@@ -40,6 +41,7 @@ import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.NewEventFrgBinding;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.TimeConverter;
 import csfyp.cs_fyp_android.model.request.EventCreateRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
 import retrofit2.Call;
@@ -342,74 +344,73 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
 
     @Override
     public void onValidationSucceeded() {
-            if(mMinPpl == 0 ){
-                Toast.makeText(getContext(), "Please choose the minimum participant", Toast.LENGTH_SHORT).show();
-                return ;
-            }
-            if(mMaxPpl == 0 ){
-                Toast.makeText(getContext(), "Please choose the maximum participant", Toast.LENGTH_SHORT).show();
-                return ;
-            }
-            if(mMaxPpl<mMinPpl) {
-                Toast.makeText(getContext(), "Number of Maximum people must be bigger then number of minimum people", Toast.LENGTH_SHORT).show();
-                return ;
-            }
-            try {
-                SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-                Date start = format.parse(mDataBinding.eventStartText.getText().toString());
-                Date ddl = format.parse(mDataBinding.eventDeadlineText.getText().toString());
-                if(start.after(ddl)||start.equals(ddl)){
-                    //Pass
-                }
-                else {
-                    Toast.makeText(getContext(), "Please set the deadline time before the start time.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }catch (Exception e){
-                Toast.makeText(getContext(), "Please choose the date and time.", Toast.LENGTH_SHORT).show();
+        if (mMinPpl == 0) {
+            Toast.makeText(getContext(), "Please choose the minimum participant", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (mMaxPpl == 0) {
+            Toast.makeText(getContext(), "Please choose the maximum participant", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (mMaxPpl < mMinPpl) {
+            Toast.makeText(getContext(), "Number of Maximum people must be bigger then number of minimum people", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            Date start = format.parse(mDataBinding.eventStartText.getText().toString());
+            Date ddl = format.parse(mDataBinding.eventDeadlineText.getText().toString());
+            if (start.after(ddl) || start.equals(ddl)) {
+                //Pass
+            } else {
+                Toast.makeText(getContext(), "Please set the deadline time before the start time.", Toast.LENGTH_SHORT).show();
                 return;
             }
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Please choose the date and time.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
 
-            if (!mDataBinding.eventName.getText().toString().matches("")
+        if (!mDataBinding.eventName.getText().toString().matches("")
                     /*&& !mDataBinding.eventDescription.getText().toString().matches("")*/
-                    && !mDataBinding.eventLocation.getText().toString().matches("")
-                    && mMaxPpl != 0
-                    && mMinPpl != 0
-                    && !mDataBinding.eventDeadlineText.getText().toString().matches("Click to set time")
-                    && !mDataBinding.eventStartText.getText().toString().matches("Click to set time"))
-            {
-                HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                LatLng position = mMarker.getPosition();
-                MainActivity parentActivity = (MainActivity) getActivity();
-                EventCreateRequest event = new EventCreateRequest(
-                        mDataBinding.eventName.getText().toString(),
-                        position.latitude,
-                        position.longitude,
-                        mDataBinding.eventLocation.getText().toString(),
-                        ((MainActivity) getActivity()).getmUserId(),
-                        mMaxPpl,
-                        mMinPpl,
-                        mEventStartString,
-                        mEventDeadlineString,
-                        mDataBinding.eventDescription.getText().toString());
-                Call<ErrorMsgOnly> call = httpService.pushEvent(event);
-                call.enqueue(new Callback<ErrorMsgOnly>() {
-                    @Override
-                    public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
-                        if(response.isSuccessful()) {
-                            Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
-                            onBack(null);
-                        }else{
-                            Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
-                        }
+                && !mDataBinding.eventLocation.getText().toString().matches("")
+                && mMaxPpl != 0
+                && mMinPpl != 0
+                && !mDataBinding.eventDeadlineText.getText().toString().matches("Click to set time")
+                && !mDataBinding.eventStartText.getText().toString().matches("Click to set time")) {
+            HTTP httpService = HTTP.retrofit.create(HTTP.class);
+            LatLng position = mMarker.getPosition();
+            MainActivity parentActivity = (MainActivity) getActivity();
+            EventCreateRequest event = new EventCreateRequest(
+                    mDataBinding.eventName.getText().toString(),
+                    position.latitude,
+                    position.longitude,
+                    mDataBinding.eventLocation.getText().toString(),
+                    ((MainActivity) getActivity()).getmUserId(),
+                    mMaxPpl,
+                    mMinPpl,
+                    TimeConverter.localToUTC(mEventStartString),
+                    TimeConverter.localToUTC(mEventDeadlineString),
+                    mDataBinding.eventDescription.getText().toString());
+            Call<ErrorMsgOnly> call = httpService.pushEvent(event);
+            call.enqueue(new Callback<ErrorMsgOnly>() {
+                @Override
+                public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+                        onBack(null);
+                    } else {
+                        Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
                     }
-                    @Override
-                    public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
-                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+                }
+
+                @Override
+                public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
+                    Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     public void onClickSetEventStart(View view) {

@@ -2,6 +2,8 @@ package csfyp.cs_fyp_android.model;
 
 import java.util.List;
 
+import csfyp.cs_fyp_android.lib.TimeConverter;
+
 public class Event {
     private int id;
     private String name;
@@ -60,11 +62,13 @@ public class Event {
     }
 
     public String getStartTime_formated() {
-        return startTime_formated;
+        //return startTime_formated;
+        return TimeConverter.removeYear(TimeConverter.UTCToLocal(startTime_formated));
     }
 
     public String getDeadlineTime_formated() {
-        return deadlineTime_formated;
+        //return deadlineTime_formated;
+        return TimeConverter.removeYear(TimeConverter.UTCToLocal(deadlineTime_formated));
     }
 
     public String getDescription() {
