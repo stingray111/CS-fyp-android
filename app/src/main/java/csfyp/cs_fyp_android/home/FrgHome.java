@@ -1,6 +1,7 @@
 package csfyp.cs_fyp_android.home;
 
 import android.databinding.DataBindingUtil;
+import android.databinding.repacked.apache.commons.io.IOUtils;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,6 +29,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.ClusterItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import csfyp.cs_fyp_android.ClusterableMarker;
@@ -42,6 +47,7 @@ import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.history.FrgHistory;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.SSL;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
@@ -119,6 +125,13 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
         setHasOptionsMenu(true);
 
+        InputStream is = (InputStream) getContext().getResources().openRawResource(R.raw.server);
+        try {
+            SSL.setServerCert(is);
+        }catch (java.io.IOException e){
+            Toast.makeText(getContext(),"SSL Error: please restart the app", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @Override
@@ -138,6 +151,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         mMapView = mDataBinding.homeMap;
         super.onCreateView(inflater, container, savedInstanceState);
 
+
         // Setting up Action Bar
         mToolBar = mDataBinding.homeToolbar;
         mToolBar.setTitle("Home");
@@ -149,6 +163,8 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                 mDrawerLayout.openDrawer(GravityCompat.START);
             }
         });
+
+        Toast.makeText(getContext(),SSL.getServerCert(), Toast.LENGTH_LONG).show();
 
         // Setting up Pull-up Panel
         if (mIsPanelExpanded) {

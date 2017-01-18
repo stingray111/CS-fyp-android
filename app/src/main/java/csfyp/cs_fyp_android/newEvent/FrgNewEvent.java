@@ -366,7 +366,7 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
                 Toast.makeText(getContext(), "Please set the deadline time before the start time.", Toast.LENGTH_SHORT).show();
                 return;
             }
-        } catch (Exception e) {
+        } catch (Exception e){
             Toast.makeText(getContext(), "Please choose the date and time.", Toast.LENGTH_SHORT).show();
             return;
         }
