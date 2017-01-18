@@ -164,7 +164,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             }
         });
 
-        Toast.makeText(getContext(),SSL.getServerCert(), Toast.LENGTH_LONG).show();
 
         // Setting up Pull-up Panel
         if (mIsPanelExpanded) {
