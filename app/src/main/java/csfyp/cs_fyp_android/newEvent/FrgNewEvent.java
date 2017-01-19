@@ -425,6 +425,8 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
     public void onMapReady(GoogleMap googleMap) {
         super.onMapReady(googleMap);
 
+        mGoogleMap.setOnMarkerDragListener(this);
+
         if (mCurrentLatitude != 0.0 && mCurrentLongitude != 0.0){
             mMarker = mGoogleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(mCurrentLatitude, mCurrentLongitude))
@@ -442,6 +444,8 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(22.25, 114.1667), 12.0f));
         }
     }
+
+
 
     @Override
     public void onMarkerDragStart(Marker marker) {}

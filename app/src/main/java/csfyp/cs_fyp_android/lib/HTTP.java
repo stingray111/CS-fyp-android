@@ -1,6 +1,5 @@
 package csfyp.cs_fyp_android.lib;
 
-
 import java.util.concurrent.TimeUnit;
 
 import csfyp.cs_fyp_android.model.Event;
@@ -78,13 +77,12 @@ public interface HTTP {
     final OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .readTimeout(10, TimeUnit.SECONDS)
             .connectTimeout(10, TimeUnit.SECONDS)
-            .sslSocketFactory(SSL.getNewSSL(),SSL.getTm())
             .build();
 
     Retrofit retrofit = new Retrofit.Builder()
             //.baseUrl("http://172.18.6.87:3000")
             //.baseUrl("http://192.168.1.5:3000")
-            .baseUrl("https://stingray.space:3000")
+            .baseUrl("http://stingray.space:3001")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build();

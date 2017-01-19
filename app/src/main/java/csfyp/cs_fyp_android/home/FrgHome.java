@@ -26,7 +26,6 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
-import com.google.maps.android.clustering.ClusterItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.io.BufferedReader;
@@ -36,7 +35,6 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import csfyp.cs_fyp_android.ClusterableMarker;
-import csfyp.cs_fyp_android.ClusterableMarkerRenderer;
 import csfyp.cs_fyp_android.CustomMapFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
@@ -107,9 +105,9 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             mClusterManager.clearItems();
             for (Event item : mData) {
                 ClusterableMarker marker = new ClusterableMarker(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker), item.getLatitude(), item.getLongitude(), item.getName(), item.getHolder().getUserName() + "&" + item.getStartTime_formated() + "&" + (item.getCurrentPpl()+1) + "&" + item.getMaxPpl() + "&" + item.getId());
-                mClusterManager.setRenderer(new ClusterableMarkerRenderer(getContext(), mGoogleMap, mClusterManager));
                 mClusterManager.addItem(marker);
             }
+            mClusterManager.cluster();
         }
     }
 
@@ -344,9 +342,10 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onClusterItemInfoWindowClick(ClusterItem clusterItem) {
+    public void onClusterItemInfoWindowClick(ClusterableMarker clusterItem) {
         super.onClusterItemInfoWindowClick(clusterItem);
         String[] temp = ((ClusterableMarker)clusterItem).getSnippet().split("&");
+        Toast.makeText(getContext(), "clicked", Toast.LENGTH_SHORT).show();
         switchFragment(FrgEvent.newInstance(Integer.parseInt(temp[4])));
     }
 
