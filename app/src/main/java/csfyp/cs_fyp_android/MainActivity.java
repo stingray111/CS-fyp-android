@@ -85,7 +85,7 @@ public class MainActivity extends LocalizationActivity {
 
         mHome = FrgHome.newInstance();
 
-        if (!mToken.isEmpty()) {
+        if (mToken.isEmpty()) {
             // user not login
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.parent_fragment_container, FrgLogin.newInstance());

@@ -35,6 +35,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 
@@ -46,7 +48,8 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
         ResultCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        ClusterManager.OnClusterItemInfoWindowClickListener,
+        ClusterManager.OnClusterClickListener<ClusterableMarker>,
+        ClusterManager.OnClusterItemInfoWindowClickListener<ClusterableMarker>,
         LocationListener {
 
 
@@ -188,10 +191,14 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
 
         mClusterManager = new ClusterManager<ClusterableMarker>(getContext(), mGoogleMap);
 
-        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+        mClusterManager.setRenderer(new ClusterableMarkerRenderer(getContext(), mGoogleMap, mClusterManager));
 
         mGoogleMap.setOnCameraIdleListener(mClusterManager);
         mGoogleMap.setOnMarkerClickListener(mClusterManager);
+
+        mClusterManager.setOnClusterClickListener(this);
+        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mGoogleMap.setMyLocationEnabled(true);
@@ -206,9 +213,36 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
 
     // method for info window
     @Override
-    public void onClusterItemInfoWindowClick(ClusterItem clusterItem) {
+    public void onClusterItemInfoWindowClick(ClusterableMarker clusterItem) {
         mLastTarget = mGoogleMap.getCameraPosition().target;
         mLastZoom = mGoogleMap.getCameraPosition().zoom;
+    }
+
+    @Override
+    public boolean onClusterClick(Cluster<ClusterableMarker> cluster) {
+        // Show a toast with some info when the cluster is clicked.
+        String firstName = cluster.getItems().iterator().next().getTitle();
+        Toast.makeText(getContext(), cluster.getSize() + " (including " + firstName + ")", Toast.LENGTH_SHORT).show();
+
+        // Zoom in the cluster. Need to create LatLngBounds and including all the cluster items
+        // inside of bounds, then animate to center of the bounds.
+
+        // Create the builder to collect all essential cluster items for the bounds.
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+        for (ClusterItem item : cluster.getItems()) {
+            builder.include(item.getPosition());
+        }
+        // Get the LatLngBounds
+        final LatLngBounds bounds = builder.build();
+
+        // Animate camera to the bounds
+        try {
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
     //method for location
