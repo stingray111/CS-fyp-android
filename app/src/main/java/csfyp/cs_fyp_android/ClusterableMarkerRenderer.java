@@ -27,10 +27,10 @@ public class ClusterableMarkerRenderer extends DefaultClusterRenderer<Clusterabl
         super.onBeforeClusterItemRendered(item, markerOptions);
     }
 
-//    @Override
-//    protected boolean shouldRenderAsCluster(Cluster cluster) {
-//        // Always render clusters.
-//        return cluster.getSize() > 1;
-//    }
+    @Override
+    protected boolean shouldRenderAsCluster(Cluster cluster) {
+        // Always render clusters.
+        return cluster.getSize() > 1;
+    }
 
 }

@@ -1,7 +1,6 @@
 package csfyp.cs_fyp_android.home;
 
 import android.databinding.DataBindingUtil;
-import android.databinding.repacked.apache.commons.io.IOUtils;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,10 +27,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import csfyp.cs_fyp_android.ClusterableMarker;
