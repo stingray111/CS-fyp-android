@@ -17,6 +17,7 @@ import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.SettingFrgBinding;
+import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
@@ -76,10 +77,10 @@ public class FrgSetting extends CustomFragment{
                                 editor.remove("userId");
                                 editor.remove("username");
                                 editor.commit();
-                                ((MainActivity) getActivity()).setmHome(null);
+                                ((MainActivity) getActivity()).setmHome(FrgHome.newInstance());
 //                                FragmentManager fm = getActivity().getSupportFragmentManager();
 //                                for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
-//                                    fm.popBackStack();
+//                                    fm.popBackStack();h
 //                                }
 
                                 replaceFragment(FrgLogin.newInstance());
