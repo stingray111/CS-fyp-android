@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 
 import com.akexorcist.localizationactivity.LocalizationActivity;
 
+import csfyp.cs_fyp_android.chat.chatService;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.login.FrgLogin;
 
@@ -84,6 +85,8 @@ public class MainActivity extends LocalizationActivity {
         mUsername = sharedPref.getString("username", "user");
 
         mHome = FrgHome.newInstance();
+
+        startService(new Intent(getApplicationContext(), chatService.class));
 
         if (mToken.isEmpty()) {
             // user not login
