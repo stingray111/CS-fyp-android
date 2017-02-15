@@ -106,8 +106,8 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
                 String uuidInString = UUID.randomUUID().toString();
 
-                mProgressBar.setVisibility(View.VISIBLE);
-                mLoginBtn.setVisibility(View.GONE);
+                //mProgressBar.setVisibility(View.VISIBLE);
+                //mLoginBtn.setVisibility(View.GONE);
 
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 Login login = new Login(strEmailOrUsername, strPassword, uuidInString);
@@ -125,13 +125,16 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                                 editor.putString("userToken", response.body().getToken());
                                 editor.putInt("userId", response.body().getUserId());
                                 editor.putString("username", response.body().getUsername());
+                                editor.putString("msgToken", response.body().getMsgToken());
                                 editor.commit();
 
                                 MainActivity parent = (MainActivity)getActivity();
                                 parent.setmToken(response.body().getToken());
                                 parent.setmUserId(response.body().getUserId());
                                 parent.setmUsername(response.body().getUsername());
+                                parent.setmToken(response.body().getMsgToken());
                                 replaceFragment(((MainActivity) getActivity()).getmHome());
+
 
                             } else {
                                 // TODO: 6/11/2016 print error msg to user

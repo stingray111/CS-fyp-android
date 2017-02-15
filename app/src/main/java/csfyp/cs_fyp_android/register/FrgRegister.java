@@ -187,12 +187,15 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                                     editor.putString("userToken", response.body().getToken());
                                     editor.putInt("userId", response.body().getUserId());
                                     editor.putString("username", response.body().getUsername());
+                                    editor.putString("msgToken", response.body().getMsgToken());
                                     Log.d(TAG, "onResponse: "+response.body().getUserId());
                                     editor.commit();
                                     MainActivity parent = (MainActivity)getActivity();
                                     parent.setmToken(response.body().getToken());
                                     parent.setmUserId(response.body().getUserId());
                                     parent.setmUsername(response.body().getUsername());
+                                    parent.setmToken(response.body().getMsgToken());
+
 
                                     replaceFragment(((MainActivity) getActivity()).getmHome());
                                 }

@@ -6,6 +6,11 @@ public class LoginRespond {
     private int userId;
     private String username;
     private String token;
+    private String msgToken;
+
+    public String getMsgToken(){
+        return msgToken;
+    }
 
     public boolean isSuccessful() {
         return isSuccessful;
@@ -26,4 +31,5 @@ public class LoginRespond {
     public String getToken() {
         return token;
     }
+
 }
