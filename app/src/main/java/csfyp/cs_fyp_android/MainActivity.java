@@ -28,25 +28,32 @@ public class MainActivity extends LocalizationActivity {
     private int mUserId;
     private String mUsername;
     private String mMsgToken;
-    private ChatService mChatService;
+    private boolean mIsBound = false;
+    public ChatService mChatService;
 
-    public void setmChatService(ChatService chatService) {
-        this.mChatService = chatService;
+    public void setmIsBound(boolean mIsBound) {
+        this.mIsBound = mIsBound;
     }
 
-    public ChatService getmChatService() {
-        return mChatService;
+    public boolean getmIsBound(){
+        return this.mIsBound;
     }
 
     public void setmMsgToken(String mMsgToken) {
         this.mMsgToken = mMsgToken;
     }
 
-    public void setmUserId(int userId){mUserId = userId;}
+    public void setmUserId(int userId) {
+        mUserId = userId;
+    }
 
-    public void setmToken(String token){mToken= token;}
+    public void setmToken(String token) {
+        mToken = token;
+    }
 
-    public void setmUsername(String username){mUsername= username;}
+    public void setmUsername(String username) {
+        mUsername = username;
+    }
 
     public int getmUserId() {
         return mUserId;
@@ -114,18 +121,11 @@ public class MainActivity extends LocalizationActivity {
 
         mHome = FrgHome.newInstance();
 
-        Log.d("act","fuck first");
-        //Intent serviceIntent = new Intent(getApplicationContext(), ChatService.class);
-        //bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
-        //startService(serviceIntent);
-        startService(new Intent(getApplicationContext(),ChatService.class));
-        Log.d("act","fuck last");
-
         InputStream is = (InputStream) this.getResources().openRawResource(R.raw.server);
         try {
             SSL.setServerCert(is);
-        }catch (java.io.IOException e){
-            Toast.makeText(this,"SSL Error: please restart the app", Toast.LENGTH_LONG).show();
+        } catch (java.io.IOException e) {
+            Toast.makeText(this, "SSL Error: please restart the app", Toast.LENGTH_LONG).show();
         }
 
         if (mToken.isEmpty()) {
@@ -145,20 +145,21 @@ public class MainActivity extends LocalizationActivity {
 
     }
 
-    /*
     public ServiceConnection connection = new ServiceConnection() {
         // 成功與 Service 建立連線
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            setmChatService(((ChatService.LocalBinder)service).getService());
             Log.d("main", "MainActivity onServiceConnected");
+            mChatService = (((ChatService.LocalBinder)service).getService());
+            //mChatService.startMsg();
+            mIsBound = true;
         }
         // 與 Service 建立連線失敗
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            setmChatService(null);
             Log.d("main", "MainActivity onServiceFailed");
+            mChatService = null;
         }
     };
-    */
+
 }

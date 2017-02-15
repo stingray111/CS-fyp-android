@@ -30,9 +30,11 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.StreetViewPanoramaCamera;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.io.InputStream;
+import java.sql.Types;
 import java.util.List;
 
 import csfyp.cs_fyp_android.ClusterableMarker;
@@ -135,12 +137,51 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
         //chat messaging service
 
-        /*
-        Intent serviceIntent = new Intent((MainActivity)getActivity(), ChatService.class);
-        ((MainActivity)getActivity()).bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
-        */
+        Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
+        getMainActivity().bindService(serviceIntent, getMainActivity().connection, Context.BIND_AUTO_CREATE);
 
-        //((MainActivity)getActivity()).startService(serviceIntent);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String TAG = "Home Thread";
+                while(!getMainActivity().getmIsBound()){
+                    try{
+                        Thread.sleep(1000);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                // set the token
+                Log.d(TAG, "start putting token to service");
+                getMainActivity().mChatService.setmMsgToken(getMainActivity().getmMsgToken());
+                int count = 0;
+                while(getMainActivity().mChatService.getmMsgToken().isEmpty()){
+                    try{
+                        Thread.sleep(1000);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    count++;
+                    if(count>8){
+                        showMsgError();
+                        count = 0;
+                    }
+                }
+                // connect to firebase
+
+
+                // set the messaging layout
+                Log.d(TAG, "start setting the msg layout");
+                getMainActivity().mChatService.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getMainActivity().mChatService.startMsg();
+                    }
+                });
+            }
+        }).start();
+
+
     }
 
     @Override
@@ -372,7 +413,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     public void onClickSetting(View view){ switchFragment(FrgSetting.newInstance());}
 
     public void onClickProfile(View view) {
-        switchFragment(FrgProfile.newInstance(((MainActivity) getActivity()).getmUserId()));
+        switchFragment(FrgProfile.newInstance(getMainActivity().getmUserId()));
     }
 
     public void onClickAbout(View view) {
@@ -380,5 +421,18 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     }
 
     public void onClickHistory(View view){ switchFragment(FrgHistory.newInstance());}
+
+    private MainActivity getMainActivity(){
+        return (MainActivity)getActivity();
+    }
+
+    public void showMsgError(){
+        getMainActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getMainActivity(),"Messaging Init Error, please restart the app", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 }
 

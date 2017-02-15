@@ -32,33 +32,34 @@ import java.util.zip.Inflater;
 import csfyp.cs_fyp_android.R;
 
 import static android.view.View.GONE;
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static android.widget.ListPopupWindow.MATCH_PARENT;
+import static android.widget.ListPopupWindow.WRAP_CONTENT;
+
 
 /**
  * Created by ray on 8/2/2017.
  */
 
 public class ChatService extends Service {
-    private static String mMsgToken;
-    public final IBinder myBinder = new LocalBinder();
-    private static WindowManager mWindowManager;
-    private static View mView;
-    private static int mStatus;  //0: icon
-    private static int mWidth;//dp
-    private static int mHeight;//dp
-    private static int mXPos;//dp
-    private static int mYPos;//dp
-    private static WindowManager.LayoutParams mParams;
+    private String mMsgToken = "";
+    private String TAG = "ChatService";
+    public LocalBinder myBinder = new LocalBinder();
+    private WindowManager mWindowManager;
+    private View mView;
+    private int mStatus;  //0: icon
+    private int mWidth;//dp
+    private int mHeight;//dp
+    private int mXPos;//dp
+    private int mYPos;//dp
+    private WindowManager.LayoutParams mParams;
     private Handler mHandler;
-    private ChatService _This = this;
 
-    private static FloatingActionMenu mFloatingActionMenu;
-    private static List<com.github.clans.fab.FloatingActionButton> mFloatingActionButtonList;
-    private static View mChatBox;
-    private static WindowManager.LayoutParams mParamsChatBox;
-    private static ProgressBar mProgressBar;
-    private static RecyclerView mMessageRecyclerView;
+    private FloatingActionMenu mFloatingActionMenu;
+    private List<com.github.clans.fab.FloatingActionButton> mFloatingActionButtonList;
+    private View mChatBox;
+    private WindowManager.LayoutParams mParamsChatBox;
+    private ProgressBar mProgressBar;
+    private RecyclerView mMessageRecyclerView;
 
 
     public class LocalBinder extends Binder {
@@ -71,14 +72,45 @@ public class ChatService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d("in onBind","here fuck");
-        return null;
+        return myBinder;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("in service","here fuck");
+        mHandler = new Handler();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG,"onStartCommand");
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mView!= null) mWindowManager.removeView(mView);
+    }
+
+    public void runOnUiThread(Runnable runnable) {
+        mHandler.post(runnable);
+    }
+
+    public int dp2px(float dp){
+        return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, Resources.getSystem().getDisplayMetrics());
+    }
+
+    public void setmMsgToken(String mMsgToken) {
+        this.mMsgToken = mMsgToken;
+    }
+
+    public String getmMsgToken() {
+        return mMsgToken;
+    }
+
+
+    public void startMsg(){
 
         mStatus= 0;
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -86,7 +118,6 @@ public class ChatService extends Service {
         mView = li.inflate(R.layout.chat_float_frg,null);
         mChatBox = li.inflate(R.layout.chat_frame,null);
 
-        /*
         mView.setOnDragListener(new View.OnDragListener(){
             @Override
             public boolean onDrag(View v, DragEvent event) {
@@ -96,7 +127,6 @@ public class ChatService extends Service {
                 return true;
             }
         });
-        */
 
         mWidth = 150;
         mHeight = 150;
@@ -110,29 +140,29 @@ public class ChatService extends Service {
 
         mParams.gravity = Gravity.LEFT| Gravity.TOP;
 
-                final com.github.clans.fab.FloatingActionButton programFab1 = new com.github.clans.fab.FloatingActionButton(_This);
-                programFab1.setButtonSize(FloatingActionButton.SIZE_MINI);
-                programFab1.setLabelText("hey");
-                programFab1.setImageResource(R.drawable.bg_event);
-                programFab1.setOnClickListener(new View.OnClickListener(){
-                    @Override
-                    public void onClick(View v) {
-                        mChatBox.findViewById(R.id.chat_frame).setVisibility(View.VISIBLE);
-                        mStatus = 2;
-                    }
-                });
+        final com.github.clans.fab.FloatingActionButton programFab1 = new com.github.clans.fab.FloatingActionButton(this);
+        programFab1.setButtonSize(FloatingActionButton.SIZE_MINI);
+        programFab1.setLabelText("hey");
+        programFab1.setImageResource(R.drawable.bg_event);
+        programFab1.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                mChatBox.findViewById(R.id.chat_frame).setVisibility(View.VISIBLE);
+                mStatus = 2;
+            }
+        });
 
-                final com.github.clans.fab.FloatingActionButton programFab2 = new com.github.clans.fab.FloatingActionButton(_This);
-                programFab2.setButtonSize(FloatingActionButton.SIZE_MINI);
-                programFab2.setLabelText("hey");
-                programFab2.setOnClickListener(new View.OnClickListener(){
-                    @Override
-                    public void onClick(View v) {
-                        mChatBox.findViewById(R.id.chat_frame).setVisibility(View.VISIBLE);
-                        mStatus = 2;
-                    }
-                });
-               programFab2.setImageResource(R.drawable.bg_event);
+        final com.github.clans.fab.FloatingActionButton programFab2 = new com.github.clans.fab.FloatingActionButton(this);
+        programFab2.setButtonSize(FloatingActionButton.SIZE_MINI);
+        programFab2.setLabelText("hey");
+        programFab2.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                mChatBox.findViewById(R.id.chat_frame).setVisibility(View.VISIBLE);
+                mStatus = 2;
+            }
+        });
+        programFab2.setImageResource(R.drawable.bg_event);
 
         mFloatingActionButtonList = new LinkedList<com.github.clans.fab.FloatingActionButton>();
         mFloatingActionButtonList.add(programFab1);
@@ -213,68 +243,7 @@ public class ChatService extends Service {
 
         mWindowManager.addView(mChatBox, mParamsChatBox);
 
-        mHandler = new Handler();
 
-        Log.d("here", "onCreate End");
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mView!= null) mWindowManager.removeView(mView);
-    }
-
-    private void runOnUiThread(Runnable runnable) {
-        mHandler.post(runnable);
-    }
-
-    public int dp2px(float dp){
-        return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, Resources.getSystem().getDisplayMetrics());
     }
 
 }
-
-        /*
-        FloatingActionMenu mFloatingMenuBtn;
-        mFloatingMenuBtn = new FloatingActionButton(mView.findViewById(R.id.floatingMsgMenu));
-        mFloatingMenuBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("here", "FUCK");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mView.findViewById(R.id.menu_item1).setVisibility(View.VISIBLE);
-                        mParams.width = dp2px(200);
-                        mParams.height = dp2px(200);
-                        mWindowManager.updateViewLayout(mView,mParams);
-                        mView.setLayoutParams(mParams);
-                    }
-                });
-            }
-        });
-        */
-
-  /*
-        //TODO: remove
-
-        new Thread( new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep( 5000);
-                }catch (Exception e){
-                }
-                Log.d("here", "FUCK");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                });
-            }
-        }).start();
-
-
-        */
