@@ -226,7 +226,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
     public void onValidationFailed(List<ValidationError> errors) {
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
         if(mUsernameField.getText().toString().contains("fuck")){
-            mUsernameField.setText("test"+((new Random().nextInt()%99999)+1));
+            mUsernameField.setText("test"+(Math.abs(new Random().nextInt()%99999)+1));
             mEmailField.setText(mUsernameField.getText().toString()+"@test.com");
             mPasswordField.setText("aaaaaaaa1");
             mSecondPasswordField.setText("aaaaaaaa1");
