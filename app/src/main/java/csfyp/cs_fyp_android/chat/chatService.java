@@ -24,6 +24,12 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -61,11 +67,12 @@ public class ChatService extends Service {
     private ProgressBar mProgressBar;
     private RecyclerView mMessageRecyclerView;
 
-
-
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    //vars
 
     public class LocalBinder extends Binder {
-       public ChatService getService() {
+        public ChatService getService() {
             // Return this instance of LocalService so clients can call public methods
             return ChatService.this;
         }
@@ -81,6 +88,21 @@ public class ChatService extends Service {
     public void onCreate() {
         super.onCreate();
         mHandler = new Handler();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user!=null){
+                    Log.d(TAG, user.getUid());
+                    startMsg();
+                }
+                else{
+                    Log.d(TAG, "signedOut");
+                }
+            }
+        };
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
@@ -93,6 +115,9 @@ public class ChatService extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (mView!= null) mWindowManager.removeView(mView);
+        if(mAuthListener!=null){
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     public void runOnUiThread(Runnable runnable) {
@@ -110,6 +135,9 @@ public class ChatService extends Service {
     public String getmMsgToken() {
         return mMsgToken;
     }
+
+
+
 
 
     public void startMsg(){
@@ -246,6 +274,19 @@ public class ChatService extends Service {
         mWindowManager.addView(mChatBox, mParamsChatBox);
 
 
+    }
+
+    public void login(){
+        mAuth.signInWithCustomToken(mMsgToken)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@android.support.annotation.NonNull Task<AuthResult> task) {
+                        Log.d("login firebase: ", "logining");
+                        if(!task.isSuccessful()){
+                            Log.d("login firebase: ", "login failed");
+                        }
+                    }
+                });
     }
 
 }

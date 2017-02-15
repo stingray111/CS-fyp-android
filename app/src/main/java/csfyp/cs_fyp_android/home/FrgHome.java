@@ -168,16 +168,8 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                     }
                 }
                 // connect to firebase
+                //getMainActivity().mChatService.login();
 
-
-                // set the messaging layout
-                Log.d(TAG, "start setting the msg layout");
-                getMainActivity().mChatService.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        getMainActivity().mChatService.startMsg();
-                    }
-                });
             }
         }).start();
 
