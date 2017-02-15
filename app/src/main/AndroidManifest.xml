@@ -57,7 +57,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".chat.chatService"
+        <service android:name=".chat.ChatService"
             android:label="MeetUs Chat"
         >
         </service>
