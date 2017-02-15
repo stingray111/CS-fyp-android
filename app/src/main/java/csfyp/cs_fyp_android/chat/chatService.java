@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -38,7 +39,9 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * Created by ray on 8/2/2017.
  */
 
-public class chatService extends Service {
+public class ChatService extends Service {
+    private static String mMsgToken;
+    public final IBinder myBinder = new LocalBinder();
     private static WindowManager mWindowManager;
     private static View mView;
     private static int mStatus;  //0: icon
@@ -48,7 +51,7 @@ public class chatService extends Service {
     private static int mYPos;//dp
     private static WindowManager.LayoutParams mParams;
     private Handler mHandler;
-    private chatService _This = this;
+    private ChatService _This = this;
 
     private static FloatingActionMenu mFloatingActionMenu;
     private static List<com.github.clans.fab.FloatingActionButton> mFloatingActionButtonList;
@@ -57,16 +60,25 @@ public class chatService extends Service {
     private static ProgressBar mProgressBar;
     private static RecyclerView mMessageRecyclerView;
 
+
+    public class LocalBinder extends Binder {
+       public ChatService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return ChatService.this;
+        }
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        //dont know what to do
+        Log.d("in onBind","here fuck");
         return null;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d("in service","here fuck");
 
         mStatus= 0;
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -190,12 +202,13 @@ public class chatService extends Service {
         mChatBox.findViewById(R.id.chat_inner).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                //TODO: dont know
+                //do nothing
             }
         });
 
         mProgressBar = (ProgressBar) mChatBox.findViewById(R.id.progressBar);
         mMessageRecyclerView = (RecyclerView) mChatBox.findViewById(R.id.messageRecyclerView);
+        //TODO: here
 
 
         mWindowManager.addView(mChatBox, mParamsChatBox);
@@ -216,7 +229,7 @@ public class chatService extends Service {
         mHandler.post(runnable);
     }
 
-    private static int dp2px(float dp){
+    public int dp2px(float dp){
         return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, Resources.getSystem().getDisplayMetrics());
     }
 

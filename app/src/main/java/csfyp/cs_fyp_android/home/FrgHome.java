@@ -1,8 +1,13 @@
 package csfyp.cs_fyp_android.home;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -35,6 +40,7 @@ import csfyp.cs_fyp_android.CustomMapFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.about.FrgAbout;
+import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.currentEvent.FrgCurrentEvent;
 import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
 import csfyp.cs_fyp_android.event.FrgEvent;
@@ -119,13 +125,22 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
         setHasOptionsMenu(true);
 
-        InputStream is = (InputStream) getContext().getResources().openRawResource(R.raw.server);
+
+        InputStream is = (InputStream) this.getResources().openRawResource(R.raw.server);
         try {
             SSL.setServerCert(is);
         }catch (java.io.IOException e){
-            Toast.makeText(getContext(),"SSL Error: please restart the app", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(),"SSL Error: please restart the app", Toast.LENGTH_LONG).show();
         }
 
+        //chat messaging service
+
+        /*
+        Intent serviceIntent = new Intent((MainActivity)getActivity(), ChatService.class);
+        ((MainActivity)getActivity()).bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
+        */
+
+        //((MainActivity)getActivity()).startService(serviceIntent);
     }
 
     @Override
