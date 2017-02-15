@@ -62,6 +62,8 @@ public class ChatService extends Service {
     private RecyclerView mMessageRecyclerView;
 
 
+
+
     public class LocalBinder extends Binder {
        public ChatService getService() {
             // Return this instance of LocalService so clients can call public methods
