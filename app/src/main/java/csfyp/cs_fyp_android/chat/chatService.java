@@ -1,5 +1,9 @@
 package csfyp.cs_fyp_android.chat;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -21,8 +25,10 @@ import android.util.TypedValue;
 import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -167,16 +173,6 @@ public class ChatService extends Service {
         mView = li.inflate(R.layout.chat_float_frg,null);
         mChatBox = li.inflate(R.layout.chat_frame,null);
 
-        mView.setOnDragListener(new View.OnDragListener(){
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                if (mStatus == 0 ){ // not expanded
-                    //TODO: move the box
-                }
-                return true;
-            }
-        });
-
         mWidth = 150;
         mHeight = 150;
 
@@ -184,7 +180,7 @@ public class ChatService extends Service {
                 dp2px(mWidth),
                 dp2px(mHeight),
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH|WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
         mParams.gravity = Gravity.LEFT| Gravity.TOP;
@@ -222,6 +218,36 @@ public class ChatService extends Service {
         mFloatingActionMenu = (FloatingActionMenu) mView.findViewById(R.id.floatingMsgMenu);
         //Cannot use because not covering whole screen
         //mFloatingActionMenu.setClosedOnTouchOutside(true);
+
+
+        AnimatorSet set = new AnimatorSet();
+
+        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(mFloatingActionMenu.getMenuIconView(), "scaleX", 1.0f, 0.2f);
+        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(mFloatingActionMenu.getMenuIconView(), "scaleY", 1.0f, 0.2f);
+
+        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(mFloatingActionMenu.getMenuIconView(), "scaleX", 0.2f, 1.0f);
+        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(mFloatingActionMenu.getMenuIconView(), "scaleY", 0.2f, 1.0f);
+
+        scaleOutX.setDuration(50);
+        scaleOutY.setDuration(50);
+
+        scaleInX.setDuration(150);
+        scaleInY.setDuration(150);
+
+        scaleInX.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mFloatingActionMenu.getMenuIconView().setImageResource(mFloatingActionMenu.isOpened()
+                        ? R.drawable.ic_speech_bubble: R.drawable.ic_close_black_24dp);
+            }
+        });
+        set.play(scaleOutX).with(scaleOutY);
+        set.play(scaleInX).with(scaleInY).after(scaleOutX);
+        set.setInterpolator(new OvershootInterpolator(2));
+
+        mFloatingActionMenu.setIconToggleAnimatorSet(set);
+
+
         mFloatingActionMenu.setOnMenuButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

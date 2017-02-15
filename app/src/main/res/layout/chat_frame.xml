@@ -7,11 +7,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"></LinearLayout>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="240dp"
+    android:layout_width="0dp"
+    android:layout_weight="5"
     android:layout_gravity="end"
     android:background="@drawable/bg_chat_box"
     android:padding="7dp"
@@ -58,4 +66,5 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 </RelativeLayout>
+</LinearLayout>
 </FrameLayout>
