@@ -161,6 +161,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                     }catch (Exception e){
                         e.printStackTrace();
                     }
+                    getMainActivity().mChatService.setmMsgToken(getMainActivity().getmMsgToken());
                     count++;
                     if(count>8){
                         showMsgError();
@@ -168,7 +169,8 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                     }
                 }
                 // connect to firebase
-                //getMainActivity().mChatService.login();
+                Log.d(TAG, "finish putting token");
+                getMainActivity().mChatService.login();
 
             }
         }).start();

@@ -1,6 +1,5 @@
 package csfyp.cs_fyp_android.chat;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -18,9 +17,7 @@ import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.github.clans.fab.FloatingActionMenu;
@@ -28,12 +25,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import csfyp.cs_fyp_android.R;
 
@@ -86,6 +81,7 @@ public class ChatService extends Service {
 
     @Override
     public void onCreate() {
+        Log.d(TAG,"onCreate");
         super.onCreate();
         mHandler = new Handler();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -93,7 +89,7 @@ public class ChatService extends Service {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user!=null){
-                    Log.d(TAG, user.getUid());
+                    Log.d(TAG, "Login:\t" +user.getUid());
                     startMsg();
                 }
                 else{
@@ -113,6 +109,7 @@ public class ChatService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.d(TAG,"onDestroy");
         super.onDestroy();
         if (mView!= null) mWindowManager.removeView(mView);
         if(mAuthListener!=null){
@@ -136,11 +133,8 @@ public class ChatService extends Service {
         return mMsgToken;
     }
 
-
-
-
-
     public void startMsg(){
+        Log.d(TAG, "start messaging interface");
 
         mStatus= 0;
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -268,11 +262,10 @@ public class ChatService extends Service {
 
         mProgressBar = (ProgressBar) mChatBox.findViewById(R.id.progressBar);
         mMessageRecyclerView = (RecyclerView) mChatBox.findViewById(R.id.messageRecyclerView);
-        //TODO: here
+        //TODO: messager details
 
 
         mWindowManager.addView(mChatBox, mParamsChatBox);
-
 
     }
 
@@ -281,7 +274,6 @@ public class ChatService extends Service {
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@android.support.annotation.NonNull Task<AuthResult> task) {
-                        Log.d("login firebase: ", "logining");
                         if(!task.isSuccessful()){
                             Log.d("login firebase: ", "login failed");
                         }

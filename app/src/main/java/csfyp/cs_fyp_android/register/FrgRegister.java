@@ -195,7 +195,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                                     parent.setmToken(response.body().getToken());
                                     parent.setmUserId(response.body().getUserId());
                                     parent.setmUsername(response.body().getUsername());
-                                    parent.setmToken(response.body().getMsgToken());
+                                    parent.setmMsgToken(response.body().getMsgToken());
 
 
                                     replaceFragment(((MainActivity) getActivity()).getmHome());
