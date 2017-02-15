@@ -10,7 +10,12 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.DragEvent;
@@ -18,23 +23,34 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.appindexing.Indexable;
+import com.google.firebase.appindexing.builders.Indexables;
+import com.google.firebase.appindexing.builders.PersonBuilder;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 
 import static android.view.View.GONE;
 import static android.widget.ListPopupWindow.MATCH_PARENT;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
+import com.bumptech.glide.Glide;
 
 
 /**
@@ -64,6 +80,15 @@ public class ChatService extends Service {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+
+    private LinearLayoutManager mLinearLayoutManager;
+    private DatabaseReference mFirebaseDatabaseReference;
+
+    private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> mFirebaseAdapter;
+    public static final String MESSAGES_CHILD = "testMsg";
+    private static final String MESSAGE_URL = "https://cs-fyp.firebaseio.com/testMsg";
+    private Button mSendButton;
+    private EditText mMessageEditText;
     //vars
 
     public class LocalBinder extends Binder {
@@ -262,6 +287,109 @@ public class ChatService extends Service {
 
         mProgressBar = (ProgressBar) mChatBox.findViewById(R.id.progressBar);
         mMessageRecyclerView = (RecyclerView) mChatBox.findViewById(R.id.messageRecyclerView);
+
+        mLinearLayoutManager = new LinearLayoutManager(this);
+        mLinearLayoutManager.setStackFromEnd(true);
+        mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
+
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage,MessageViewHolder>(
+                FriendlyMessage.class,
+                R.layout.item_message,
+                MessageViewHolder.class,
+                mFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
+            @Override
+            protected FriendlyMessage parseSnapshot(DataSnapshot snapshot) {
+                FriendlyMessage friendlyMessage = super.parseSnapshot(snapshot);
+                if (friendlyMessage != null) {
+                    friendlyMessage.setId(snapshot.getKey());
+                }
+                return friendlyMessage;
+            }
+            @Override
+            protected void populateViewHolder(MessageViewHolder viewHolder,
+                                              FriendlyMessage friendlyMessage, int position) {
+                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                viewHolder.messageTextView.setText(friendlyMessage.getText());
+                viewHolder.messengerTextView.setText(friendlyMessage.getName());
+                if (friendlyMessage.getPhotoUrl() == null) {
+                    viewHolder.messengerImageView
+                            .setImageDrawable(getResources().
+                                    getDrawable(
+                                            R.drawable.ic_account_circle_black_36dp));
+                } else {
+                    Glide.with(ChatService.this)
+                            .load(friendlyMessage.getPhotoUrl())
+                            .into(viewHolder.messengerImageView);
+                }
+            }
+
+        };
+
+        mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                int friendlyMessageCount = mFirebaseAdapter.getItemCount();
+                int lastVisiblePosition =
+                        mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+                // If the recycler view is initially being loaded or the
+                // user is at the bottom of the list, scroll to the bottom
+                // of the list to show the newly added message.
+                if (lastVisiblePosition == -1 ||
+                        (positionStart >= (friendlyMessageCount - 1) &&
+                                lastVisiblePosition == (positionStart - 1))) {
+                    mMessageRecyclerView.scrollToPosition(positionStart);
+                }
+            }
+        });
+
+        mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mMessageRecyclerView.setAdapter(mFirebaseAdapter);
+        mMessageEditText = (EditText) mChatBox.findViewById(R.id.messageEditText);
+
+        mMessageEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().trim().length() > 0) {
+                    mSendButton.setEnabled(true);
+                } else {
+                    mSendButton.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+
+        mSendButton = (Button) mChatBox.findViewById(R.id.sendButton);
+        mSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Send messages on click.
+                mSendButton = (Button) mChatBox.findViewById(R.id.sendButton);
+                mSendButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        FriendlyMessage friendlyMessage = new
+                                FriendlyMessage(mMessageEditText.getText().toString(),
+                                "ray",
+                                null);
+                        mFirebaseDatabaseReference.child(MESSAGES_CHILD)
+                                .push().setValue(friendlyMessage);
+                        mMessageEditText.setText("");
+                    }
+                });
+            }
+        });
+
+
         //TODO: messager details
 
 
@@ -280,5 +408,6 @@ public class ChatService extends Service {
                     }
                 });
     }
+
 
 }
