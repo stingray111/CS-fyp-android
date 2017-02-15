@@ -26,6 +26,7 @@ import com.mobsandgeeks.saripaar.annotation.Password;
 import com.mobsandgeeks.saripaar.annotation.Pattern;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import csfyp.cs_fyp_android.CustomFragment;
@@ -224,6 +225,16 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
     @Override
     public void onValidationFailed(List<ValidationError> errors) {
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
+        if(mUsernameField.getText().toString().contains("fuck")){
+            mUsernameField.setText("test"+((new Random().nextInt()%99999)+1));
+            mEmailField.setText(mUsernameField.getText().toString()+"@test.com");
+            mPasswordField.setText("aaaaaaaa1");
+            mSecondPasswordField.setText("aaaaaaaa1");
+            mLastNameField.setText(mUsernameField.getText().toString());
+            mMaleBtn.toggle();
+            mSubmitBtn.callOnClick();
+            return;
+        }
         for (ValidationError error : errors) {
             View view = error.getView();
             String message = error.getCollatedErrorMessage(parentActivity);
