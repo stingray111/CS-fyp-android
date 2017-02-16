@@ -52,6 +52,12 @@
     <string name="setting_language_item">語言</string>
 
     <!--string for personality-->
+    <string name="extraversion">外向性</string>
+    <string name="agreeableness">親和性</string>
+    <string name="conscientiousness">盡責性</string>
+    <string name="openness">開放性</string>
+    <string name="neuroticism">神經質</string>
+
     <string name="outgoing">外向</string>
     <string name="enthusiastic">熱情</string>
     <string name="active">活躍</string>

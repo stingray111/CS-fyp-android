@@ -56,7 +56,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:text="Extraversion"/>
+                    android:text="@string/extraversion"/>
 
                 <com.cunoraz.tagview.TagView
                     xmlns:tagview="http://schemas.android.com/apk/res-auto"
@@ -76,7 +76,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:text="Neuroticism"/>
+                    android:text="@string/neuroticism"/>
 
                 <com.cunoraz.tagview.TagView
                     xmlns:tagview="http://schemas.android.com/apk/res-auto"
@@ -96,7 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:text="Conscientiousness"/>
+                    android:text="@string/conscientiousness"/>
 
                 <com.cunoraz.tagview.TagView
                     xmlns:tagview="http://schemas.android.com/apk/res-auto"
@@ -116,7 +116,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:text="Agreeableness"/>
+                    android:text="@string/agreeableness"/>
 
                 <com.cunoraz.tagview.TagView
                     xmlns:tagview="http://schemas.android.com/apk/res-auto"
@@ -136,7 +136,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:text="Openness"/>
+                    android:text="@string/openness"/>
 
                 <com.cunoraz.tagview.TagView
                     xmlns:tagview="http://schemas.android.com/apk/res-auto"

@@ -54,6 +54,12 @@
 
 
     <!--string for personality-->
+    <string name="extraversion">Extraversion</string>
+    <string name="agreeableness">Agreeableness</string>
+    <string name="conscientiousness">Conscientiousness</string>
+    <string name="openness">Openness</string>
+    <string name="neuroticism">Neuroticism</string>
+    
     <string name="outgoing">Outgoing</string>
     <string name="enthusiastic">Enthusiastic</string>
     <string name="active">Active</string>
