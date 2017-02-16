@@ -72,7 +72,6 @@ public interface HTTP {
     );
 
 
-
     @POST("/api/join-event")
     Call<ErrorMsgOnly> joinEvent (
             @Body EventJoinQuitRequest join
@@ -91,7 +90,7 @@ public interface HTTP {
     final OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .readTimeout(10, TimeUnit.SECONDS)
             .connectTimeout(10, TimeUnit.SECONDS)
-            //.sslSocketFactory(SSL.getNewSSL(),SSL.getTm())
+            .sslSocketFactory(SSL.getNewSSL(),SSL.getTm())
             .build();
 
     Retrofit retrofit = new Retrofit.Builder()
