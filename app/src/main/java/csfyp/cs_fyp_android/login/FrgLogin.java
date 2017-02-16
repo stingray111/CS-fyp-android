@@ -132,6 +132,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                                 parent.setmToken(response.body().getToken());
                                 parent.setmUserId(response.body().getUserId());
                                 parent.setmUsername(response.body().getUsername());
+                                parent.setmSelf(response.body().getSelf());
                                 Log.d("fuck you ", "token"+response.body().getMsgToken());
                                 parent.setmMsgToken(response.body().getMsgToken());
                                 replaceFragment(((MainActivity) getActivity()).getmHome());

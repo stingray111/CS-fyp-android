@@ -34,6 +34,13 @@
             android:clickable="true"
             android:onClick="@{handlers::onClickUserItem}" />
 
+        <ImageView
+            android:id="@+id/ratedImg"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_tick_green">
+        </ImageView>
+
         <ImageButton
             android:id="@+id/rateBtn"
             android:layout_width="24dp"

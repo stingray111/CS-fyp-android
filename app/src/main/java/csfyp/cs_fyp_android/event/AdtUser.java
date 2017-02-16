@@ -68,9 +68,11 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
             if (mUserList != null) {
                 holder.getPassedBinding().setItem(mUserList.get(position));
                 if (mUserList.get(position).getId() == ((FrgPassedEvent)mFragment).getmSelfUserId())
-                    holder.getPassedBinding().rateBtn.setVisibility(View.INVISIBLE);
-                if (mUserList.get(position).isRatedbyOther())
-                    holder.getPassedBinding().rateBtn.setVisibility(View.INVISIBLE);
+                    holder.getPassedBinding().rateBtn.setVisibility(View.GONE);
+                if (mUserList.get(position).isRatedbyOther()) {
+                    holder.getPassedBinding().rateBtn.setVisibility(View.GONE);
+                    holder.getPassedBinding().ratedImg.setVisibility(View.VISIBLE);
+                }
                 holder.getPassedBinding().executePendingBindings();
             }
         } else {

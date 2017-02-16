@@ -277,11 +277,17 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
 
             if (mEventObj.getRates() != null) {
                 for (Rate rate: mEventObj.getRates()) {
-                    if (mEventObj.getHolder().getId() == rate.getOtherUserId())
+                    if (mEventObj.getHolder().getId() == rate.getOtherUserId()) {
                         mDataBinding.holderRateBtn.setVisibility(View.INVISIBLE);
-                    for (User user: mEventObj.getParticipantList()) {
-                        if (rate.getOtherUserId() == user.getId())
-                            user.setRatedbyOther(true);
+                        mDataBinding.holderRatedImg.setVisibility(View.VISIBLE);
+                    }
+                    if (((MainActivity)getActivity()).getmSelf().isSelfRated()) {
+                        for (User user: mEventObj.getParticipantList()) {
+                            if (rate.getOtherUserId() == user.getId())
+                                user.setRatedbyOther(true);
+                        }
+                    } else {
+                        mDataBinding.notSelfRatedMsg.setVisibility(View.VISIBLE);
                     }
                 }
             } // // TODO: 9/2/2017 performance? 

@@ -1,5 +1,7 @@
 package csfyp.cs_fyp_android.model.respond;
 
+import csfyp.cs_fyp_android.model.User;
+
 public class LoginRespond {
     private boolean isSuccessful;
     private String errorMsg;
@@ -7,6 +9,7 @@ public class LoginRespond {
     private String username;
     private String token;
     private String msgToken;
+    private User self;
 
     public String getMsgToken(){
         return msgToken;
@@ -32,4 +35,7 @@ public class LoginRespond {
         return token;
     }
 
+    public User getSelf() {
+        return self;
+    }
 }

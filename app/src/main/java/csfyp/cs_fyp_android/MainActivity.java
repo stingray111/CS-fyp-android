@@ -1,6 +1,5 @@
 package csfyp.cs_fyp_android;
 
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +8,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.LocalizationActivity;
 
@@ -16,15 +17,14 @@ import java.io.InputStream;
 
 import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.home.FrgHome;
-import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.lib.SSL;
-
-import android.util.Log;
-import android.widget.Toast;
+import csfyp.cs_fyp_android.login.FrgLogin;
+import csfyp.cs_fyp_android.model.User;
 public class MainActivity extends LocalizationActivity {
 
     private FrgHome mHome;
     private String mToken;
+    private User mSelf;
     private int mUserId;
     public static String mUsername;
     private String mMsgToken;
@@ -41,6 +41,14 @@ public class MainActivity extends LocalizationActivity {
 
     public void setmMsgToken(String mMsgToken) {
         this.mMsgToken = mMsgToken;
+    }
+
+    public User getmSelf() {
+        return mSelf;
+    }
+
+    public void setmSelf(User mSelf) {
+        this.mSelf = mSelf;
     }
 
     public void setmUserId(int userId) {

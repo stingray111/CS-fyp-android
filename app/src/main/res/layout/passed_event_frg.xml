@@ -232,104 +232,137 @@
                         android:textSize="15sp" />
 
                 </LinearLayout>
-
-                <LinearLayout
+                
+                <RelativeLayout
+                    android:id="@+id/notSelfRatedMsg"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/bg_event"
-                    android:orientation="vertical"
-                    android:paddingBottom="15dp"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:paddingTop="15dp">
+                    android:layout_height="wrap_content">
+                    
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:elevation="4dp"
+                        android:background="#40000000">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="You had not rated yourself"
+                            android:textSize="20dp"
+                            android:gravity="center" />
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="People"
-                            android:textColor="#777777"
-                            android:textSize="15sp" />
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_event"
+                        android:orientation="vertical"
+                        android:paddingBottom="15dp"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:paddingTop="15dp">
 
                         <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="24dp"
-                            android:layout_weight="1"
-                            android:gravity="right|center_vertical"
-                            android:orientation="horizontal">
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="@{Integer.toString(eventObj.currentPpl+1)}"
-                                android:textSize="16sp" />
+                                android:layout_weight="1"
+                                android:text="People"
+                                android:textColor="#777777"
+                                android:textSize="15sp" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="24dp"
+                                android:layout_weight="1"
+                                android:gravity="right|center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{Integer.toString(eventObj.currentPpl+1)}"
+                                    android:textSize="16sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="/"
+                                    android:textSize="16sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{Integer.toString(eventObj.maxPpl)}"
+                                    android:textSize="16sp" />
+
+                            </LinearLayout>
+
+                            <ImageView
+                                android:id="@+id/imageView3"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginLeft="4dp"
+                                android:src="@drawable/ic_people_3" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:background="?android:attr/selectableItemBackground"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="8dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginRight="4dp"
+                                android:src="@drawable/ic_star" />
 
                             <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="/"
-                                android:textSize="16sp" />
+                                android:layout_width="0dp"
+                                android:layout_height="24dp"
+                                android:layout_weight="3"
+                                android:gravity="center_vertical"
+                                android:text="@{eventObj.holder.userName}"
+                                android:textColor="#000000"
+                                android:textSize="16sp"
+                                android:clickable="true"
+                                android:onClick="@{handlers::onClickHolder}" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@{Integer.toString(eventObj.maxPpl)}"
-                                android:textSize="16sp" />
+                            <ImageView
+                                android:visibility="gone"
+                                android:id="@+id/holderRatedImg"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_tick_green">
+                            </ImageView>
+
+                            <ImageButton
+                                android:id="@+id/holderRateBtn"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/ic_rating"
+                                android:onClick="@{handlers::onClickHolderRate}"/>
 
                         </LinearLayout>
 
-                        <ImageView
-                            android:id="@+id/imageView3"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginLeft="4dp"
-                            android:src="@drawable/ic_people_3" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:background="?android:attr/selectableItemBackground"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="8dp">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginRight="4dp"
-                            android:src="@drawable/ic_star" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="24dp"
-                            android:layout_weight="3"
-                            android:gravity="center_vertical"
-                            android:text="@{eventObj.holder.userName}"
-                            android:textColor="#000000"
-                            android:textSize="16sp"
-                            android:clickable="true"
-                            android:onClick="@{handlers::onClickHolder}" />
-
-                        <ImageButton
-                            android:id="@+id/holderRateBtn"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:background="@drawable/ic_rating"
-                            android:onClick="@{handlers::onClickHolderRate}"/>
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rvUser"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
 
                     </LinearLayout>
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/rvUser"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                </RelativeLayout>
 
-                </LinearLayout>
 
             </LinearLayout>
 
