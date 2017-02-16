@@ -141,6 +141,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
         //chat messaging service
         Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
+        getMainActivity().startService(serviceIntent);
         getMainActivity().bindService(serviceIntent, getMainActivity().connection, Context.BIND_AUTO_CREATE);
 
         new Thread(new Runnable() {

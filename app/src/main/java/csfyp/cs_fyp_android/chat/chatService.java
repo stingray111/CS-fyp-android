@@ -186,10 +186,13 @@ public class ChatService extends Service {
                 dp2px(mWidth),
                 dp2px(mHeight),
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH|WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE| WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH|WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
         mParams.gravity = Gravity.LEFT| Gravity.TOP;
+
+        mSendButton = (Button) mChatBox.findViewById(R.id.sendButton);
+        mMessageEditText = (EditText) mChatBox.findViewById(R.id.messageEditText);
 
         mFloatingActionButtonList = new LinkedList<com.github.clans.fab.FloatingActionButton>();
         for(Event item:mEventList) {
@@ -200,14 +203,29 @@ public class ChatService extends Service {
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    mSendButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            FriendlyMessage friendlyMessage = new
+                                    FriendlyMessage(MainActivity.mUsername,
+                                    MainActivity.mUsername,
+                                    mMessageEditText.getText().toString());
+                            mFirebaseDatabaseReference.child("messages/group_"+eventId)
+                                    .push().setValue(friendlyMessage);
+                            mMessageEditText.setText("");
+                        }
+                    });
+
                     mChatBox.findViewById(R.id.chat_frame).setVisibility(View.VISIBLE);
+
+                    mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
                     mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage,MessageViewHolder>(
                             FriendlyMessage.class,
                             R.layout.item_message,
                             MessageViewHolder.class,
-                            //mFirebaseDatabaseReference.child("messages/group_"+eventId)) { //TODO: change the child
-                            mFirebaseDatabaseReference.child("testMsg"+eventId)) { //TODO: change the child
+                            mFirebaseDatabaseReference.child("messages/group_"+eventId)) { //TODO: change the child
                         @Override
                         protected FriendlyMessage parseSnapshot(DataSnapshot snapshot) {
                             FriendlyMessage friendlyMessage = super.parseSnapshot(snapshot);
@@ -220,8 +238,8 @@ public class ChatService extends Service {
                         protected void populateViewHolder(MessageViewHolder viewHolder,
                                                           FriendlyMessage friendlyMessage, int position) {
                             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                            viewHolder.messageTextView.setText(friendlyMessage.getText());
-                            viewHolder.messengerTextView.setText(friendlyMessage.getName());
+                            viewHolder.messageTextView.setText(friendlyMessage.getContent());
+                            viewHolder.messengerTextView.setText(friendlyMessage.getDisplayName());
                             if (friendlyMessage.getPhotoUrl() == null) {
                                 viewHolder.messengerImageView
                                         .setImageDrawable(getResources().
@@ -235,7 +253,6 @@ public class ChatService extends Service {
                         }
 
                     };
-                    Log.d("haha",""+eventId);
 
                     mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
                         @Override
@@ -302,6 +319,7 @@ public class ChatService extends Service {
         mFloatingActionMenu.setIconToggleAnimatorSet(set);
 
 
+
         mFloatingActionMenu.setOnMenuButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -349,7 +367,7 @@ public class ChatService extends Service {
                 MATCH_PARENT,
                 MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
         mChatBox.setOnClickListener(new View.OnClickListener() {
@@ -374,17 +392,13 @@ public class ChatService extends Service {
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
-
-
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
-        mMessageEditText = (EditText) mChatBox.findViewById(R.id.messageEditText);
 
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
-
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.toString().trim().length() > 0) {
@@ -393,30 +407,8 @@ public class ChatService extends Service {
                     mSendButton.setEnabled(false);
                 }
             }
-
             @Override
             public void afterTextChanged(Editable editable) {
-            }
-        });
-
-        mSendButton = (Button) mChatBox.findViewById(R.id.sendButton);
-        mSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Send messages on click.
-                mSendButton = (Button) mChatBox.findViewById(R.id.sendButton);
-                mSendButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        FriendlyMessage friendlyMessage = new
-                                FriendlyMessage(mMessageEditText.getText().toString(),
-                                "ray",
-                                null);
-                        mFirebaseDatabaseReference.child(MESSAGES_CHILD)
-                                .push().setValue(friendlyMessage);
-                        mMessageEditText.setText("");
-                    }
-                });
             }
         });
 

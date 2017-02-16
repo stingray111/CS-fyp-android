@@ -26,7 +26,7 @@ public class MainActivity extends LocalizationActivity {
     private FrgHome mHome;
     private String mToken;
     private int mUserId;
-    private String mUsername;
+    public static String mUsername;
     private String mMsgToken;
     private boolean mIsBound = false;
     public ChatService mChatService;
