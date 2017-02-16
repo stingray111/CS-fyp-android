@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
-import csfyp.cs_fyp_android.model.request.EventAllRequest;
 import csfyp.cs_fyp_android.model.request.EventCreateRequest;
 import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
@@ -70,11 +69,6 @@ public interface HTTP {
     @POST("/api/get-events")
     Call<EventListRespond> getEvents (
             @Body EventListRequest eventFilter
-    );
-
-    @POST("/api/get-all-events")
-    Call<EventListRespond> getAllEvents (
-            @Body EventAllRequest eventAllRequest
     );
 
 

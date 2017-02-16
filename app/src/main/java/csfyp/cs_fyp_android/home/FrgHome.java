@@ -51,7 +51,6 @@ import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
 import csfyp.cs_fyp_android.model.Event;
-import csfyp.cs_fyp_android.model.request.EventAllRequest;
 import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
