@@ -58,8 +58,7 @@
         </activity>
 
         <service android:name=".chat.ChatService"
-            android:label="MeetUs Chat"
-        >
+            android:label="MeetUs Chat" >
         </service>
 
         <meta-data

@@ -124,7 +124,6 @@ public class ChatService extends Service {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user!=null) {
                     Log.d(TAG, "Login:\t" + user.getUid());
-                    //wait till init finished to startMsg
                 }
                 else{
                     Log.d(TAG, "signedOut");

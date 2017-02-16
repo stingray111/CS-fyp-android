@@ -117,7 +117,7 @@ public class MainActivity extends LocalizationActivity {
         mToken = sharedPref.getString("userToken", "");
         mUserId = sharedPref.getInt("userId", 0);
         mUsername = sharedPref.getString("username", "user");
-        mMsgToken = sharedPref.getString("msgToken", "");
+        mMsgToken = sharedPref.getString("msgToken", null);
 
         mHome = FrgHome.newInstance();
 
