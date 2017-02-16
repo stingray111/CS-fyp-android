@@ -140,7 +140,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
         //chat messaging service
         Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
-        getMainActivity().startService(serviceIntent);
+        //getMainActivity().startService(serviceIntent);
         getMainActivity().bindService(serviceIntent, getMainActivity().connection, Context.BIND_AUTO_CREATE);
 
         new Thread(new Runnable() {
@@ -175,7 +175,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                     }
                 }
                 // set the token
-                while(getMainActivity().getmMsgToken().isEmpty()){
+                while(getMainActivity().getmMsgToken() == null){
                     try{
                         Thread.sleep(1000);
                     }catch (Exception e){

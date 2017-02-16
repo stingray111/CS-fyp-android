@@ -198,6 +198,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                                     parent.setmToken(response.body().getToken());
                                     parent.setmUserId(response.body().getUserId());
                                     parent.setmUsername(response.body().getUsername());
+                                    Log.d("fuck you ", "Token"+response.body().getMsgToken());
                                     parent.setmMsgToken(response.body().getMsgToken());
 
 
