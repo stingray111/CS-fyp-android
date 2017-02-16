@@ -162,4 +162,8 @@ public class MainActivity extends LocalizationActivity {
         }
     };
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

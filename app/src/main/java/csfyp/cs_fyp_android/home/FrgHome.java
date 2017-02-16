@@ -51,12 +51,16 @@ import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
 import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.request.EventAllRequest;
+import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
+import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
 import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCallbacks<List<Event>> {
@@ -136,14 +140,33 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         }
 
         //chat messaging service
-
         Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
         getMainActivity().bindService(serviceIntent, getMainActivity().connection, Context.BIND_AUTO_CREATE);
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String TAG = "Home Thread";
+                Response<EventListRespond> EventRespond;
+                List<Event> eventList;
+
+                while(true){
+                    HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                    Call<EventListRespond> call = httpService.getEvents(new EventListRequest(((MainActivity)getActivity()).getmUserId(), 3));
+                    try {
+                        EventRespond = call.execute();
+                        if(EventRespond.isSuccessful() && EventRespond.body().getErrorMsg() == null) {
+                            eventList = EventRespond.body().getEvents();
+                            break;
+                        } else
+                            continue;
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                        continue;
+                    }
+
+                }
+
+                //check bound
                 while(!getMainActivity().getmIsBound()){
                     try{
                         Thread.sleep(1000);
@@ -152,29 +175,37 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                     }
                 }
                 // set the token
-                Log.d(TAG, "start putting token to service");
-                getMainActivity().mChatService.setmMsgToken(getMainActivity().getmMsgToken());
-                int count = 0;
-                while(getMainActivity().mChatService.getmMsgToken().isEmpty()){
+                while(getMainActivity().getmMsgToken().isEmpty()){
                     try{
                         Thread.sleep(1000);
                     }catch (Exception e){
                         e.printStackTrace();
                     }
-                    getMainActivity().mChatService.setmMsgToken(getMainActivity().getmMsgToken());
+                }
+                Log.d("TAG","token"+getMainActivity().getmMsgToken());
+                Log.d("TAG","event"+eventList.size());
+                getMainActivity().mChatService.setmMsgToken(getMainActivity().getmMsgToken());
+                getMainActivity().mChatService.setmEventList(eventList);
+
+                int count = 0;
+                while(getMainActivity().mChatService.getmMsgToken() == null || getMainActivity().mChatService.getmEventList() == null) {
+                    try{
+                        Thread.sleep(1000);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                     count++;
                     if(count>8){
-                        showMsgError();
+                        Log.d("TAG", "fucked");
                         count = 0;
                     }
                 }
+
                 // connect to firebase
-                Log.d(TAG, "finish putting token");
                 getMainActivity().mChatService.login();
 
             }
         }).start();
-
 
     }
 
@@ -420,13 +451,5 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         return (MainActivity)getActivity();
     }
 
-    public void showMsgError(){
-        getMainActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getMainActivity(),"Messaging Init Error, please restart the app", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
 }
 

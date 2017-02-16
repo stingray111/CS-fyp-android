@@ -32,6 +32,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -52,6 +53,7 @@ import java.util.List;
 
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.model.Event;
 
 import static android.view.View.GONE;
 import static android.widget.ListPopupWindow.MATCH_PARENT;
@@ -64,7 +66,7 @@ import com.bumptech.glide.Glide;
  */
 
 public class ChatService extends Service {
-    private String mMsgToken = "";
+    private String mMsgToken;
     private String TAG = "ChatService";
     public LocalBinder myBinder = new LocalBinder();
     private WindowManager mWindowManager;
@@ -95,6 +97,7 @@ public class ChatService extends Service {
     private static final String MESSAGE_URL = "https://cs-fyp.firebaseio.com/testMsg";
     private Button mSendButton;
     private EditText mMessageEditText;
+    private List<Event> mEventList;
     //vars
 
     public class LocalBinder extends Binder {
@@ -119,9 +122,9 @@ public class ChatService extends Service {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user!=null){
-                    Log.d(TAG, "Login:\t" +user.getUid());
-                    startMsg();
+                if (user!=null) {
+                    Log.d(TAG, "Login:\t" + user.getUid());
+                    //wait till init finished to startMsg
                 }
                 else{
                     Log.d(TAG, "signedOut");
@@ -165,6 +168,9 @@ public class ChatService extends Service {
     }
 
     public void startMsg(){
+        //put the event list in
+
+
         Log.d(TAG, "start messaging interface");
 
         mStatus= 0;
@@ -185,34 +191,82 @@ public class ChatService extends Service {
 
         mParams.gravity = Gravity.LEFT| Gravity.TOP;
 
-        final com.github.clans.fab.FloatingActionButton programFab1 = new com.github.clans.fab.FloatingActionButton(this);
-        programFab1.setButtonSize(FloatingActionButton.SIZE_MINI);
-        programFab1.setLabelText("hey");
-        programFab1.setImageResource(R.drawable.bg_event);
-        programFab1.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                mChatBox.findViewById(R.id.chat_frame).setVisibility(View.VISIBLE);
-                mStatus = 2;
-            }
-        });
-
-        final com.github.clans.fab.FloatingActionButton programFab2 = new com.github.clans.fab.FloatingActionButton(this);
-        programFab2.setButtonSize(FloatingActionButton.SIZE_MINI);
-        programFab2.setLabelText("hey");
-        programFab2.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                mChatBox.findViewById(R.id.chat_frame).setVisibility(View.VISIBLE);
-                mStatus = 2;
-            }
-        });
-        programFab2.setImageResource(R.drawable.bg_event);
-
         mFloatingActionButtonList = new LinkedList<com.github.clans.fab.FloatingActionButton>();
-        mFloatingActionButtonList.add(programFab1);
-        mFloatingActionButtonList.add(programFab2);
+        for(Event item:mEventList) {
+            final com.github.clans.fab.FloatingActionButton btn = new com.github.clans.fab.FloatingActionButton(this);
+            final int eventId = item.getId();
+            btn.setButtonSize(FloatingActionButton.SIZE_MINI);//TODO: change icon
+            btn.setLabelText(item.getName());
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mChatBox.findViewById(R.id.chat_frame).setVisibility(View.VISIBLE);
 
+                    mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage,MessageViewHolder>(
+                            FriendlyMessage.class,
+                            R.layout.item_message,
+                            MessageViewHolder.class,
+                            //mFirebaseDatabaseReference.child("messages/group_"+eventId)) { //TODO: change the child
+                            mFirebaseDatabaseReference.child("testMsg"+eventId)) { //TODO: change the child
+                        @Override
+                        protected FriendlyMessage parseSnapshot(DataSnapshot snapshot) {
+                            FriendlyMessage friendlyMessage = super.parseSnapshot(snapshot);
+                            if (friendlyMessage != null) {
+                                friendlyMessage.setId(snapshot.getKey());
+                            }
+                            return friendlyMessage;
+                        }
+                        @Override
+                        protected void populateViewHolder(MessageViewHolder viewHolder,
+                                                          FriendlyMessage friendlyMessage, int position) {
+                            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                            viewHolder.messageTextView.setText(friendlyMessage.getText());
+                            viewHolder.messengerTextView.setText(friendlyMessage.getName());
+                            if (friendlyMessage.getPhotoUrl() == null) {
+                                viewHolder.messengerImageView
+                                        .setImageDrawable(getResources().
+                                                getDrawable(
+                                                        R.drawable.ic_account_circle_black_36dp));
+                            } else {
+                                Glide.with(ChatService.this)
+                                        .load(friendlyMessage.getPhotoUrl())
+                                        .into(viewHolder.messengerImageView);
+                            }
+                        }
+
+                    };
+                    Log.d("haha",""+eventId);
+
+                    mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                        @Override
+                        public void onItemRangeInserted(int positionStart, int itemCount) {
+                            super.onItemRangeInserted(positionStart, itemCount);
+                            int friendlyMessageCount = mFirebaseAdapter.getItemCount();
+                            int lastVisiblePosition =
+                                    mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+                            // If the recycler view is initially being loaded or the
+                            // user is at the bottom of the list, scroll to the bottom
+                            // of the list to show the newly added message.
+                            if (lastVisiblePosition == -1 ||
+                                    (positionStart >= (friendlyMessageCount - 1) &&
+                                            lastVisiblePosition == (positionStart - 1))) {
+                                mMessageRecyclerView.scrollToPosition(positionStart);
+                            }
+                        }
+                    });
+
+                    if(mMessageRecyclerView.getAdapter() == null) {
+                        mMessageRecyclerView.setAdapter(mFirebaseAdapter);
+                    }else{
+                        mMessageRecyclerView.swapAdapter(mFirebaseAdapter,false);
+                    }
+                    //TODO: change mChatBox adaptor
+                    mStatus = 2;
+                }
+            });
+            btn.setImageResource(R.drawable.bg_event);
+            mFloatingActionButtonList.add(btn);
+        }
 
         //handling open the menu
         mFloatingActionMenu = (FloatingActionMenu) mView.findViewById(R.id.floatingMsgMenu);
@@ -320,56 +374,7 @@ public class ChatService extends Service {
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage,MessageViewHolder>(
-                FriendlyMessage.class,
-                R.layout.item_message,
-                MessageViewHolder.class,
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
-            @Override
-            protected FriendlyMessage parseSnapshot(DataSnapshot snapshot) {
-                FriendlyMessage friendlyMessage = super.parseSnapshot(snapshot);
-                if (friendlyMessage != null) {
-                    friendlyMessage.setId(snapshot.getKey());
-                }
-                return friendlyMessage;
-            }
-            @Override
-            protected void populateViewHolder(MessageViewHolder viewHolder,
-                                              FriendlyMessage friendlyMessage, int position) {
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                viewHolder.messageTextView.setText(friendlyMessage.getText());
-                viewHolder.messengerTextView.setText(friendlyMessage.getName());
-                if (friendlyMessage.getPhotoUrl() == null) {
-                    viewHolder.messengerImageView
-                            .setImageDrawable(getResources().
-                                    getDrawable(
-                                            R.drawable.ic_account_circle_black_36dp));
-                } else {
-                    Glide.with(ChatService.this)
-                            .load(friendlyMessage.getPhotoUrl())
-                            .into(viewHolder.messengerImageView);
-                }
-            }
 
-        };
-
-        mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                super.onItemRangeInserted(positionStart, itemCount);
-                int friendlyMessageCount = mFirebaseAdapter.getItemCount();
-                int lastVisiblePosition =
-                        mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
-                // If the recycler view is initially being loaded or the
-                // user is at the bottom of the list, scroll to the bottom
-                // of the list to show the newly added message.
-                if (lastVisiblePosition == -1 ||
-                        (positionStart >= (friendlyMessageCount - 1) &&
-                                lastVisiblePosition == (positionStart - 1))) {
-                    mMessageRecyclerView.scrollToPosition(positionStart);
-                }
-            }
-        });
 
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
@@ -416,7 +421,6 @@ public class ChatService extends Service {
         });
 
 
-        //TODO: messager details
 
 
         mWindowManager.addView(mChatBox, mParamsChatBox);
@@ -424,6 +428,7 @@ public class ChatService extends Service {
     }
 
     public void login(){
+        Log.d("here",mMsgToken);
         mAuth.signInWithCustomToken(mMsgToken)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -435,5 +440,18 @@ public class ChatService extends Service {
                 });
     }
 
+    public void setmEventList(List<Event> mEventList) {
+        this.mEventList = mEventList;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                startMsg();
+            }
+        });
+    }
+
+    public List<Event> getmEventList() {
+        return mEventList;
+    }
 
 }
