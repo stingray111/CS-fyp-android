@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
+import csfyp.cs_fyp_android.model.request.EventAllRequest;
 import csfyp.cs_fyp_android.model.request.EventCreateRequest;
 import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
@@ -71,6 +72,13 @@ public interface HTTP {
             @Body EventListRequest eventFilter
     );
 
+    @POST("/api/get-all-events")
+    Call<EventListRespond> getAllEvents (
+            @Body EventAllRequest eventAllRequest
+    );
+
+
+
     @POST("/api/join-event")
     Call<ErrorMsgOnly> joinEvent (
             @Body EventJoinQuitRequest join
@@ -94,8 +102,11 @@ public interface HTTP {
 
     Retrofit retrofit = new Retrofit.Builder()
             //.baseUrl("http://137.189.204.173:3000")
-            .baseUrl("http://192.168.1.5:3000")
+            //.baseUrl("http://192.168.1.5:3000")
             //.baseUrl("https://stingray.space:3000")
+            //.baseUrl("http://172.18.6.87:3000")
+            //.baseUrl("http://192.168.1.5:3000")
+            .baseUrl("https://stingray.space:3000")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build();

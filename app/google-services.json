@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "932997240603",
+    "firebase_url": "https://cs-fyp.firebaseio.com",
+    "project_id": "cs-fyp",
+    "storage_bucket": "cs-fyp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932997240603:android:9244545944218745",
+        "android_client_info": {
+          "package_name": "csfyp.cs_fyp_android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "932997240603-6scda76ni8v124erg4qahr51a1t3kqoi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "csfyp.cs_fyp_android",
+            "certificate_hash": "BC66B0EDA4911B4F6A56A666D8C8ED933951A223"
+          }
+        },
+        {
+          "client_id": "932997240603-jtkni4na80uvvcdurra1br2nbmcek015.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "csfyp.cs_fyp_android",
+            "certificate_hash": "887BEC033C7F450FA0AA4A08C5660D080F16A30A"
+          }
+        },
+        {
+          "client_id": "932997240603-j0ssfim0ducsulsa02gar6i102l1vqvf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5J29iBLcv3gRux2JusbQ_r19gV9SwlZk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "932997240603-j0ssfim0ducsulsa02gar6i102l1vqvf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

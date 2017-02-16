@@ -189,6 +189,8 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 Toast.makeText(getContext(), "Joined successfully", Toast.LENGTH_SHORT).show();
                                 Log.i(TAG, "Joined successfully");
                                 mIsJoined = true;
+                                //((MainActivity)getActivity()).mChatService.
+
                                 resetLoader();
                             }
                             else
@@ -244,6 +246,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                         if (response.isSuccessful()) {
                             if (response.body().getErrorMsg() == null) {
                                 Toast.makeText(getContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
+                                //TODO: drop the messaging record
                                 onBack(null);
                             }
                             else

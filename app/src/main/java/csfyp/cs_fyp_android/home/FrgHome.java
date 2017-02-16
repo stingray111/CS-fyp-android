@@ -1,8 +1,13 @@
 package csfyp.cs_fyp_android.home;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -25,9 +30,11 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.StreetViewPanoramaCamera;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.io.InputStream;
+import java.sql.Types;
 import java.util.List;
 
 import csfyp.cs_fyp_android.lib.ClusterableMarker;
@@ -35,6 +42,7 @@ import csfyp.cs_fyp_android.CustomMapFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.about.FrgAbout;
+import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.currentEvent.FrgCurrentEvent;
 import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
 import csfyp.cs_fyp_android.event.FrgEvent;
@@ -43,12 +51,16 @@ import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
 import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.request.EventAllRequest;
+import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
+import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
 import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCallbacks<List<Event>> {
@@ -119,12 +131,82 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
         setHasOptionsMenu(true);
 
-        InputStream is = (InputStream) getContext().getResources().openRawResource(R.raw.server);
+
+        InputStream is = (InputStream) this.getResources().openRawResource(R.raw.server);
         try {
             SSL.setServerCert(is);
         }catch (java.io.IOException e){
-            Toast.makeText(getContext(),"SSL Error: please restart the app", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(),"SSL Error: please restart the app", Toast.LENGTH_LONG).show();
         }
+
+        //chat messaging service
+        Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
+        getMainActivity().startService(serviceIntent);
+        getMainActivity().bindService(serviceIntent, getMainActivity().connection, Context.BIND_AUTO_CREATE);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Response<EventListRespond> EventRespond;
+                List<Event> eventList;
+
+                while(true){
+                    HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                    Call<EventListRespond> call = httpService.getEvents(new EventListRequest(((MainActivity)getActivity()).getmUserId(), 3));
+                    try {
+                        EventRespond = call.execute();
+                        if(EventRespond.isSuccessful() && EventRespond.body().getErrorMsg() == null) {
+                            eventList = EventRespond.body().getEvents();
+                            break;
+                        } else
+                            continue;
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                        continue;
+                    }
+
+                }
+
+                //check bound
+                while(!getMainActivity().getmIsBound()){
+                    try{
+                        Thread.sleep(1000);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                // set the token
+                while(getMainActivity().getmMsgToken().isEmpty()){
+                    try{
+                        Thread.sleep(1000);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                Log.d("TAG","token"+getMainActivity().getmMsgToken());
+                Log.d("TAG","event"+eventList.size());
+                getMainActivity().mChatService.setmMsgToken(getMainActivity().getmMsgToken());
+                getMainActivity().mChatService.setmEventList(eventList);
+
+                int count = 0;
+                while(getMainActivity().mChatService.getmMsgToken() == null || getMainActivity().mChatService.getmEventList() == null) {
+                    try{
+                        Thread.sleep(1000);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    count++;
+                    if(count>8){
+                        Log.d("TAG", "fucked");
+                        count = 0;
+                    }
+                }
+
+                // connect to firebase
+                getMainActivity().mChatService.login();
+
+            }
+        }).start();
 
     }
 
@@ -358,7 +440,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     public void onClickSetting(View view){ switchFragment(FrgSetting.newInstance());}
 
     public void onClickProfile(View view) {
-        switchFragment(FrgProfile.newInstance(((MainActivity) getActivity()).getmUserId()));
+        switchFragment(FrgProfile.newInstance(getMainActivity().getmUserId()));
     }
 
     public void onClickAbout(View view) {
@@ -366,5 +448,10 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     }
 
     public void onClickHistory(View view){ switchFragment(FrgHistory.newInstance());}
+
+    private MainActivity getMainActivity(){
+        return (MainActivity)getActivity();
+    }
+
 }
 

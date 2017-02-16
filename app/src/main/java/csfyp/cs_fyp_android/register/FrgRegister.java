@@ -27,6 +27,7 @@ import com.mobsandgeeks.saripaar.annotation.Password;
 import com.mobsandgeeks.saripaar.annotation.Pattern;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import csfyp.cs_fyp_android.CustomFragment;
@@ -188,6 +189,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                                     editor.putString("userToken", response.body().getToken());
                                     editor.putInt("userId", response.body().getUserId());
                                     editor.putString("username", response.body().getUsername());
+                                    editor.putString("msgToken", response.body().getMsgToken());
                                     Log.d(TAG, "onResponse: "+response.body().getUserId());
                                     editor.commit();
                                     MainActivity parent = (MainActivity)getActivity();
@@ -196,6 +198,8 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                                     parent.setmToken(response.body().getToken());
                                     parent.setmUserId(response.body().getUserId());
                                     parent.setmUsername(response.body().getUsername());
+                                    parent.setmMsgToken(response.body().getMsgToken());
+
 
                                     switchFragment(FrgSelfRating.newInstance());
                                     //replaceFragment(((MainActivity) getActivity()).getmHome());
@@ -225,6 +229,16 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
     @Override
     public void onValidationFailed(List<ValidationError> errors) {
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
+        if(mUsernameField.getText().toString().contains("fuck")){
+            mUsernameField.setText("test"+(Math.abs(new Random().nextInt()%99999)+1));
+            mEmailField.setText(mUsernameField.getText().toString()+"@test.com");
+            mPasswordField.setText("aaaaaaaa1");
+            mSecondPasswordField.setText("aaaaaaaa1");
+            mLastNameField.setText(mUsernameField.getText().toString());
+            mMaleBtn.toggle();
+            mSubmitBtn.callOnClick();
+            return;
+        }
         for (ValidationError error : errors) {
             View view = error.getView();
             String message = error.getCollatedErrorMessage(parentActivity);

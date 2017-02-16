@@ -16,6 +16,7 @@ public class User {
     private String email;
     private String phone;
     private String description;
+
     private float selfExtraversion;
     private float selfAgreeableness;
     private float selfConscientiousness;
@@ -27,6 +28,7 @@ public class User {
     private float adjustmentNeuroticismWeightedSum;
     private float adjustmentOpennessWeightedSum;
     private float adjustmentWeight;
+    private String msgToken;
     private int level;
 
     public User(String userName, String password, String firstName, String lastName, String nickName, boolean isMale, int attendEventNum, int missingEventNum, int holdingEventNum, String email, String phone, String description, int level) {
@@ -57,6 +59,10 @@ public class User {
             return firstName+" "+lastName;
         }
         return lastName;
+    }
+
+    public String getMsgToken() {
+        return msgToken;
     }
 
     public int getId() {
