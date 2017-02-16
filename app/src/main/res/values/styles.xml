@@ -65,4 +65,12 @@
         <item name="android:includeFontPadding">false</item>
     </style>
 
+    <style name="DistCreteSlider">
+        <item name="dsb_thumbSize">24dp</item>
+        <item name="dsb_scrubberHeight">6dp</item>
+        <item name="dsb_trackHeight">6dp</item>
+        <item name="dsb_indicatorColor">@color/colorAccent</item>
+        <item name="dsb_progressColor">@color/colorAccent</item>
+    </style>
+
 </resources>

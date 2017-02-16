@@ -3,6 +3,7 @@ package csfyp.cs_fyp_android.model;
 import java.util.List;
 
 import csfyp.cs_fyp_android.lib.TimeConverter;
+import csfyp.cs_fyp_android.model.request.Rate;
 
 public class Event {
     private int id;
@@ -19,6 +20,7 @@ public class Event {
     private String deadlineTime_formated;
     private String description;
     private List<User> participantList;
+    private List<Rate> rates;
 
 
     public int getId() {
@@ -77,5 +79,9 @@ public class Event {
 
     public List<User> getParticipantList() {
         return participantList;
+    }
+
+    public List<Rate> getRates() {
+        return rates;
     }
 }

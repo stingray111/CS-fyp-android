@@ -19,7 +19,7 @@
             android:elevation="4dp"
             android:background="#FFFFFF"/>
 
-        <csfyp.cs_fyp_android.CustomScrollView
+        <csfyp.cs_fyp_android.lib.CustomScrollView
             android:id="@+id/customScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -244,17 +244,35 @@
 
                 </LinearLayout>
 
-                <Button
-                    android:id="@+id/submitEvent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/btn_create"
-                    style="@style/DefaultButton"/>
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/submitEvent"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_margin="4dp"
+                        android:layout_gravity="center"
+                        android:text="@string/btn_create"
+                        style="@style/DefaultButton"/>
+
+                    <ProgressBar
+                        android:id="@+id/createProgressBar"
+                        android:visibility="gone"
+                        style="@android:style/Widget.Holo.Light.ProgressBar.Inverse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+
+                </LinearLayout>
 
             </LinearLayout>
 
-        </csfyp.cs_fyp_android.CustomScrollView>
+        </csfyp.cs_fyp_android.lib.CustomScrollView>
 
     </LinearLayout>
 

@@ -40,6 +40,9 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 
+import csfyp.cs_fyp_android.lib.ClusterableMarker;
+import csfyp.cs_fyp_android.lib.ClusterableMarkerRenderer;
+
 import static android.app.Activity.RESULT_OK;
 import static csfyp.cs_fyp_android.home.FrgHome.HOME_LOCATION_SETTING_CALLBACK;
 import static csfyp.cs_fyp_android.home.FrgHome.HOME_PERMISSION_CALLBACK;
@@ -174,8 +177,10 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
     }
 
     public void switchFragment(Fragment fragment) {
-        mLastTarget = mGoogleMap.getCameraPosition().target;
-        mLastZoom = mGoogleMap.getCameraPosition().zoom;
+        if (mGoogleMap != null) {
+            mLastTarget = mGoogleMap.getCameraPosition().target;
+            mLastZoom = mGoogleMap.getCameraPosition().zoom;
+        }
         super.switchFragment(this, fragment);
     }
 

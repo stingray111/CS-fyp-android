@@ -30,7 +30,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import java.io.InputStream;
 import java.util.List;
 
-import csfyp.cs_fyp_android.ClusterableMarker;
+import csfyp.cs_fyp_android.lib.ClusterableMarker;
 import csfyp.cs_fyp_android.CustomMapFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
@@ -340,6 +340,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     @Override
     public void onClusterItemInfoWindowClick(ClusterableMarker clusterItem) {
         super.onClusterItemInfoWindowClick(clusterItem);
+        Toast.makeText(getContext(), "clicked", Toast.LENGTH_SHORT).show();
         String[] temp = ((ClusterableMarker)clusterItem).getSnippet().split("&");
         Toast.makeText(getContext(), "clicked", Toast.LENGTH_SHORT).show();
         switchFragment(FrgEvent.newInstance(Integer.parseInt(temp[4])));

@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">MeetUs</string>
     <string name="title_activity_main">MeetUs</string>
 
@@ -18,6 +19,16 @@
     <string name="sort_menu_by_popularity">Sort by Popularity</string>
     <string name="sort_menu_by_name">Sort by Name</string>
 
+    <string name="profile_description">Description</string>
+    <string name="profile_record">Record</string>
+    <string name="profile_joined_event">Joined Event: </string>
+    <string name="profile_absent_event">Absent Event: </string>
+    <string name="profile_phone">Phone</string>
+    <string name="profile_email">Email</string>
+
+    <string name="profile_no_description">No Description Yet</string>
+    <string name="profile_no_phone">No Phone Number Yet</string>
+
     <string name="new_event_name_hint">Event Name</string>
     <string name="new_event_venue_hint">Venue</string>
     <string name="new_event_description_hint">Description</string>
@@ -28,11 +39,63 @@
     <string name="new_event_deadline_time">Event Deadline Time</string>
     <string name="new_event_deadline_time_hint">Click to set time</string>
 
+    <string name="self_rate_skip_dialog_title">Skip this test</string>
+    <string name="self_rate_skip_dialog_message">really?</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">cancel</string>
+
     <string name="btn_create">Create</string>
     <string name="btn_join">Join this Event</string>
     <string name="btn_quit">Quit this Event</string>
     <string name="btn_delete">Cancel this Event</string>
 
     <string name="setting_language_item">Language</string>
+
+
+    <!--string for personality-->
+    <string name="outgoing">Outgoing</string>
+    <string name="enthusiastic">Enthusiastic</string>
+    <string name="active">Active</string>
+
+    <string name="aloof">Aloof</string>
+    <string name="quiet">Quiet</string>
+    <string name="independent">Independent</string>
+
+    <string name="trusting">Trusting</string>
+    <string name="empathetic">Empathetic</string>
+    <string name="compliant">Compliant</string>
+
+    <string name="uncooperative">Uncooperative</string>
+    <string name="unempathetic">Unempathetic</string>
+    <string name="hostile">Unfriendly</string>
+
+    <string name="organized">Organized</string>
+    <string name="selfDirected">Self-discipline</string>
+    <string name="dependable">Dependable</string>
+
+    <string name="spontaneous">Spontaneous</string>
+    <string name="careless">Careless</string>
+    <string name="proneToAddiction">Prone to addiction</string>
+
+    <string name="irritable">Irritable</string>
+    <string name="moody">Moody</string>
+
+    <string name="stable">Stable</string>
+    <string name="relaxed">Relaxed</string>
+
+    <string name="openToNewExperiences">Open to new experiences</string>
+    <string name="curious">Curious</string>
+    <string name="creative">Creative</string>
+    <string name="imaginative">Imaginative</string>
+
+    <string name="practical">Practical</string>
+    <string name="conventional">Conventional</string>
+    <string name="skeptical">Skeptical</string>
+    <string name="rational">Rational</string>
+
+
+
+
 
 </resources>

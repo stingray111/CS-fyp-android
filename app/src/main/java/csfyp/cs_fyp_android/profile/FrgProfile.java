@@ -1,6 +1,7 @@
 package csfyp.cs_fyp_android.profile;
 
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -11,6 +12,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.RadarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.MarkerView;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.RadarData;
+import com.github.mikephil.charting.data.RadarDataSet;
+import com.github.mikephil.charting.data.RadarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
+
+import java.util.ArrayList;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.R;
@@ -29,6 +45,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
     private Toolbar mToolBar;
     private int mUserId;
     private User mUserObj;
+    private RadarChart mChart;
     private ProfileFrgBinding mDatabinding;
     private Response<UserRespond> mUserRespond;
 
@@ -40,6 +57,42 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
         args.putInt("userId", id);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setChartData(float e, float a, float c, float n, float o) {
+
+        float mult = 10;
+        int cnt = 5;
+
+        ArrayList<RadarEntry> entries1 = new ArrayList<RadarEntry>();
+
+        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
+        // the chart.
+        entries1.add(new RadarEntry(e));
+        entries1.add(new RadarEntry(a));
+        entries1.add(new RadarEntry(c));
+        entries1.add(new RadarEntry(n));
+        entries1.add(new RadarEntry(o));
+
+        RadarDataSet set1 = new RadarDataSet(entries1, null);
+        set1.setColor(Color.rgb(103, 110, 129));
+        set1.setFillColor(Color.rgb(103, 110, 129));
+        set1.setDrawFilled(true);
+        set1.setFillAlpha(180);
+        set1.setLineWidth(2f);
+        set1.setDrawHighlightCircleEnabled(true);
+        set1.setDrawHighlightIndicators(false);
+
+        ArrayList<IRadarDataSet> sets = new ArrayList<IRadarDataSet>();
+        sets.add(set1);
+
+        RadarData data = new RadarData(sets);
+        data.setValueTextSize(8f);
+        data.setDrawValues(true);
+        data.setValueTextColor(Color.BLACK);
+
+        mChart.setData(data);
+        mChart.invalidate();
     }
 
     @Nullable
@@ -63,6 +116,63 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
                 onBack(TAG);
             }
         });
+
+        mChart = mDatabinding.radarChart;
+
+        mChart.getDescription().setEnabled(false);
+
+        mChart.setWebLineWidth(1f);
+        mChart.setWebColor(Color.GRAY);
+        mChart.setWebLineWidthInner(0.6f);
+        mChart.setWebColorInner(Color.GRAY);
+        mChart.setWebAlpha(100);
+        mChart.setRotationEnabled(false);
+        mChart.setExtraTopOffset(15f);
+        mChart.setExtraLeftOffset(10f);
+        mChart.setExtraRightOffset(10f);
+
+        MarkerView mv = new MarkerView(getContext(),R.layout.radar_markerview);
+        mv.setChartView(mChart); // For bounds control
+
+        //setData();
+
+        mChart.animateXY(
+                1400, 1400,
+                Easing.EasingOption.EaseInOutQuad,
+                Easing.EasingOption.EaseInOutQuad);
+
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setTextSize(12f);
+        xAxis.setYOffset(15f);
+        xAxis.setXOffset(15f);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+
+            private String[] mActivities = new String[]{"E", "A", "C", "N", "O"};
+
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return mActivities[(int) value % mActivities.length];
+            }
+        });
+        xAxis.setTextColor(Color.BLACK);
+
+        YAxis yAxis = mChart.getYAxis();
+        yAxis.setLabelCount(5, false);
+        yAxis.setTextSize(12f);
+        yAxis.setAxisMinimum(0f);
+        yAxis.setAxisMaximum(4f);
+        yAxis.setGranularity(1f);
+        yAxis.setDrawLabels(false);
+
+        Legend l = mChart.getLegend();
+        l.setEnabled(false);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setDrawInside(false);
+        l.setXEntrySpace(5f);
+        l.setYEntrySpace(3f);
+        l.setTextColor(Color.BLACK);
 
         getLoaderManager().initLoader(USER_LOADER_ID, null, this);
 
@@ -99,6 +209,21 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
             mToolBar.setTitle(mUserObj.getUserName());
             mDatabinding.setUserObj(mUserObj);
             mDatabinding.profileProgressBar.setVisibility(View.GONE);
+
+            float e = mUserObj.getSelfExtraversion() + mUserObj.getAdjustmentExtraversionWeightedSum()/mUserObj.getAdjustmentWeight();
+            float a = mUserObj.getSelfAgreeableness() + mUserObj.getAdjustmentAgreeablenessWeightedSum()/mUserObj.getAdjustmentWeight();
+            float c = mUserObj.getSelfConscientiousness() + mUserObj.getAdjustmentConscientiousnessWeightedSum()/mUserObj.getAdjustmentWeight();
+            float n = mUserObj.getSelfNeuroticism() + mUserObj.getAdjustmentNeuroticismWeightedSum()/mUserObj.getAdjustmentWeight();
+            float o = mUserObj.getSelfOpenness() + mUserObj.getAdjustmentOpennessWeightedSum()/mUserObj.getAdjustmentWeight();
+
+            setChartData(e, a, c, n, o);
+
+            if (data.getDescription() == null || data.getDescription().replace(" ","").isEmpty())
+                data.setDescription(getResources().getString(R.string.profile_no_description));
+            if (data.getPhone() == null || data.getPhone().replace(" ","").isEmpty()) {
+                data.setPhone(getResources().getString(R.string.profile_no_phone));
+                mDatabinding.profilePhoneNo.setText(R.string.profile_no_phone);
+            }
         }
     }
 

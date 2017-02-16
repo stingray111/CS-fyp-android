@@ -85,20 +85,28 @@ public class MainActivity extends LocalizationActivity {
 
         mHome = FrgHome.newInstance();
 
-        if (mToken.isEmpty()) {
-            // user not login
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.parent_fragment_container, FrgLogin.newInstance());
-            ft.commit();
+        boolean debugMode = false;
+
+        if (debugMode) {
+//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//            ft.replace(R.id.parent_fragment_container, FrgRating.newInstance(mUserId, "ken31ee"));
+//            ft.commit();
+
         } else {
+            if (mToken.isEmpty()) {
+                // user not login
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.parent_fragment_container, FrgLogin.newInstance());
+                ft.commit();
+            } else {
 
-            // TODO: 6/11/2016 verify token 
-            // user login
+                // TODO: 6/11/2016 verify token
+                // user login
 
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.parent_fragment_container, mHome);
-            ft.commit();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.parent_fragment_container, mHome);
+                ft.commit();
+            }
         }
-
     }
 }

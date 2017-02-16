@@ -14,6 +14,8 @@ import java.util.List;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.HomeItemEventBinding;
 import csfyp.cs_fyp_android.event.FrgEvent;
+import csfyp.cs_fyp_android.event.FrgPassedEvent;
+import csfyp.cs_fyp_android.history.FrgHistory;
 import csfyp.cs_fyp_android.model.Event;
 
 public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
@@ -67,11 +69,18 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
         // each data item is just a string in this case
         public void onClickEventItem(View view) {
             FragmentTransaction ft = ((AppCompatActivity)binding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
-            ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
-                    .add(R.id.parent_fragment_container, FrgEvent.newInstance(binding.getItem().getId()))
-                    .hide(mFragment)
-                    .addToBackStack(null)
-                    .commit();
+            if (mFragment instanceof FrgHistory)
+                ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
+                        .add(R.id.parent_fragment_container, FrgPassedEvent.newInstance(binding.getItem().getId()))
+                        .hide(mFragment)
+                        .addToBackStack(null)
+                        .commit();
+            else
+                ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
+                        .add(R.id.parent_fragment_container, FrgEvent.newInstance(binding.getItem().getId()))
+                        .hide(mFragment)
+                        .addToBackStack(null)
+                        .commit();
         }
 
         public void setBinding(HomeItemEventBinding binding) {

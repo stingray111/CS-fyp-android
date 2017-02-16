@@ -1,6 +1,5 @@
 package csfyp.cs_fyp_android.event;
 
-
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -34,30 +32,30 @@ import java.util.List;
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
-import csfyp.cs_fyp_android.databinding.EventFrgBinding;
+import csfyp.cs_fyp_android.databinding.PassedEventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
-import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventRequest;
-import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
+import csfyp.cs_fyp_android.model.request.Rate;
 import csfyp.cs_fyp_android.profile.FrgProfile;
+import csfyp.cs_fyp_android.rating.FrgRating;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-
-public class FrgEvent extends CustomFragment implements OnMapReadyCallback,LoaderManager.LoaderCallbacks<Event>{
-    public FrgEvent() {}
+public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback,LoaderManager.LoaderCallbacks<Event> {
+    public FrgPassedEvent() {}
     private static final int EVENT_LOADER_ID  = 2;
-    private static final String TAG = "EventFragment";
-    private EventFrgBinding mDataBinding;
-    private Event mEventObj;
+    private static final String TAG = "PassedEventFragment";
+    private PassedEventFrgBinding mDataBinding;
     private boolean mIsSelfHold = false;
-    private boolean mIsJoined = false;
+    private boolean mIsAttendence = false;
     private boolean mIsMapReady = false;
     private boolean mIsLoaded = false;
+
+    private Event mEventObj;
+    private int mSelfUserId;
 
     private Toolbar mToolBar;
 
@@ -73,8 +71,8 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
 
     private Response<Event> mEventRespond;
 
-    public static FrgEvent newInstance(int id) {
-        FrgEvent fragment = new FrgEvent();
+    public static FrgPassedEvent newInstance(int id) {
+        FrgPassedEvent fragment = new FrgPassedEvent();
 
         Bundle args = new Bundle();
         args.putInt("eventId", id);
@@ -87,39 +85,23 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         getLoaderManager().restartLoader(EVENT_LOADER_ID, null, this);
     }
 
-    private void showJoin() {
-        mDataBinding.joinQuitProgressBar.setVisibility(View.GONE);
-        mDataBinding.deleteEvent.setVisibility(View.GONE);
-        mDataBinding.joinEvent.setVisibility(View.VISIBLE);
-        mDataBinding.quitEvent.setVisibility(View.GONE);
+    public int getmEventId() {
+        return mEventId;
     }
 
-    private void showQuit() {
-        mDataBinding.joinQuitProgressBar.setVisibility(View.GONE);
-        mDataBinding.deleteEvent.setVisibility(View.GONE);
-        mDataBinding.joinEvent.setVisibility(View.GONE);
-        mDataBinding.quitEvent.setVisibility(View.VISIBLE);
+    public Event getmEventObj() {
+        return mEventObj;
     }
 
-    private void showDelete() {
-        mDataBinding.joinQuitProgressBar.setVisibility(View.GONE);
-        mDataBinding.deleteEvent.setVisibility(View.VISIBLE);
-        mDataBinding.joinEvent.setVisibility(View.GONE);
-        mDataBinding.quitEvent.setVisibility(View.GONE);
-    }
-
-    private void showProgress() {
-        mDataBinding.joinQuitProgressBar.setVisibility(View.VISIBLE);
-        mDataBinding.deleteEvent.setVisibility(View.GONE);
-        mDataBinding.joinEvent.setVisibility(View.GONE);
-        mDataBinding.quitEvent.setVisibility(View.GONE);
+    public int getmSelfUserId() {
+        return mSelfUserId;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("isSelfHold", mIsSelfHold);
-        outState.putBoolean("isJoined", mIsJoined);
+        outState.putBoolean("isAttendence", mIsAttendence);
         outState.putBoolean("isMapReady", mIsMapReady);
         outState.putBoolean("isLoaded", mIsLoaded);
     }
@@ -140,12 +122,12 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
 
         if (savedInstanceState != null) {
             mIsSelfHold = savedInstanceState.getBoolean("isSelfHold");
-            mIsJoined = savedInstanceState.getBoolean("isJoined");
+            mIsAttendence = savedInstanceState.getBoolean("isAttendence");
             mIsMapReady = savedInstanceState.getBoolean("isMapReady");
             mIsLoaded = savedInstanceState.getBoolean("isLoaded");
         }
 
-        mDataBinding = DataBindingUtil.inflate(inflater,R.layout.event_frg, container,false);
+        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.passed_event_frg, container,false);
         mDataBinding.setHandlers(this);
         View v  = mDataBinding.getRoot();
 
@@ -174,102 +156,9 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         mMapView.onCreate(null);
         mMapView.getMapAsync(this);
 
-        // join button
-        mDataBinding.joinEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                Call<ErrorMsgOnly> call = httpService.joinEvent(new EventJoinQuitRequest(mEventId, ((MainActivity) getActivity()).getmUserId()));
-                showProgress();
-                call.enqueue(new Callback<ErrorMsgOnly>() {
-                    @Override
-                    public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
-                        if (response.isSuccessful()) {
-                            if (response.body().getErrorMsg() == null) {
-                                Toast.makeText(getContext(), "Joined successfully", Toast.LENGTH_SHORT).show();
-                                Log.i(TAG, "Joined successfully");
-                                mIsJoined = true;
-                                resetLoader();
-                            }
-                            else
-                                Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
-                        Toast.makeText(getContext(), "Cannot join event: unknown err", Toast.LENGTH_SHORT);
-                    }
-                });
-            }
-        });
-
-        mDataBinding.quitEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                Call<ErrorMsgOnly> call = httpService.quitEvent(new EventJoinQuitRequest(mEventId, ((MainActivity) getActivity()).getmUserId()));
-                mDataBinding.joinQuitProgressBar.setVisibility(View.VISIBLE);
-                mDataBinding.quitEvent.setVisibility(View.GONE);
-                call.enqueue(new Callback<ErrorMsgOnly>() {
-                    @Override
-                    public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
-                        if (response.isSuccessful()) {
-                            if (response.body().getErrorMsg() == null) {
-                                Toast.makeText(getContext(), "Quited successfully", Toast.LENGTH_SHORT).show();
-                                mIsJoined = false;
-                                resetLoader();
-                            }
-                            else
-                                Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
-                        Toast.makeText(getContext(), "Cannot quit event: unknown err", Toast.LENGTH_SHORT);
-                    }
-                });
-            }
-        });
-
-        mDataBinding.deleteEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                Call<ErrorMsgOnly> call = httpService.deleteEvent(new EventJoinQuitRequest(mEventId, ((MainActivity) getActivity()).getmUserId()));
-                call.enqueue(new Callback<ErrorMsgOnly>() {
-                    @Override
-                    public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
-                        if (response.isSuccessful()) {
-                            if (response.body().getErrorMsg() == null) {
-                                Toast.makeText(getContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
-                                onBack(null);
-                            }
-                            else
-                                Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
-
-                    }
-                });
-            }
-        });
-
-        if (mIsSelfHold) {
-            showDelete();
-        }
-
-        if (mIsJoined) {
-            showQuit();
-        } else {
-            showJoin();
-        }
-
         getLoaderManager().initLoader(EVENT_LOADER_ID, null, this);
+
+        mSelfUserId = ((MainActivity)getActivity()).getmUserId();
 
         return v;
     }
@@ -286,7 +175,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         mIsMapReady = true;
 
         if (mIsLoaded)
-            mDataBinding.eventProgressBar.setVisibility(View.GONE);
+            mDataBinding.passedEventProgressBar.setVisibility(View.GONE);
 
     }
 
@@ -375,44 +264,54 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
 
         mEventObj = data;
 
-        if (mEventObj != null) {
+        if(mEventObj != null){
+            int selfId = ((MainActivity)getActivity()).getmUserId();
+
+            if (selfId == data.getHolderId()) {
+                mIsSelfHold = true;
+            }
+
+            if (mIsSelfHold) {
+                mDataBinding.holderRateBtn.setVisibility(View.INVISIBLE);
+            }
+
+            if (mEventObj.getRates() != null) {
+                for (Rate rate: mEventObj.getRates()) {
+                    if (mEventObj.getHolder().getId() == rate.getOtherUserId())
+                        mDataBinding.holderRateBtn.setVisibility(View.INVISIBLE);
+                    for (User user: mEventObj.getParticipantList()) {
+                        if (rate.getOtherUserId() == user.getId())
+                            user.setRatedbyOther(true);
+                    }
+                }
+            } // // TODO: 9/2/2017 performance? 
+            
             mUserAdapter.setmUserList(mEventObj.getParticipantList());
             mUserAdapter.notifyDataSetChanged();
-
             mDataBinding.setEventObj(mEventObj);
+
+            if (mIsMapReady)
+                mDataBinding.passedEventProgressBar.setVisibility(View.GONE);
+
             mGoogleMap.clear();
             mGoogleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_self_marker)));
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()), 12.0f));
 
-            if (mIsMapReady) {
-                mDataBinding.eventProgressBar.setVisibility(View.GONE);
-            }
 
-            int selfId = ((MainActivity)getActivity()).getmUserId();
+//            for (Participation item: data.getAttendenceList()) {
+//                if(item.getUserId() == selfId)
+//                    mIsAttendence = item.isAttendence();
+//            }
 
-            if (selfId == data.getHolderId()){
-                mIsSelfHold = true;
-                showDelete();
-                return;
-            }
-
-            if (mIsJoined) {
-                showQuit();
-                return;
-            }
-
-            for (User item: data.getParticipantList()) {
-                if(item.getId() == selfId)
-                    mIsJoined = true;
-            }
-
-            if (mIsJoined) {
-                showQuit();
-            } else {
-                showJoin();
-            }
+//            if (mIsAttendence) {
+//
+//            } else {
+//
+//            }
+            
+            //// TODO: 8/2/2017 fix attendance problem 
         }
     }
 
@@ -420,9 +319,13 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     public void onLoaderReset(Loader<Event> loader) {
 
     }
-
+    
+    //// TODO: 23/1/2017 change this 
     public void onClickHolder(View v) {
         switchFragment(this, FrgProfile.newInstance(mEventObj.getHolder().getId()));
     }
-}
 
+    public void onClickHolderRate(View v) {
+        switchFragment(this, FrgRating.newInstance(mEventObj.getHolder().getId(), mEventObj.getHolder().getUserName(), mEventId));
+    }
+}

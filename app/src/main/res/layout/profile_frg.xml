@@ -19,6 +19,7 @@
             android:elevation="4dp" />
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/profileProgressBar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -50,11 +51,13 @@
                     android:orientation="vertical"
                     android:paddingBottom="10dp"
                     android:paddingTop="20dp">
+
                     <!-- icon -->
                     <ImageView
                         android:layout_width="150dp"
                         android:layout_height="150dp"
-                        android:src="@drawable/ic_people_1" />
+                        android:layout_margin="8dp"
+                        android:src="@drawable/ic_propic_big" />
                     <!-- name row -->
 
                     <TextView
@@ -66,61 +69,54 @@
                         android:textSize="20sp" />
 
                     <!-- level and thump row -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center">
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:paddingRight="4dp"
-                            android:paddingTop="4dp">
+                    <com.github.mikephil.charting.charts.RadarChart
+                        android:id="@+id/radarChart"
+                        android:layout_margin="12dp"
+                        android:padding="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Lv: "
-                                android:textSize="16sp" />
+                    <ImageButton
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="right"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginRight="16dp"
+                        android:background="@drawable/ic_help" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@{Integer.toString(userObj.level)}"
-                                android:textSize="16sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingLeft="5dp">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/ic_hate" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/ic_hate" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/ic_hate" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
                     <!-- description -->
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_event"
+                    android:elevation="2dp"
+                    android:orientation="vertical"
+                    android:paddingBottom="15dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="15dp">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingLeft="20dp"
-                        android:paddingRight="20dp"
+                        android:paddingBottom="5dp"
+                        android:text="@string/profile_description"
+                        android:textColor="#777777"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/profileDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000"
                         android:text="@{userObj.description}" />
+
                 </LinearLayout>
 
                 <!-- past record -->
@@ -140,7 +136,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="5dp"
-                        android:text="Record"
+                        android:text="@string/profile_record"
                         android:textColor="#777777"
                         android:textSize="18sp" />
 
@@ -152,7 +148,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Joined Event: "
+                            android:text="@string/profile_joined_event"
                             android:textColor="#000000"
                             android:textSize="14sp" />
 
@@ -162,6 +158,7 @@
                             android:text="@{Integer.toString(userObj.attendEventNum)}"
                             android:textColor="#000000"
                             android:textSize="14sp" />
+
                     </LinearLayout>
 
                     <LinearLayout
@@ -172,7 +169,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Missed Event: "
+                            android:text="@string/profile_absent_event"
                             android:textColor="#000000"
                             android:textSize="14sp" />
 
@@ -202,16 +199,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="5dp"
-                        android:text="Phone"
+                        android:text="@string/profile_phone"
                         android:textColor="#777777"
                         android:textSize="18sp" />
 
                     <TextView
+                        android:id="@+id/profilePhoneNo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@{userObj.phone}"
                         android:textColor="#000000"
                         android:textSize="14sp" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -230,7 +229,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="5dp"
-                        android:text="Email"
+                        android:text="@string/profile_email"
                         android:textColor="#777777"
                         android:textSize="18sp" />
 

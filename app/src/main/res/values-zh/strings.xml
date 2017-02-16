@@ -18,6 +18,16 @@
     <string name="sort_menu_by_popularity">熱門</string>
     <string name="sort_menu_by_name">名稱</string>
 
+    <string name="profile_description">自我介紹</string>
+    <string name="profile_record">參加記錄</string>
+    <string name="profile_joined_event">已參加活動: </string>
+    <string name="profile_absent_event">缺席活動: </string>
+    <string name="profile_phone">電話</string>
+    <string name="profile_email">電郵</string>
+
+    <string name="profile_no_description">未有簡介</string>
+    <string name="profile_no_phone">未有電話</string>
+
     <string name="new_event_name_hint">活動名稱</string>
     <string name="new_event_venue_hint">地點</string>
     <string name="new_event_description_hint">活動簡介</string>
@@ -28,11 +38,58 @@
     <string name="new_event_deadline_time">死線</string>
     <string name="new_event_deadline_time_hint">按此設定時間</string>
 
+    <string name="self_rate_skip_dialog_title">Skip this test</string>
+    <string name="self_rate_skip_dialog_message">really?</string>
+
+    <string name="ok">確定</string>
+    <string name="cancel">取消</string>
+
     <string name="btn_create">建立</string>
     <string name="btn_join">加入活動</string>
     <string name="btn_quit">退出活動</string>
     <string name="btn_delete">取消活動</string>
 
     <string name="setting_language_item">語言</string>
+
+    <!--string for personality-->
+    <string name="outgoing">外向</string>
+    <string name="enthusiastic">熱情</string>
+    <string name="active">活躍</string>
+
+    <string name="aloof">冷漠</string>
+    <string name="quiet">沉默</string>
+    <string name="independent">自立</string>
+
+    <string name="trusting">輕易信任別人</string>
+    <string name="empathetic">富同情心</string>
+    <string name="compliant">唯唯諾諾</string>
+
+    <string name="uncooperative">不合作</string>
+    <string name="unempathetic">欠同情心</string>
+    <string name="hostile">不友善</string>
+
+    <string name="organized">有條理</string>
+    <string name="selfDirected">自律</string>
+    <string name="dependable">可靠</string>
+
+    <string name="spontaneous">衝動</string>
+    <string name="careless">粗心</string>
+    <string name="proneToAddiction">容易上癮</string>
+
+    <string name="irritable">易怒</string>
+    <string name="moody">憂鬱</string>
+
+    <string name="stable">穩定</string>
+    <string name="relaxed">無拘無束</string>
+
+    <string name="openToNewExperiences">樂於接受新事物</string>
+    <string name="curious">好奇心重</string>
+    <string name="creative">有創意</string>
+    <string name="imaginative">富想像力</string>
+
+    <string name="practical">實事求是</string>
+    <string name="conventional">傳統</string>
+    <string name="skeptical">疑心重</string>
+    <string name="rational">理性</string>
 
 </resources>

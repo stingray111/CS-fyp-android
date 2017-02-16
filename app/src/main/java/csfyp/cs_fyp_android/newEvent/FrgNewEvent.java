@@ -33,10 +33,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import csfyp.cs_fyp_android.CustomMapFragment;
-import csfyp.cs_fyp_android.CustomScrollView;
+import csfyp.cs_fyp_android.lib.CustomScrollView;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.NewEventFrgBinding;
@@ -319,6 +318,8 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
             @Override
             public void onClick(View v) {
                 mValidator.validate();
+                mDataBinding.submitEvent.setVisibility(View.GONE);
+                mDataBinding.createProgressBar.setVisibility(View.VISIBLE);
             }
 
         });
@@ -336,6 +337,8 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
             // Display error messages ;)
             if (view instanceof EditText) {
                 ((EditText) view).setError(message);
+                mDataBinding.submitEvent.setVisibility(View.VISIBLE);
+                mDataBinding.createProgressBar.setVisibility(View.GONE);
             } else {
                 Toast.makeText(parentActivity,message,Toast.LENGTH_LONG).show();
             }

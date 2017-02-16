@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="username"
+            type="String"/>
+        <variable
+            name="handlers"
+            type="csfyp.cs_fyp_android.rating.FrgRating"/>
+    </data>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/ratingToolBar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="#FFFFFFFF"
+            android:elevation="6dp" />
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_event">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="@{username}"/>
+
+                <com.cunoraz.tagview.TagView
+                    xmlns:tagview="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/addedTagGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="30dp"
+                    android:layout_margin="4dp"
+                    tagview:lineMargin="4dp"
+                    tagview:tagMargin="4dp"
+                    tagview:textPaddingLeft="8dp"
+                    tagview:textPaddingTop="4dp"
+                    tagview:textPaddingRight="8dp"
+                    tagview:textPaddingBottom="4dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="Extraversion"/>
+
+                <com.cunoraz.tagview.TagView
+                    xmlns:tagview="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/ETagGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="30dp"
+                    android:layout_margin="4dp"
+                    tagview:lineMargin="4dp"
+                    tagview:tagMargin="4dp"
+                    tagview:textPaddingLeft="8dp"
+                    tagview:textPaddingTop="4dp"
+                    tagview:textPaddingRight="8dp"
+                    tagview:textPaddingBottom="4dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="Neuroticism"/>
+
+                <com.cunoraz.tagview.TagView
+                    xmlns:tagview="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/NTagGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="30dp"
+                    android:layout_margin="4dp"
+                    tagview:lineMargin="4dp"
+                    tagview:tagMargin="4dp"
+                    tagview:textPaddingLeft="8dp"
+                    tagview:textPaddingTop="4dp"
+                    tagview:textPaddingRight="8dp"
+                    tagview:textPaddingBottom="4dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="Conscientiousness"/>
+
+                <com.cunoraz.tagview.TagView
+                    xmlns:tagview="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/CTagGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="30dp"
+                    android:layout_margin="4dp"
+                    tagview:lineMargin="4dp"
+                    tagview:tagMargin="4dp"
+                    tagview:textPaddingLeft="8dp"
+                    tagview:textPaddingTop="4dp"
+                    tagview:textPaddingRight="8dp"
+                    tagview:textPaddingBottom="4dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="Agreeableness"/>
+
+                <com.cunoraz.tagview.TagView
+                    xmlns:tagview="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/ATagGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="30dp"
+                    android:layout_margin="4dp"
+                    tagview:lineMargin="4dp"
+                    tagview:tagMargin="4dp"
+                    tagview:textPaddingLeft="8dp"
+                    tagview:textPaddingTop="4dp"
+                    tagview:textPaddingRight="8dp"
+                    tagview:textPaddingBottom="4dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="Openness"/>
+
+                <com.cunoraz.tagview.TagView
+                    xmlns:tagview="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/OTagGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="30dp"
+                    android:layout_margin="4dp"
+                    tagview:lineMargin="4dp"
+                    tagview:tagMargin="4dp"
+                    tagview:textPaddingLeft="8dp"
+                    tagview:textPaddingTop="4dp"
+                    tagview:textPaddingRight="8dp"
+                    tagview:textPaddingBottom="4dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="32dp"
+                    android:orientation="vertical">
+
+                    <ProgressBar
+                        android:id="@+id/selfRateSubmitBtnProgressBar"
+                        style="@android:style/Widget.Holo.Light.ProgressBar.Inverse"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <Button
+                        android:id="@+id/selfRateSubmitBtn"
+                        style="@style/DefaultButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:text="submit"
+                        android:onClick="@{handlers::onClickRateSubmit}"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+</layout>

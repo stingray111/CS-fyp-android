@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -190,11 +191,14 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                                     Log.d(TAG, "onResponse: "+response.body().getUserId());
                                     editor.commit();
                                     MainActivity parent = (MainActivity)getActivity();
+
+                                    // set information in Main Activity for later use
                                     parent.setmToken(response.body().getToken());
                                     parent.setmUserId(response.body().getUserId());
                                     parent.setmUsername(response.body().getUsername());
 
-                                    replaceFragment(((MainActivity) getActivity()).getmHome());
+                                    switchFragment(FrgSelfRating.newInstance());
+                                    //replaceFragment(((MainActivity) getActivity()).getmHome());
                                 }
                             }
 
@@ -232,6 +236,10 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                 Toast.makeText(parentActivity,message,Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public void switchFragment(Fragment to) {
+        super.switchFragment(this, to);
     }
 }
 
