@@ -182,7 +182,6 @@ public class ChatService extends Service {
         mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG,"here: "+"fuck");
             }
         });
         mChatBox = li.inflate(R.layout.chat_frame,null);
@@ -194,10 +193,10 @@ public class ChatService extends Service {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|  WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL  |WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
-        //mParams.gravity = Gravity.LEFT| Gravity.TOP;
+        mParams.gravity = Gravity.LEFT| Gravity.TOP;
 
-        mParams.x = 200;
-        mParams.y = 200;
+        mParams.x = dp2px(100);
+        mParams.y = dp2px(100);
 
         mSendButton = (Button) mChatBox.findViewById(R.id.sendButton);
         mMessageEditText = (EditText) mChatBox.findViewById(R.id.messageEditText);
@@ -326,8 +325,97 @@ public class ChatService extends Service {
 
         mFloatingActionMenu.setIconToggleAnimatorSet(set);
 
+        mView.findViewById(R.id.floatingMsgMenuForeground).setOnTouchListener(new View.OnTouchListener() {
+            private int CLICK_ACTION_THRESHHOLD = 150;
+            private float startX;
+            private float startY;
+            private float preX;
+            private float preY;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                boolean isAClick = true;
+                float endX = event.getRawX();
+                float endY = event.getRawY();
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        startX = event.getRawX();
+                        startY = event.getRawY();
+                        isAClick = true;
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        if (isClick(startX, endX, startY, endY) && isAClick) {
+                            clickEvent();
+                            return false;
+                        }
+                        else {
+                            mParams.x = mParams.x + (int)(endX-preX);
+                            mParams.y = mParams.y + (int)(endY-preY);
+                            mWindowManager.updateViewLayout(mView,mParams);
+                            Log.d(TAG,"fuck moved");
+                            return false;
+                        }
+
+                    case MotionEvent.ACTION_MOVE:
+                        if(!isClick(startX,endX,startY,endY)) {
+                            isAClick = false;
+                        }
+                        mParams.x = mParams.x + (int)(endX-preX);
+                        mParams.y = mParams.y + (int)(endY-preY);
+                        mWindowManager.updateViewLayout(mView, mParams);
+                        Log.d(TAG, "fuck moved");
+                        break;
+
+                }
+                preX = event.getRawX();
+                preY = event.getRawY();
+                return true;
+            }
+
+            private boolean isClick(float startX, float endX, float startY, float endY) {
+                float differenceX = Math.abs(startX - endX);
+                float differenceY = Math.abs(startY - endY);
+                if (differenceX > CLICK_ACTION_THRESHHOLD/* =5 */ || differenceY > CLICK_ACTION_THRESHHOLD) {
+                    return false;
+                }
+                return true;
+            }
+
+            private void clickEvent(){
+                if(mStatus == 0) {
+                    for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
+                        mFloatingActionMenu.addMenuButton(_fab);
+                    }
+                    int tempx = mParams.x;
+                    int tempy = mParams.y;
+                    mParams.x = 0;
+                    mParams.y = 0;
+                    mWindowManager.updateViewLayout(mView,mParams);
+                    mParams.x = tempx;
+                    mParams.y = tempy;
+                    mStatus = 1;
+                }
+                else if(mStatus == 1) {
+                    for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
+                        mFloatingActionMenu.removeMenuButton(_fab);
+                        mWindowManager.updateViewLayout(mView,mParams);
+                    }
+                    mStatus = 0;
+                }else if(mStatus == 2){
+                    for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
+                        mFloatingActionMenu.removeMenuButton(_fab);
+                    }
+                    mChatBox.findViewById(R.id.chat_frame).setVisibility(GONE);
+                    mStatus = 0;
+                }
+                mFloatingActionMenu.toggle(true);
+            }
+        });
 
 
+
+        /*
         mFloatingActionMenu.setOnMenuButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -335,28 +423,32 @@ public class ChatService extends Service {
                     for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
                         mFloatingActionMenu.addMenuButton(_fab);
                     }
-                    Log.d(TAG,"here:" + mWindowManager.getDefaultDisplay().getWidth());
+                    int tempx = mParams.x;
+                    int tempy = mParams.y;
+                    mParams.x = 0;
+                    mParams.y = 0;
+                    mWindowManager.updateViewLayout(mView,mParams);
+                    mParams.x = tempx;
+                    mParams.y = tempy;
                     mStatus = 1;
                 }
                 else if(mStatus == 1) {
                     for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
                         mFloatingActionMenu.removeMenuButton(_fab);
+                        mWindowManager.updateViewLayout(mView,mParams);
                     }
-                    Log.d(TAG,"here:" + mWindowManager.getDefaultDisplay().getWidth());
                     mStatus = 0;
                 }else if(mStatus == 2){
                     for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
                         mFloatingActionMenu.removeMenuButton(_fab);
                     }
-                    Log.d(TAG,"here:" + mWindowManager.getDefaultDisplay().getSize());
                     mChatBox.findViewById(R.id.chat_frame).setVisibility(GONE);
                     mStatus = 0;
                 }
                 mFloatingActionMenu.toggle(true);
             }
         });
-        mParams.x = dp2px(0);
-        mParams.y = dp2px(50);
+        */
         mWindowManager.addView(mView, mParams);
 
 

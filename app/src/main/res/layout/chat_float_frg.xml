@@ -40,6 +40,12 @@
 
     </com.github.clans.fab.FloatingActionMenu>
 
+    <FrameLayout
+        android:layout_width="@dimen/fab_size_normal"
+        android:layout_height="@dimen/fab_size_normal"
+        android:id="@+id/floatingMsgMenuForeground">
+
+    </FrameLayout>
 
 </FrameLayout>
 
