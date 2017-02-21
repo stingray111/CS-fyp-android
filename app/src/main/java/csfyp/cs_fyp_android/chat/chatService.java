@@ -72,10 +72,6 @@ public class ChatService extends Service {
     private WindowManager mWindowManager;
     private View mView;
     private int mStatus;  //0: icon
-    private int mWidth;//dp
-    private int mHeight;//dp
-    private int mXPos;//dp
-    private int mYPos;//dp
     private WindowManager.LayoutParams mParams;
     private Handler mHandler;
 
@@ -176,19 +172,32 @@ public class ChatService extends Service {
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         mView = li.inflate(R.layout.chat_float_frg,null);
+        mView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });
+
+        mView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG,"here: "+"fuck");
+            }
+        });
         mChatBox = li.inflate(R.layout.chat_frame,null);
 
-        mWidth = 150;
-        mHeight = 150;
-
         mParams = new WindowManager.LayoutParams(
-                dp2px(mWidth),
-                dp2px(mHeight),
+                WRAP_CONTENT,
+                WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE| WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH|WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|  WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL  |WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
-        mParams.gravity = Gravity.LEFT| Gravity.TOP;
+        //mParams.gravity = Gravity.LEFT| Gravity.TOP;
+
+        mParams.x = 200;
+        mParams.y = 200;
 
         mSendButton = (Button) mChatBox.findViewById(R.id.sendButton);
         mMessageEditText = (EditText) mChatBox.findViewById(R.id.messageEditText);
@@ -318,38 +327,22 @@ public class ChatService extends Service {
         mFloatingActionMenu.setIconToggleAnimatorSet(set);
 
 
+        for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
+            mFloatingActionMenu.addMenuButton(_fab);
+        }
 
         mFloatingActionMenu.setOnMenuButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if(mStatus == 0) {
-
-                    for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
-                        mFloatingActionMenu.addMenuButton(_fab);
-                    }
-
-                    mParams.width = WRAP_CONTENT;
-                    mParams.height = WRAP_CONTENT;
-                    mWindowManager.updateViewLayout(mView,mParams);
-
+                    Log.d(TAG,"here:" + mWindowManager.getDefaultDisplay().getWidth());
                     mStatus = 1;
                 }
                 else if(mStatus == 1) {
-                    for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
-                        mFloatingActionMenu.removeMenuButton(_fab);
-                    }
-                    mParams.width = dp2px(mHeight);
-                    mParams.height = dp2px(mWidth);
-                    mWindowManager.updateViewLayout(mView,mParams);
+                    Log.d(TAG,"here:" + mWindowManager.getDefaultDisplay().getWidth());
                     mStatus = 0;
                 }else if(mStatus == 2){
-                    for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
-                        mFloatingActionMenu.removeMenuButton(_fab);
-                    }
-                    mParams.width = dp2px(mHeight);
-                    mParams.height = dp2px(mWidth);
-                    mWindowManager.updateViewLayout(mView,mParams);
+                    Log.d(TAG,"here:" + mWindowManager.getDefaultDisplay().getSize());
                     mChatBox.findViewById(R.id.chat_frame).setVisibility(GONE);
                     mStatus = 0;
                 }
@@ -410,9 +403,6 @@ public class ChatService extends Service {
             public void afterTextChanged(Editable editable) {
             }
         });
-
-
-
 
         mWindowManager.addView(mChatBox, mParamsChatBox);
 
