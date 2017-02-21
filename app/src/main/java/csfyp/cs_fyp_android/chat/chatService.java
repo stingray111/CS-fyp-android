@@ -327,21 +327,27 @@ public class ChatService extends Service {
         mFloatingActionMenu.setIconToggleAnimatorSet(set);
 
 
-        for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
-            mFloatingActionMenu.addMenuButton(_fab);
-        }
 
         mFloatingActionMenu.setOnMenuButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(mStatus == 0) {
+                    for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
+                        mFloatingActionMenu.addMenuButton(_fab);
+                    }
                     Log.d(TAG,"here:" + mWindowManager.getDefaultDisplay().getWidth());
                     mStatus = 1;
                 }
                 else if(mStatus == 1) {
+                    for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
+                        mFloatingActionMenu.removeMenuButton(_fab);
+                    }
                     Log.d(TAG,"here:" + mWindowManager.getDefaultDisplay().getWidth());
                     mStatus = 0;
                 }else if(mStatus == 2){
+                    for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
+                        mFloatingActionMenu.removeMenuButton(_fab);
+                    }
                     Log.d(TAG,"here:" + mWindowManager.getDefaultDisplay().getSize());
                     mChatBox.findViewById(R.id.chat_frame).setVisibility(GONE);
                     mStatus = 0;
