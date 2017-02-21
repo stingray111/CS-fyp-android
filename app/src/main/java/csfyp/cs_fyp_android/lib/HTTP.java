@@ -26,6 +26,11 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public interface HTTP {
+
+    String theURL ="https://stingray.space:3001";
+    //String theURL ="https://stingray.space:3000";
+
+
     @POST("/api/register")
     Call<RegisterRespond> createUser (
             @Body User user
@@ -94,12 +99,7 @@ public interface HTTP {
             .build();
 
     Retrofit retrofit = new Retrofit.Builder()
-            //.baseUrl("http://137.189.204.173:3000")
-            //.baseUrl("http://192.168.1.5:3000")
-            //.baseUrl("https://stingray.space:3000")
-            //.baseUrl("http://172.18.6.87:3000")
-            //.baseUrl("http://192.168.1.5:3000")
-            .baseUrl("https://stingray.space:3000")
+            .baseUrl(theURL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
