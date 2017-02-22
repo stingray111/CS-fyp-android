@@ -31,6 +31,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -201,6 +202,7 @@ public class ChatService extends Service {
         mFloatingActionButtonList = new LinkedList<com.github.clans.fab.FloatingActionButton>();
         for(Event item:mEventList) {
             final com.github.clans.fab.FloatingActionButton btn = new com.github.clans.fab.FloatingActionButton(this);
+            final String eventName = item.getName();
             final int eventId = item.getId();
             btn.setButtonSize(FloatingActionButton.SIZE_MINI);//TODO: change icon
             btn.setLabelText(item.getName());
@@ -222,6 +224,8 @@ public class ChatService extends Service {
                     });
 
                     mChatBox.findViewById(R.id.chat_frame).setVisibility(View.VISIBLE);
+
+                    ((TextView)mChatBox.findViewById(R.id.chatFrameTitle)).setText(eventName);
 
                     mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
@@ -365,10 +369,10 @@ public class ChatService extends Service {
             private float startY;
             private float preX;
             private float preY;
+            boolean isAClick = true;
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                boolean isAClick = true;
                 float endX = event.getRawX();
                 float endY = event.getRawY();
                 switch (event.getAction()){
@@ -380,6 +384,7 @@ public class ChatService extends Service {
 
                     case MotionEvent.ACTION_UP:
                         if (isClick(startX, endX, startY, endY) && isAClick) {
+                            validLocation();
                             clickEvent();
                             return false;
                         }
@@ -427,8 +432,8 @@ public class ChatService extends Service {
                     mParams.y = 0;
                 }
 
-                if(mParams.y + fabSize > mWindowSize.y){
-                    mParams.y = mWindowSize.y - fabSize;
+                if(mParams.y + fabSize*2 > mWindowSize.y){
+                    mParams.y = mWindowSize.y - fabSize*2;
                 }
 
                 if(mParams.x + fabSize > mWindowSize.x){
@@ -461,6 +466,13 @@ public class ChatService extends Service {
             @Override
             public void onClick(View v) {
                 //do nothing
+            }
+        });
+
+        mChatBox.findViewById(R.id.chatFrameBack).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mChatBox.setVisibility(GONE);
             }
         });
 
