@@ -15,33 +15,26 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Display;
-import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.appindexing.Indexable;
-import com.google.firebase.appindexing.builders.Indexables;
-import com.google.firebase.appindexing.builders.PersonBuilder;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -60,7 +53,6 @@ import csfyp.cs_fyp_android.model.Event;
 import static android.view.View.GONE;
 import static android.widget.ListPopupWindow.MATCH_PARENT;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
-import com.bumptech.glide.Glide;
 
 
 /**
@@ -91,8 +83,8 @@ public class ChatService extends Service {
     private LinearLayoutManager mLinearLayoutManager;
     private DatabaseReference mFirebaseDatabaseReference;
 
-    private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> mFirebaseAdapter;
-    //private FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder> mFirebaseAdapter;
+    //private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> mFirebaseAdapter;
+    private FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder> mFirebaseAdapter;
     public static final String MESSAGES_CHILD = "testMsg";
     private static final String MESSAGE_URL = "https://cs-fyp.firebaseio.com/testMsg";
     private Button mSendButton;
@@ -233,7 +225,6 @@ public class ChatService extends Service {
 
                     mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
-/*
                     mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder>(
                             FriendlyMessage.class,
                             R.layout.item_message,
@@ -241,40 +232,65 @@ public class ChatService extends Service {
                             mFirebaseDatabaseReference.child("messages/group_"+eventId)){
                         @Override
                         protected void populateViewHolder(RecyclerView.ViewHolder viewHolder, FriendlyMessage model, int position) {
-
-
+                            int localType = getLocalType(model);
+                            switch (localType){
+                                case 0:
+                                    //others
+                                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                                    ((MessageViewHolder)viewHolder).messageTextView.setText(model.getContent());
+                                    ((MessageViewHolder)viewHolder).messengerTextView.setText(model.getDisplayName());
+                                    ((MessageViewHolder) viewHolder).timeStamp.setText(model.getTime());
+                                    break;
+                                case 10:
+                                    //own
+                                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                                    ((MessageViewHolder)viewHolder).messageTextView.setText(model.getContent());
+                                    ((MessageViewHolder)viewHolder).timeStamp.setText(model.getTime());
+                                    break;
+                            }
                         }
-                    }
-                    */
-                    mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage,MessageViewHolder>(
-                            FriendlyMessage.class,
-                            R.layout.item_message_1,
-                            MessageViewHolder.class,
-                            mFirebaseDatabaseReference.child("messages/group_"+eventId)) { //TODO: change the child
+
                         @Override
-                        protected FriendlyMessage parseSnapshot(DataSnapshot snapshot) {
+                        protected FriendlyMessage parseSnapshot(DataSnapshot snapshot){
                             FriendlyMessage friendlyMessage = super.parseSnapshot(snapshot);
-                            if (friendlyMessage != null) {
+                            if(friendlyMessage !=null ){
                                 friendlyMessage.setId(snapshot.getKey());
                             }
                             return friendlyMessage;
                         }
+
                         @Override
-                        protected void populateViewHolder(MessageViewHolder viewHolder,
-                                                          FriendlyMessage friendlyMessage, int position) {
-                            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                            viewHolder.messageTextView.setText(friendlyMessage.getContent());
-                            viewHolder.messengerTextView.setText(friendlyMessage.getDisplayName());
-                            if (friendlyMessage.getPhotoUrl() == null) {
-                                viewHolder.messengerImageView
-                                        .setImageDrawable(getResources().
-                                                getDrawable(
-                                                        R.drawable.ic_account_circle_black_36dp));
-                            } else {
-                                Glide.with(ChatService.this)
-                                        .load(friendlyMessage.getPhotoUrl())
-                                        .into(viewHolder.messengerImageView);
+                        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                            switch (viewType){
+                                case 10:
+                                    View selfView = LayoutInflater.from(parent.getContext())
+                                            .inflate(R.layout.item_message_own,parent,false);
+                                    return new MessageViewHolder(selfView);
+                                case 0:
+                                    View otherView = LayoutInflater.from(parent.getContext())
+                                            .inflate(R.layout.item_message,parent,false);
+                                    return new MessageViewHolder(otherView);
                             }
+                            Log.d(TAG,"unhandled");
+                            return null;
+                        }
+
+
+                        @Override
+                        public int getItemViewType(int position) {
+                            FriendlyMessage friendlyMessage = getItem(position);
+                            return getLocalType(friendlyMessage);
+                        }
+
+                        public int getLocalType(FriendlyMessage friendlyMessage){
+                            int localType = 0;
+                            if(friendlyMessage.getUid().equals(MainActivity.mUsername)){
+                                localType = friendlyMessage.getType()+10;
+                            }
+                            else{
+                                localType = friendlyMessage.getType();
+                            }
+                            return localType;
                         }
 
                     };
@@ -308,7 +324,7 @@ public class ChatService extends Service {
             });
             btn.setImageResource(R.drawable.bg_event);
             mFloatingActionButtonList.add(btn);
-        }
+        };
 
         //handling open the menu
         mFloatingActionMenu = (FloatingActionMenu) mView.findViewById(R.id.floatingMsgMenu);
@@ -464,6 +480,7 @@ public class ChatService extends Service {
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
             }
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -475,6 +492,7 @@ public class ChatService extends Service {
             }
             @Override
             public void afterTextChanged(Editable editable) {
+
             }
         });
 
@@ -514,15 +532,6 @@ public class ChatService extends Service {
             for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
                 mFloatingActionMenu.addMenuButton(_fab);
             }
-            /*
-            int tempx = mParams.x;
-            int tempy = mParams.y;
-            mParams.x = 0;
-            mParams.y = 0;
-            mWindowManager.updateViewLayout(mView,mParams);
-            mParams.x = tempx;
-            mParams.y = tempy;
-            */
             mStatus = 1;
         }
         else if(mStatus == 1) {
