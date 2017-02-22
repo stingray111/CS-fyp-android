@@ -401,6 +401,7 @@ public class ChatService extends Service {
                 mChatBox.setVisibility(GONE);
             }
         });
+
         mChatBox.findViewById(R.id.chat_inner).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -473,6 +474,7 @@ public class ChatService extends Service {
             for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
                 mFloatingActionMenu.addMenuButton(_fab);
             }
+            /*
             int tempx = mParams.x;
             int tempy = mParams.y;
             mParams.x = 0;
@@ -480,12 +482,13 @@ public class ChatService extends Service {
             mWindowManager.updateViewLayout(mView,mParams);
             mParams.x = tempx;
             mParams.y = tempy;
+            */
             mStatus = 1;
         }
         else if(mStatus == 1) {
             for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
                 mFloatingActionMenu.removeMenuButton(_fab);
-                mWindowManager.updateViewLayout(mView,mParams);
+                //mWindowManager.updateViewLayout(mView,mParams);
             }
             mStatus = 0;
         }else if(mStatus == 2){
