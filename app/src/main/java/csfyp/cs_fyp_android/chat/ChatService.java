@@ -92,6 +92,7 @@ public class ChatService extends Service {
     private DatabaseReference mFirebaseDatabaseReference;
 
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> mFirebaseAdapter;
+    //private FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder> mFirebaseAdapter;
     public static final String MESSAGES_CHILD = "testMsg";
     private static final String MESSAGE_URL = "https://cs-fyp.firebaseio.com/testMsg";
     private Button mSendButton;
@@ -232,9 +233,22 @@ public class ChatService extends Service {
 
                     mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
-                    mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage,MessageViewHolder>(
+/*
+                    mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder>(
                             FriendlyMessage.class,
                             R.layout.item_message,
+                            RecyclerView.ViewHolder.class,
+                            mFirebaseDatabaseReference.child("messages/group_"+eventId)){
+                        @Override
+                        protected void populateViewHolder(RecyclerView.ViewHolder viewHolder, FriendlyMessage model, int position) {
+
+
+                        }
+                    }
+                    */
+                    mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage,MessageViewHolder>(
+                            FriendlyMessage.class,
+                            R.layout.item_message_1,
                             MessageViewHolder.class,
                             mFirebaseDatabaseReference.child("messages/group_"+eventId)) { //TODO: change the child
                         @Override
@@ -441,6 +455,7 @@ public class ChatService extends Service {
         mLinearLayoutManager.setStackFromEnd(true);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
