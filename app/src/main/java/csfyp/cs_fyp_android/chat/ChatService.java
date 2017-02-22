@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -22,6 +23,7 @@ import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -66,6 +68,7 @@ import com.bumptech.glide.Glide;
  */
 
 public class ChatService extends Service {
+    private Point mWindowSize = new Point();
     private String mMsgToken;
     private String TAG = "ChatService";
     public LocalBinder myBinder = new LocalBinder();
@@ -170,6 +173,7 @@ public class ChatService extends Service {
 
         mStatus= 0;
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        mWindowManager.getDefaultDisplay().getSize(mWindowSize);
         LayoutInflater li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         mView = li.inflate(R.layout.chat_float_frg,null);
         mView.setOnTouchListener(new View.OnTouchListener() {
@@ -350,9 +354,8 @@ public class ChatService extends Service {
                             return false;
                         }
                         else {
-                            mParams.x = mParams.x + (int)(endX-preX);
-                            mParams.y = mParams.y + (int)(endY-preY);
-                            mWindowManager.updateViewLayout(mView,mParams);
+                            move((int)(endX-preX),(int)(endY-preY));
+                            validLocation();
                             return false;
                         }
 
@@ -360,9 +363,7 @@ public class ChatService extends Service {
                         if(!isClick(startX,endX,startY,endY)) {
                             isAClick = false;
                         }
-                        mParams.x = mParams.x + (int)(endX-preX);
-                        mParams.y = mParams.y + (int)(endY-preY);
-                        mWindowManager.updateViewLayout(mView, mParams);
+                        move((int)(endX-preX),(int)(endY-preY));
                         break;
 
                 }
@@ -380,7 +381,31 @@ public class ChatService extends Service {
                 return true;
             }
 
+            private void move(int diffx, int diffy){
+                mParams.x = mParams.x + diffx;
+                mParams.y = mParams.y + diffy;
 
+                mWindowManager.updateViewLayout(mView, mParams);
+            }
+
+            private void validLocation(){
+                int fabSize = getResources().getDimensionPixelSize(R.dimen.fab_size_normal);
+                if(mParams.x < 0){
+                    mParams.x = 0;
+                }
+                if(mParams.y < 0){
+                    mParams.y = 0;
+                }
+
+                if(mParams.y + fabSize > mWindowSize.y){
+                    mParams.y = mWindowSize.y - fabSize;
+                }
+
+                if(mParams.x + fabSize > mWindowSize.x){
+                    mParams.x = mWindowSize.x - fabSize;
+                }
+                mWindowManager.updateViewLayout(mView,mParams);
+            }
         });
 
 
