@@ -686,9 +686,7 @@ public class ChatService extends Service {
         btn.setImageResource(R.drawable.bg_event);
         //((ViewGroup)btn.getParent()).removeView(btn);
         mFloatingActionMenu.close(true);
-        //for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
-         //   mFloatingActionMenu.removeMenuButton(_fab);
-        //}
+
         mFloatingActionMenu.removeAllMenuButtons();
         mStatus = 0;
 
