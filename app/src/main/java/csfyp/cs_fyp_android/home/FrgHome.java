@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -69,6 +70,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     public static final int HOME_PERMISSION_CALLBACK = 1;
     public static final String TAG = "HomeFragment";
 
+
     private boolean mIsPanelExpanded;
     private boolean mIsPanelAnchored;
     private boolean mIsLoadFinished = false;
@@ -81,6 +83,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
     // For Toolbar
     private Toolbar mToolBar;
+    private Menu mMenu;
 
     // For Event Recycler View
     private RecyclerView mEventRecyclerView;
@@ -240,6 +243,8 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         });
 
 
+
+
         // Setting up Pull-up Panel
         if (mIsPanelExpanded) {
             Fragment expandPanelAppBar = FrgExpandPanelAppBar.newInstance();
@@ -314,6 +319,13 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.option_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //TODO: add action
+        mEventAdapter.sortEventList(item);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override // TODO: 3/1/2017 override super here
@@ -451,6 +463,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     private MainActivity getMainActivity(){
         return (MainActivity)getActivity();
     }
+
 
 }
 

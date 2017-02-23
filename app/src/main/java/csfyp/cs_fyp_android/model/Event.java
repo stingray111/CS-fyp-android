@@ -1,5 +1,8 @@
 package csfyp.cs_fyp_android.model;
 
+import android.location.Location;
+
+import java.util.Comparator;
 import java.util.List;
 
 import csfyp.cs_fyp_android.lib.TimeConverter;
@@ -89,4 +92,12 @@ public class Event {
     public List<Participation> getAttendace() {
         return attendance;
     }
+
+    public Location retrieveLocation(){
+        Location locationA = new Location(this.name);
+        locationA.setLatitude(this.getLatitude());
+        locationA.setLongitude(this.getLongitude());
+        return locationA;
+    }
+
 }

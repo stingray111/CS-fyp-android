@@ -6,17 +6,26 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.load.engine.Resource;
+
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.HomeItemEventBinding;
 import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.event.FrgPassedEvent;
 import csfyp.cs_fyp_android.history.FrgHistory;
 import csfyp.cs_fyp_android.model.Event;
+
+import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.decending;
+import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.getComparator;
 
 public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
 
@@ -58,6 +67,22 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
         this.mEventList = mEventList;
     }
 
+    public void sortEventList(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.sortDistance:
+                Collections.sort(mEventList, decending(getComparator(EventComparator.DISTANCE_SORT)));
+                break;
+            case R.id.sortPopularity:
+                break;
+            case R.id.sortName:
+                Collections.sort(mEventList, decending(getComparator(EventComparator.NAME_SORT)));
+                break;
+        }
+        this.notifyDataSetChanged();
+    }
+
+
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private HomeItemEventBinding binding;
@@ -89,6 +114,46 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
 
         public HomeItemEventBinding getBinding() {
             return binding;
+        }
+    }
+
+    public enum EventComparator implements Comparator<Event> {
+        ID_SORT{
+            public int compare(Event o1, Event o2) {
+                return Integer.valueOf(o1.getId()).compareTo(o2.getId());
+            }},
+        NAME_SORT {
+            public int compare(Event o1, Event o2) {
+                return o1.getName().compareTo(o2.getName());
+            }},
+        DISTANCE_SORT{
+            public int compare(Event o1,Event o2){
+                float distance1 = o1.retrieveLocation().distanceTo(MainActivity.mCurrentLocation);
+                float distance2 = o2.retrieveLocation().distanceTo(MainActivity.mCurrentLocation);
+                return Float.compare(distance1,distance2);
+        }};
+
+
+        public static Comparator<Event> decending(final Comparator<Event> other) {
+            return new Comparator<Event>() {
+                public int compare(Event o1, Event o2) {
+                    return -1 * other.compare(o1, o2);
+                }
+            };
+        }
+
+        public static Comparator<Event> getComparator(final EventComparator... multipleOptions) {
+            return new Comparator<Event>() {
+                public int compare(Event o1, Event o2) {
+                    for (EventComparator option : multipleOptions) {
+                        int result = option.compare(o1, o2);
+                        if (result != 0) {
+                            return result;
+                        }
+                    }
+                    return 0;
+                }
+            };
         }
     }
 

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentTransaction;
@@ -22,7 +23,8 @@ import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.model.User;
 public class MainActivity extends LocalizationActivity {
 
-    private FrgHome mHome;
+    public FrgHome mHome;
+    public static Location mCurrentLocation;
     private String mToken;
     private User mSelf;
     private int mUserId;

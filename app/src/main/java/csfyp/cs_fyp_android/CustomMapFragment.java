@@ -70,6 +70,7 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
     private LocationSettingsRequest mLocationSettingsRequest;
     private boolean mIsSetToInitLocation = false;
 
+
     // permission & setting of location service
     private boolean mIsPermissionGranted = false;
     private boolean mIsLocationSettingEnable = false;
@@ -290,6 +291,7 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
+        MainActivity.mCurrentLocation = location;
         if (!mIsSetToInitLocation) {
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 11.0f));
             mIsSetToInitLocation = true;
@@ -383,4 +385,6 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
             }
         }
     }
+
+
 }

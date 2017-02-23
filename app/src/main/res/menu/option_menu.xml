@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_settings"
+    <item android:id="@+id/sortingMenu"
         android:orderInCategory="100"
         android:title="sort"
         android:icon="@drawable/ic_sort"
@@ -10,10 +10,13 @@
 
         <menu>
             <item
+                android:id="@+id/sortDistance"
                 android:title="@string/sort_menu_by_distance" />
             <item
+                android:id="@+id/sortPopularity"
                 android:title="@string/sort_menu_by_popularity" />
             <item
+                android:id="@+id/sortName"
                 android:title="@string/sort_menu_by_name" />
         </menu>
 
