@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
+import csfyp.cs_fyp_android.model.request.ChangeAttendanceRequest;
 import csfyp.cs_fyp_android.model.request.EventCreateRequest;
 import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
@@ -27,8 +28,9 @@ import retrofit2.http.POST;
 
 public interface HTTP {
 
-    String theURL ="https://stingray.space:3001";
-    //String theURL ="https://stingray.space:3000";
+    //String theURL ="https://stingray.space:3001";
+    String theURL = "https://stingray.space:3000";
+    //String theURL = "http://192.168.1.5:3000";
 
 
     @POST("/api/register")
@@ -76,7 +78,6 @@ public interface HTTP {
             @Body EventListRequest eventFilter
     );
 
-
     @POST("/api/join-event")
     Call<ErrorMsgOnly> joinEvent (
             @Body EventJoinQuitRequest join
@@ -90,6 +91,11 @@ public interface HTTP {
     @POST("/api/delete-event")
     Call<ErrorMsgOnly> deleteEvent (
             @Body EventJoinQuitRequest delete
+    );
+
+    @POST("/api/change-attendance")
+    Call<ErrorMsgOnly> changeAttendance (
+            @Body ChangeAttendanceRequest attendance
     );
 
     final OkHttpClient okHttpClient = new OkHttpClient.Builder()

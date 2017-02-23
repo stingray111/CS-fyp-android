@@ -27,6 +27,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
 
 import csfyp.cs_fyp_android.CustomFragment;
@@ -36,6 +40,7 @@ import csfyp.cs_fyp_android.databinding.PassedEventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.Participation;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.EventRequest;
 import csfyp.cs_fyp_android.model.request.Rate;
@@ -66,8 +71,11 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
     private int mEventId;
     private List<User> mUserList;
     private RecyclerView mUserRecyclerView;
+    private RecyclerView mAttandanceRecyclerView;
     private AdtUser mUserAdapter;
+    private AdtAttendanceUser mAttendanceUserAdapter;
     private RecyclerView.LayoutManager mUserLayoutManager;
+    private RecyclerView.LayoutManager mAttendanceLayoutManager;
 
     private Response<Event> mEventRespond;
 
@@ -131,12 +139,19 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
         mDataBinding.setHandlers(this);
         View v  = mDataBinding.getRoot();
 
-        // Setting up RcyclerView for event
-        mUserRecyclerView = mDataBinding.rvUser;
+        // Setting up RecyclerView for event
         mUserLayoutManager = new LinearLayoutManager(getContext());
+        mAttendanceLayoutManager = new LinearLayoutManager(getContext());
+        mUserRecyclerView = mDataBinding.rvUser;
         mUserRecyclerView.setLayoutManager(mUserLayoutManager);
         mUserAdapter = new AdtUser(this);
         mUserRecyclerView.setAdapter(mUserAdapter);
+
+        // Setting up RecyclerView for attendace
+        mAttandanceRecyclerView = mDataBinding.rvAttendaceUser;
+        mAttandanceRecyclerView.setLayoutManager(mAttendanceLayoutManager);
+        mAttendanceUserAdapter = new AdtAttendanceUser(this);
+        mAttandanceRecyclerView.setAdapter(mAttendanceUserAdapter);
 
         // Tool Bar
         mToolBar = mDataBinding.eventToolBar;
@@ -187,6 +202,7 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();
         AppIndex.AppIndexApi.start(client, getIndexApiAction());
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -197,6 +213,7 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -273,8 +290,38 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
 
             if (mIsSelfHold) {
                 mDataBinding.holderRateBtn.setVisibility(View.INVISIBLE);
+                mDataBinding.checkAttendance.setVisibility(View.VISIBLE);
+
+            } else {
+                mDataBinding.checkAttendance.setVisibility(View.GONE);
+
+                // check if self attend the event
+                if (mEventObj.getAttendace() != null) {
+                    for (Participation participation: mEventObj.getAttendace()) {
+                        if (participation.getUserId() == ((MainActivity)getActivity()).getmUserId()) {
+                            if (!participation.isAttended())
+                                mDataBinding.notAttendedMsg.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
             }
 
+            // set the attendance of the users
+            if (mEventObj.getAttendace() != null) {
+                for (Participation participation: mEventObj.getAttendace()) {
+                    Log.i("hihi", participation.getUserId() + " " + participation.isAttended());
+
+                    if (participation.isAttended()) {
+                        for (User user: mEventObj.getParticipantList()) {
+                            if (participation.getUserId() == user.getId()) {
+                                user.setAttended(true);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // check users if rated
             if (mEventObj.getRates() != null) {
                 for (Rate rate: mEventObj.getRates()) {
                     if (mEventObj.getHolder().getId() == rate.getOtherUserId()) {
@@ -290,10 +337,14 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
                         mDataBinding.notSelfRatedMsg.setVisibility(View.VISIBLE);
                     }
                 }
-            } // // TODO: 9/2/2017 performance? 
+            } // TODO: 9/2/2017 performance?
             
             mUserAdapter.setmUserList(mEventObj.getParticipantList());
             mUserAdapter.notifyDataSetChanged();
+
+            mAttendanceUserAdapter.setmUserList(mEventObj.getParticipantList());
+            mAttendanceUserAdapter.notifyDataSetChanged();
+
             mDataBinding.setEventObj(mEventObj);
 
             if (mIsMapReady)
@@ -305,11 +356,6 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_self_marker)));
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mEventObj.getLatitude(), mEventObj.getLongitude()), 12.0f));
 
-
-//            for (Participation item: data.getAttendenceList()) {
-//                if(item.getUserId() == selfId)
-//                    mIsAttendence = item.isAttendence();
-//            }
 
 //            if (mIsAttendence) {
 //
@@ -333,5 +379,11 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
 
     public void onClickHolderRate(View v) {
         switchFragment(this, FrgRating.newInstance(mEventObj.getHolder().getId(), mEventObj.getHolder().getUserName(), mEventId));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(int userId) {
+        Log.i("EventBus", "Received");
+        mUserAdapter.notifyDataSetChanged();
     }
 }

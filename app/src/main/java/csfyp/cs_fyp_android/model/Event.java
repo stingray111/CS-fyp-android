@@ -21,6 +21,7 @@ public class Event {
     private String description;
     private List<User> participantList;
     private List<Rate> rates;
+    private List<Participation> attendance;
 
 
     public int getId() {
@@ -83,5 +84,9 @@ public class Event {
 
     public List<Rate> getRates() {
         return rates;
+    }
+
+    public List<Participation> getAttendace() {
+        return attendance;
     }
 }

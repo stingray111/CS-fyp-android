@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,14 +66,29 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (mFragment instanceof FrgPassedEvent) {
             holder.getPassedBinding().setHandlers(holder);
+
             if (mUserList != null) {
+
                 holder.getPassedBinding().setItem(mUserList.get(position));
-                if (mUserList.get(position).getId() == ((FrgPassedEvent)mFragment).getmSelfUserId())
-                    holder.getPassedBinding().rateBtn.setVisibility(View.GONE);
+
+                // is rated by other?
                 if (mUserList.get(position).isRatedbyOther()) {
                     holder.getPassedBinding().rateBtn.setVisibility(View.GONE);
                     holder.getPassedBinding().ratedImg.setVisibility(View.VISIBLE);
+                } else {
+                    holder.getPassedBinding().rateBtn.setVisibility(View.VISIBLE);
+                    holder.getPassedBinding().ratedImg.setVisibility(View.GONE);
                 }
+
+                // is self?
+                if (mUserList.get(position).getId() == ((FrgPassedEvent)mFragment).getmSelfUserId())
+                    holder.getPassedBinding().rateBtn.setVisibility(View.GONE);
+                // is attended?
+                if (!mUserList.get(position).isAttended()) {
+                    Log.i("hey", "not attended" + mUserList.get(position).getUserName());
+                    holder.getPassedBinding().rateBtn.setVisibility(View.GONE);
+                }
+
                 holder.getPassedBinding().executePendingBindings();
             }
         } else {

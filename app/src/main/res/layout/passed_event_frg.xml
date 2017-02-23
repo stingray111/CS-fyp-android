@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-
     <data>
-
         <variable
             name="handlers"
             type="csfyp.cs_fyp_android.event.FrgPassedEvent" />
@@ -234,11 +232,11 @@
                 </LinearLayout>
                 
                 <RelativeLayout
-                    android:id="@+id/notSelfRatedMsg"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     
                     <LinearLayout
+                        android:id="@+id/notSelfRatedMsg"
                         android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -250,6 +248,24 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="You had not rated yourself"
+                            android:textSize="20dp"
+                            android:gravity="center" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/notAttendedMsg"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:elevation="4dp"
+                        android:background="#40000000">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="You had not attend the event"
                             android:textSize="20dp"
                             android:gravity="center" />
 
@@ -362,6 +378,39 @@
                     </LinearLayout>
 
                 </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/checkAttendance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_event"
+                    android:orientation="vertical"
+                    android:paddingBottom="15dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="15dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Attendance"
+                            android:textColor="#777777"
+                            android:textSize="15sp" />
+
+                    </LinearLayout>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rvAttendaceUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
 
 
             </LinearLayout>

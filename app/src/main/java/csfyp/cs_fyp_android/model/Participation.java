@@ -3,7 +3,7 @@ package csfyp.cs_fyp_android.model;
 public class Participation {
     private int userId;
     private int eventId;
-    private boolean attendence;
+    private boolean attendance;
 
     public int getUserId() {
         return userId;
@@ -13,7 +13,7 @@ public class Participation {
         return eventId;
     }
 
-    public boolean isAttendence() {
-        return attendence;
+    public boolean isAttended() {
+        return attendance;
     }
 }

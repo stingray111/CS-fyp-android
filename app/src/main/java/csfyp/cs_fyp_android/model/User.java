@@ -10,6 +10,7 @@ public class User {
     private boolean isMale;
     private boolean isRatedbyOther;
     private boolean isSelfRated;
+    private boolean isAttended = false;
     private int attendEventNum;
     private int missingEventNum;
     private int holdingEventNum;
@@ -125,6 +126,10 @@ public class User {
         return isSelfRated;
     }
 
+    public void setAttended(boolean attended) {
+        isAttended = attended;
+    }
+
     public float getSelfExtraversion() {
         return selfExtraversion;
     }
@@ -179,5 +184,9 @@ public class User {
 
     public void setRatedbyOther(boolean ratedbyOther) {
         isRatedbyOther = ratedbyOther;
+    }
+
+    public boolean isAttended() {
+        return isAttended;
     }
 }

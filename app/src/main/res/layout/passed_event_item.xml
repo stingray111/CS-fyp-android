@@ -35,6 +35,7 @@
             android:onClick="@{handlers::onClickUserItem}" />
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/ratedImg"
             android:layout_width="24dp"
             android:layout_height="24dp"

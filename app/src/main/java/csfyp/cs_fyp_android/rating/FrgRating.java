@@ -1,6 +1,7 @@
 package csfyp.cs_fyp_android.rating;
 
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -62,49 +63,49 @@ public class FrgRating extends CustomFragment {
     private void addAdjectives() {
 
         // Extraversion
-        ETags.add(new CustomTag(1, getString(R.string.outgoing), R.color.yellow).getTag());
-        ETags.add(new CustomTag(2, getString(R.string.enthusiastic), R.color.yellow).getTag());
-        ETags.add(new CustomTag(3, getString(R.string.active), R.color.yellow).getTag());
+        ETags.add(new CustomTag(1, getString(R.string.outgoing), Color.CYAN).getTag());
+        ETags.add(new CustomTag(2, getString(R.string.enthusiastic), Color.CYAN).getTag());
+        ETags.add(new CustomTag(3, getString(R.string.active), Color.CYAN).getTag());
 
-        ETags.add(new CustomTag(4, getString(R.string.aloof), R.color.yellow).getTag());
-        ETags.add(new CustomTag(5, getString(R.string.quiet), R.color.yellow).getTag());
-        ETags.add(new CustomTag(6, getString(R.string.independent), R.color.yellow).getTag());
+        ETags.add(new CustomTag(4, getString(R.string.aloof), Color.CYAN).getTag());
+        ETags.add(new CustomTag(5, getString(R.string.quiet), Color.CYAN).getTag());
+        ETags.add(new CustomTag(6, getString(R.string.independent), Color.CYAN).getTag());
 
         // Agreeableness
-        ATags.add(new CustomTag(7, getString(R.string.trusting), R.color.purple).getTag());
-        ATags.add(new CustomTag(8, getString(R.string.empathetic), R.color.purple).getTag());
-        ATags.add(new CustomTag(9, getString(R.string.compliant), R.color.purple).getTag());
+        ATags.add(new CustomTag(7, getString(R.string.trusting), Color.MAGENTA).getTag());
+        ATags.add(new CustomTag(8, getString(R.string.empathetic), Color.MAGENTA).getTag());
+        ATags.add(new CustomTag(9, getString(R.string.compliant), Color.MAGENTA).getTag());
 
-        ATags.add(new CustomTag(10, getString(R.string.uncooperative), R.color.purple).getTag());
-        ATags.add(new CustomTag(11, getString(R.string.unempathetic), R.color.purple).getTag());
-        ATags.add(new CustomTag(12, getString(R.string.hostile), R.color.purple).getTag());
+        ATags.add(new CustomTag(10, getString(R.string.uncooperative), Color.MAGENTA).getTag());
+        ATags.add(new CustomTag(11, getString(R.string.unempathetic), Color.MAGENTA).getTag());
+        ATags.add(new CustomTag(12, getString(R.string.hostile), Color.MAGENTA).getTag());
 
         // Conscientiousness
-        CTags.add(new CustomTag(13, getString(R.string.organized), R.color.blue).getTag());
-        CTags.add(new CustomTag(14, getString(R.string.selfDirected), R.color.blue).getTag());
-        CTags.add(new CustomTag(15, getString(R.string.dependable), R.color.blue).getTag());
+        CTags.add(new CustomTag(13, getString(R.string.organized), Color.BLUE).getTag());
+        CTags.add(new CustomTag(14, getString(R.string.selfDirected), Color.BLUE).getTag());
+        CTags.add(new CustomTag(15, getString(R.string.dependable), Color.BLUE).getTag());
 
-        CTags.add(new CustomTag(16, getString(R.string.spontaneous), R.color.blue).getTag());
-        CTags.add(new CustomTag(17, getString(R.string.careless), R.color.blue).getTag());
-        CTags.add(new CustomTag(18, getString(R.string.proneToAddiction), R.color.blue).getTag());
+        CTags.add(new CustomTag(16, getString(R.string.spontaneous), Color.BLUE).getTag());
+        CTags.add(new CustomTag(17, getString(R.string.careless), Color.BLUE).getTag());
+        CTags.add(new CustomTag(18, getString(R.string.proneToAddiction), Color.BLUE).getTag());
 
         // Neuroticism
-        NTags.add(new CustomTag(19, getString(R.string.irritable), R.color.red).getTag());
-        NTags.add(new CustomTag(20, getString(R.string.moody), R.color.red).getTag());
+        NTags.add(new CustomTag(19, getString(R.string.irritable), Color.RED).getTag());
+        NTags.add(new CustomTag(20, getString(R.string.moody), Color.RED).getTag());
 
-        NTags.add(new CustomTag(21, getString(R.string.stable), R.color.red).getTag());
-        NTags.add(new CustomTag(22, getString(R.string.relaxed), R.color.red).getTag());  // ??
+        NTags.add(new CustomTag(21, getString(R.string.stable), Color.RED).getTag());
+        NTags.add(new CustomTag(22, getString(R.string.relaxed), Color.RED).getTag());  // ??
 
         // Openness
-        OTags.add(new CustomTag(23, getString(R.string.openToNewExperiences), R.color.green).getTag());
-        OTags.add(new CustomTag(24, getString(R.string.curious), R.color.green).getTag());
-        OTags.add(new CustomTag(25, getString(R.string.creative), R.color.green).getTag());
-        OTags.add(new CustomTag(26, getString(R.string.imaginative), R.color.green).getTag());
+        OTags.add(new CustomTag(23, getString(R.string.openToNewExperiences), Color.GREEN).getTag());
+        OTags.add(new CustomTag(24, getString(R.string.curious), Color.GREEN).getTag());
+        OTags.add(new CustomTag(25, getString(R.string.creative), Color.GREEN).getTag());
+        OTags.add(new CustomTag(26, getString(R.string.imaginative), Color.GREEN).getTag());
 
-        OTags.add(new CustomTag(27, getString(R.string.practical), R.color.green).getTag());
-        OTags.add(new CustomTag(28, getString(R.string.conventional), R.color.green).getTag());
-        OTags.add(new CustomTag(29, getString(R.string.skeptical), R.color.green).getTag());
-        OTags.add(new CustomTag(30, getString(R.string.rational), R.color.green).getTag());
+        OTags.add(new CustomTag(27, getString(R.string.practical), Color.GREEN).getTag());
+        OTags.add(new CustomTag(28, getString(R.string.conventional), Color.GREEN).getTag());
+        OTags.add(new CustomTag(29, getString(R.string.skeptical), Color.GREEN).getTag());
+        OTags.add(new CustomTag(30, getString(R.string.rational), Color.GREEN).getTag());
 
     }
 
