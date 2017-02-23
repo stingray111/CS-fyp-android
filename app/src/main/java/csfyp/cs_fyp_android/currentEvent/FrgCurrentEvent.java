@@ -9,9 +9,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -22,6 +27,7 @@ import csfyp.cs_fyp_android.databinding.CurrentEventFrgBinding;
 import csfyp.cs_fyp_android.home.AdtEvent;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.RefreshLoader;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
@@ -102,6 +108,18 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
     }
 
     @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    public void onStart() {
+        EventBus.getDefault().register(this);
+        super.onStart();
+    }
+
+    @Override
     public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
         mData = data;
         if(mData != null) {
@@ -116,5 +134,12 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
     @Override
     public void onLoaderReset(Loader<List<Event>> loader) {
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(RefreshLoader event) {
+        Log.i("reload", "here");
+        getLoaderManager().restartLoader(event.getLoaderId(), null, this);
+        mEventAdapter.notifyDataSetChanged();
     }
 }

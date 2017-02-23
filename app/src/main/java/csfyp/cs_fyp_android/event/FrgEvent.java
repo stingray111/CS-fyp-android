@@ -29,6 +29,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import csfyp.cs_fyp_android.CustomFragment;
@@ -37,6 +39,7 @@ import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.EventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.RefreshLoader;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
@@ -46,6 +49,8 @@ import csfyp.cs_fyp_android.profile.FrgProfile;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static csfyp.cs_fyp_android.currentEvent.FrgCurrentEvent.CURRENT_EVENT_LOADER_ID;
 
 
 public class FrgEvent extends CustomFragment implements OnMapReadyCallback,LoaderManager.LoaderCallbacks<Event>{
@@ -254,6 +259,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 if(!((MainActivity)getActivity()).mChatService.dropEvent(mEventId)){
                                     Log.d(TAG,"Chat Service return false");
                                 }
+                                EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
                                 onBack(null);
                             }
                             else

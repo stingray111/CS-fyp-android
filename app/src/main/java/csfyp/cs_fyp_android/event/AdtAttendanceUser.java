@@ -14,6 +14,7 @@ import java.util.List;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.PassedEventAttendanceItemBinding;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.RefreshFrg;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.ChangeAttendanceRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
@@ -117,7 +118,7 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
                     if(response.isSuccessful() && response.body().getErrorMsg() == null) {
                         binding.attendBtn.setVisibility(View.VISIBLE);
                         binding.attendanceProgressBar.setVisibility(View.GONE);
-                        EventBus.getDefault().post(1);
+                        EventBus.getDefault().post(new RefreshFrg(FrgPassedEvent.TAG));
                     }
                 }
 
