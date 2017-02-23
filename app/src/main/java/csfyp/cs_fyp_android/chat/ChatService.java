@@ -322,13 +322,12 @@ public class ChatService extends Service {
                     }else{
                         mMessageRecyclerView.swapAdapter(mFirebaseAdapter,false);
                     }
-                    //TODO: change mChatBox adaptor
                     mStatus = 2;
                 }
             });
             btn.setImageResource(R.drawable.bg_event);
             mFloatingActionButtonList.add(btn);
-        };
+        }
 
         //handling open the menu
         mFloatingActionMenu = (FloatingActionMenu) mView.findViewById(R.id.floatingMsgMenu);
@@ -546,19 +545,174 @@ public class ChatService extends Service {
             }
             mStatus = 1;
         }
-        else if(mStatus == 1) {
-            for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
-                mFloatingActionMenu.removeMenuButton(_fab);
-                //mWindowManager.updateViewLayout(mView,mParams);
-            }
-            mStatus = 0;
-        }else if(mStatus == 2){
+        else if(mStatus > 0 ) {
+            /*
             for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
                 mFloatingActionMenu.removeMenuButton(_fab);
             }
-            mChatBox.findViewById(R.id.chat_frame).setVisibility(GONE);
+            */
+            mFloatingActionMenu.removeAllMenuButtons();
             mStatus = 0;
         }
         mFloatingActionMenu.toggle(true);
+    }
+
+    public boolean addEvent(Event e){
+        mEventList.add(e);
+        final com.github.clans.fab.FloatingActionButton btn = new com.github.clans.fab.FloatingActionButton(this);
+        final String eventName = e.getName();
+        final int eventId = e.getId();
+        btn.setButtonSize(FloatingActionButton.SIZE_MINI);//TODO: change icon
+        btn.setLabelText(e.getName());
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mSendButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        FriendlyMessage friendlyMessage = new
+                                FriendlyMessage(MainActivity.mUsername,
+                                MainActivity.mUsername,
+                                mMessageEditText.getText().toString());
+                        mFirebaseDatabaseReference.child("messages/group_"+eventId)
+                                .push().setValue(friendlyMessage);
+                        mMessageEditText.setText("");
+                    }
+                });
+
+                mChatBox.findViewById(R.id.chat_frame).setVisibility(View.VISIBLE);
+
+                ((TextView)mChatBox.findViewById(R.id.chatFrameTitle)).setText(eventName);
+
+                mProgressBar.setVisibility(ProgressBar.VISIBLE);
+
+                mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder>(
+                        FriendlyMessage.class,
+                        R.layout.item_message,
+                        RecyclerView.ViewHolder.class,
+                        mFirebaseDatabaseReference.child("messages/group_"+eventId)){
+                    @Override
+                    protected void populateViewHolder(RecyclerView.ViewHolder viewHolder, FriendlyMessage model, int position) {
+                        int localType = getLocalType(model);
+                        switch (localType){
+                            case 0:
+                                //others
+                                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                                ((MessageViewHolder)viewHolder).messageTextView.setText(model.getContent());
+                                ((MessageViewHolder)viewHolder).messengerTextView.setText(model.getDisplayName());
+                                ((MessageViewHolder) viewHolder).timeStamp.setText(model.getTime());
+                                break;
+                            case 10:
+                                //own
+                                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                                ((MessageViewHolder)viewHolder).messageTextView.setText(model.getContent());
+                                ((MessageViewHolder)viewHolder).timeStamp.setText(model.getTime());
+                                break;
+                        }
+                    }
+
+                    @Override
+                    protected FriendlyMessage parseSnapshot(DataSnapshot snapshot){
+                        FriendlyMessage friendlyMessage = super.parseSnapshot(snapshot);
+                        if(friendlyMessage !=null ){
+                            friendlyMessage.setId(snapshot.getKey());
+                        }
+                        return friendlyMessage;
+                    }
+
+                    @Override
+                    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                        switch (viewType){
+                            case 10:
+                                View selfView = LayoutInflater.from(parent.getContext())
+                                        .inflate(R.layout.item_message_own,parent,false);
+                                return new MessageViewHolder(selfView);
+                            case 0:
+                                View otherView = LayoutInflater.from(parent.getContext())
+                                        .inflate(R.layout.item_message,parent,false);
+                                return new MessageViewHolder(otherView);
+                        }
+                        Log.d(TAG,"unhandled");
+                        return null;
+                    }
+
+
+                    @Override
+                    public int getItemViewType(int position) {
+                        FriendlyMessage friendlyMessage = getItem(position);
+                        return getLocalType(friendlyMessage);
+                    }
+
+                    public int getLocalType(FriendlyMessage friendlyMessage){
+                        int localType = 0;
+                        if(friendlyMessage.getUid().equals(MainActivity.mUsername)){
+                            localType = friendlyMessage.getType()+10;
+                        }
+                        else{
+                            localType = friendlyMessage.getType();
+                        }
+                        return localType;
+                    }
+
+                };
+
+                mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                    @Override
+                    public void onItemRangeInserted(int positionStart, int itemCount) {
+                        super.onItemRangeInserted(positionStart, itemCount);
+                        int friendlyMessageCount = mFirebaseAdapter.getItemCount();
+                        int lastVisiblePosition =
+                                mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+                        // If the recycler view is initially being loaded or the
+                        // user is at the bottom of the list, scroll to the bottom
+                        // of the list to show the newly added message.
+                        if (lastVisiblePosition == -1 ||
+                                (positionStart >= (friendlyMessageCount - 1) &&
+                                        lastVisiblePosition == (positionStart - 1))) {
+                            mMessageRecyclerView.scrollToPosition(positionStart);
+                        }
+                    }
+                });
+
+                if(mMessageRecyclerView.getAdapter() == null) {
+                    mMessageRecyclerView.setAdapter(mFirebaseAdapter);
+                }else{
+                    mMessageRecyclerView.swapAdapter(mFirebaseAdapter,false);
+                }
+                mStatus = 2;
+            }
+        });
+        btn.setImageResource(R.drawable.bg_event);
+        //((ViewGroup)btn.getParent()).removeView(btn);
+        mFloatingActionMenu.close(true);
+        //for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
+         //   mFloatingActionMenu.removeMenuButton(_fab);
+        //}
+        mFloatingActionMenu.removeAllMenuButtons();
+        mStatus = 0;
+
+        mFloatingActionButtonList.add(btn);
+        mFloatingActionMenu.setVisibility(View.VISIBLE);
+        Log.d("here","Joined");
+        return true;
+    }
+
+
+    public boolean dropEvent(int eid){
+        for(Event item:mEventList){
+            if (item.getId() == eid){
+                com.github.clans.fab.FloatingActionButton fab = mFloatingActionButtonList.get(mEventList.indexOf(item));
+                mFloatingActionButtonList.remove(fab);
+                mFloatingActionMenu.removeMenuButton(fab);
+                mEventList.remove(item);
+                if(mFloatingActionButtonList.size() == 0){
+                    mFloatingActionMenu.setVisibility(GONE);
+                }
+                Log.d("here","quited");
+                return true;
+            }
+        }
+        return false;
     }
 }

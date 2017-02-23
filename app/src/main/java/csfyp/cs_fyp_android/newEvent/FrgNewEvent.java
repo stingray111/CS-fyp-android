@@ -419,6 +419,8 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
                 public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
                     if (response.isSuccessful()) {
                         Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+                        //((MainActivity)getActivity()).mChatService.add();
+                        //TODO
                         onBack(null);
                     } else {
                         Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
