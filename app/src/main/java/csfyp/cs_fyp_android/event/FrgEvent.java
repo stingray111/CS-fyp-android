@@ -189,8 +189,9 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 Toast.makeText(getContext(), "Joined successfully", Toast.LENGTH_SHORT).show();
                                 Log.i(TAG, "Joined successfully");
                                 mIsJoined = true;
-                                //((MainActivity)getActivity()).mChatService.
-
+                                if(!((MainActivity)getActivity()).mChatService.addEvent(mEventObj)){
+                                    Log.d(TAG,"messager service return false");
+                                }
                                 resetLoader();
                             }
                             else
@@ -220,6 +221,9 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                             if (response.body().getErrorMsg() == null) {
                                 Toast.makeText(getContext(), "Quited successfully", Toast.LENGTH_SHORT).show();
                                 mIsJoined = false;
+                                if(!((MainActivity)getActivity()).mChatService.dropEvent(mEventId)){
+                                    Log.d(TAG,"Chat Service Return false");
+                                }
                                 resetLoader();
                             }
                             else
@@ -247,6 +251,9 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                             if (response.body().getErrorMsg() == null) {
                                 Toast.makeText(getContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
                                 //TODO: drop the messaging record
+                                if(!((MainActivity)getActivity()).mChatService.dropEvent(mEventId)){
+                                    Log.d(TAG,"Chat Service return false");
+                                }
                                 onBack(null);
                             }
                             else

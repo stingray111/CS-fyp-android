@@ -14,6 +14,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView messageTextView;
     public TextView messengerTextView;
+    public TextView timeStamp;
     public CircleImageView messengerImageView;
 
     public MessageViewHolder(View v) {
@@ -21,5 +22,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
         messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
         messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
+        timeStamp = (TextView) itemView.findViewById(R.id.timeStamp);
     }
+
 }

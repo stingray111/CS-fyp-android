@@ -18,6 +18,11 @@ package csfyp.cs_fyp_android.chat;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.ServerValue;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import csfyp.cs_fyp_android.MainActivity;
+
 public class FriendlyMessage {
 
     private String id;
@@ -44,6 +49,7 @@ public class FriendlyMessage {
         this.displayName = displayName;
         this.content = content;
         this.type = type;
+
     }
 
 
@@ -74,6 +80,18 @@ public class FriendlyMessage {
     @Exclude
     public Long getCreationDateLong() {
         return creationDate;
+    }
+
+    @Exclude
+    public Date getDate(){
+        return new Date(creationDate);
+    }
+
+    @Exclude
+    public String getTime(){
+        Date date = getDate();
+        SimpleDateFormat sfd = new SimpleDateFormat("HH:mm");
+        return sfd.format(date);
     }
 
     public void setCreationDate(Long creationDate) {
