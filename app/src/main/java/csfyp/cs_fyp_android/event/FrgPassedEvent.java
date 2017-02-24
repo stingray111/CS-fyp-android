@@ -39,6 +39,7 @@ import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.PassedEventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.RefreshFrg;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.Participation;
 import csfyp.cs_fyp_android.model.User;
@@ -51,8 +52,8 @@ import retrofit2.Response;
 
 public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback,LoaderManager.LoaderCallbacks<Event> {
     public FrgPassedEvent() {}
-    private static final int EVENT_LOADER_ID  = 2;
-    private static final String TAG = "PassedEventFragment";
+    public static final int EVENT_LOADER_ID  = 2;
+    public static final String TAG = "PassedEventFragment";
     private PassedEventFrgBinding mDataBinding;
     private boolean mIsSelfHold = false;
     private boolean mIsAttendence = false;
@@ -382,8 +383,9 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(int userId) {
+    public void onMessageEvent(RefreshFrg event) {
         Log.i("EventBus", "Received");
-        mUserAdapter.notifyDataSetChanged();
+        if (event.getTag() == TAG)
+            mUserAdapter.notifyDataSetChanged();
     }
 }
