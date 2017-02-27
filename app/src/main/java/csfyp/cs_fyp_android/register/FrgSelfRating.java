@@ -54,6 +54,7 @@ public class FrgSelfRating  extends CustomFragment {
         parentActivity.setSupportActionBar(mToolBar);
 
         parentActivity.getSupportActionBar().setTitle("Self Personality Testing");
+
         mToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {

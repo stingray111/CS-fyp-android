@@ -88,7 +88,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     }
 
     private void resetLoader() {
-        Log.i(TAG, "get event again");
+        Log.i(TAG, "refresh");
         getLoaderManager().restartLoader(EVENT_LOADER_ID, null, this);
     }
 
@@ -194,10 +194,12 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 Toast.makeText(getContext(), "Joined successfully", Toast.LENGTH_SHORT).show();
                                 Log.i(TAG, "Joined successfully");
                                 mIsJoined = true;
+                                EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
+                                resetLoader();
+
                                 if(!((MainActivity)getActivity()).mChatService.addEvent(mEventObj)){
                                     Log.d(TAG,"messager service return false");
                                 }
-                                resetLoader();
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
@@ -226,10 +228,12 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                             if (response.body().getErrorMsg() == null) {
                                 Toast.makeText(getContext(), "Quited successfully", Toast.LENGTH_SHORT).show();
                                 mIsJoined = false;
+                                EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
+                                resetLoader();
+
                                 if(!((MainActivity)getActivity()).mChatService.dropEvent(mEventId)){
                                     Log.d(TAG,"Chat Service Return false");
                                 }
-                                resetLoader();
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
