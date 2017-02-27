@@ -47,7 +47,8 @@ public class FloatingActionMenu extends ViewGroup {
     private AnimatorSet mIconToggleSet;
 
     private int mButtonSpacing = Util.dpToPx(getContext(), 0f);
-    private FloatingActionButton mMenuButton;
+    //private FloatingActionButton mMenuButton;
+    public FloatingActionButton mMenuButton;
     private int mMaxButtonWidth;
     private int mLabelsMargin = Util.dpToPx(getContext(), 0f);
     private int mLabelsVerticalOffset = Util.dpToPx(getContext(), 0f);
@@ -317,7 +318,7 @@ public class FloatingActionMenu extends ViewGroup {
         for (int i = 0; i < mButtonsCount; i++) {
             View child = getChildAt(i);
 
-            if (child.getVisibility() == GONE || child == mImageToggle) continue;
+            if (child == mImageToggle) continue;
 
             measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
             mMaxButtonWidth = Math.max(mMaxButtonWidth, child.getMeasuredWidth());
@@ -327,7 +328,7 @@ public class FloatingActionMenu extends ViewGroup {
             int usedWidth = 0;
             View child = getChildAt(i);
 
-            if (child.getVisibility() == GONE || child == mImageToggle) continue;
+            if (child == mImageToggle) continue;
 
             usedWidth += child.getMeasuredWidth();
             height += child.getMeasuredHeight();
@@ -356,6 +357,7 @@ public class FloatingActionMenu extends ViewGroup {
         }
 
         setMeasuredDimension(width, height);
+
     }
 
     @Override
@@ -389,8 +391,6 @@ public class FloatingActionMenu extends ViewGroup {
             if (child == mImageToggle) continue;
 
             FloatingActionButton fab = (FloatingActionButton) child;
-
-            if (fab.getVisibility() == GONE) continue;
 
             int childX = buttonsHorizontalCenter - fab.getMeasuredWidth() / 2;
             int childY = openUp ? nextY - fab.getMeasuredHeight() - mButtonSpacing : nextY;
@@ -429,7 +429,7 @@ public class FloatingActionMenu extends ViewGroup {
                 label.layout(labelLeft, labelTop, labelRight, labelTop + label.getMeasuredHeight());
 
                 if (!mIsMenuOpening) {
-                    label.setVisibility(INVISIBLE);
+                    label.setVisibility(GONE);
                 }
             }
 
@@ -575,7 +575,7 @@ public class FloatingActionMenu extends ViewGroup {
             if (animate) {
                 mImageToggle.startAnimation(mImageToggleHideAnimation);
             }
-            mImageToggle.setVisibility(INVISIBLE);
+            mImageToggle.setVisibility(GONE);
             mIsMenuButtonAnimationRunning = false;
         }
     }
@@ -643,7 +643,7 @@ public class FloatingActionMenu extends ViewGroup {
             mIsMenuOpening = true;
             for (int i = getChildCount() - 1; i >= 0; i--) {
                 View child = getChildAt(i);
-                if (child instanceof FloatingActionButton && child.getVisibility() != GONE) {
+                if (child instanceof FloatingActionButton ) {
                     counter++;
 
                     final FloatingActionButton fab = (FloatingActionButton) child;
@@ -699,7 +699,7 @@ public class FloatingActionMenu extends ViewGroup {
             mIsMenuOpening = false;
             for (int i = 0; i < getChildCount(); i++) {
                 View child = getChildAt(i);
-                if (child instanceof FloatingActionButton && child.getVisibility() != GONE) {
+                if (child instanceof FloatingActionButton ) {
                     counter++;
 
                     final FloatingActionButton fab = (FloatingActionButton) child;
@@ -716,6 +716,7 @@ public class FloatingActionMenu extends ViewGroup {
                             if (label != null && label.isHandleVisibilityChanges()) {
                                 label.hide(animate);
                             }
+                            fab.requestLayout();
                         }
                     }, delay);
                     delay += mAnimationDelayPerItem;
@@ -811,7 +812,7 @@ public class FloatingActionMenu extends ViewGroup {
     }
 
     public boolean isMenuHidden() {
-        return getVisibility() == INVISIBLE;
+        return getVisibility() == GONE;
     }
 
     public boolean isMenuButtonHidden() {
@@ -848,7 +849,7 @@ public class FloatingActionMenu extends ViewGroup {
                         if (animate) {
                             startAnimation(mMenuButtonHideAnimation);
                         }
-                        setVisibility(INVISIBLE);
+                        setVisibility(GONE);
                         mIsMenuButtonAnimationRunning = false;
                     }
                 }, mAnimationDelayPerItem * mButtonsCount);
@@ -856,7 +857,7 @@ public class FloatingActionMenu extends ViewGroup {
                 if (animate) {
                     startAnimation(mMenuButtonHideAnimation);
                 }
-                setVisibility(INVISIBLE);
+                setVisibility(GONE);
                 mIsMenuButtonAnimationRunning = false;
             }
         }

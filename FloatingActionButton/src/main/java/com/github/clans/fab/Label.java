@@ -62,8 +62,12 @@ public class Label extends TextView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(calculateMeasuredWidth(), calculateMeasuredHeight());
+        if (getVisibility() == GONE || getVisibility() == INVISIBLE){
+            setMeasuredDimension(0, 0);
+        }else{
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            setMeasuredDimension(calculateMeasuredWidth(), calculateMeasuredHeight());
+        }
     }
 
     private int calculateMeasuredWidth() {
@@ -258,7 +262,7 @@ public class Label extends TextView {
         if (animate) {
             playHideAnimation();
         }
-        setVisibility(INVISIBLE);
+        setVisibility(GONE);
     }
 
     void setShowAnimation(Animation showAnimation) {

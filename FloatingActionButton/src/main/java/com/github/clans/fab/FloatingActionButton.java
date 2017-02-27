@@ -26,6 +26,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -161,7 +162,7 @@ public class FloatingActionButton extends ImageButton {
             }
         }
 
-//        updateBackground();
+        updateBackground();
         setClickable(true);
     }
 
@@ -222,8 +223,11 @@ public class FloatingActionButton extends ImageButton {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(calculateMeasuredWidth(), calculateMeasuredHeight());
+        if(this.getVisibility() == GONE || this.getVisibility() == INVISIBLE){
+            setMeasuredDimension(0, 0);
+        }else {
+            setMeasuredDimension(calculateMeasuredWidth(), calculateMeasuredHeight());
+        }
     }
 
     @Override
@@ -369,13 +373,6 @@ public class FloatingActionButton extends ImageButton {
             circleInsetVertical += mProgressWidth;
         }
 
-        /*layerDrawable.setLayerInset(
-                mShowShadow ? 1 : 0,
-                circleInsetHorizontal,
-                circleInsetVertical,
-                circleInsetHorizontal,
-                circleInsetVertical
-        );*/
         layerDrawable.setLayerInset(
                 hasShadow() ? 2 : 1,
                 circleInsetHorizontal + iconOffset,
@@ -1034,7 +1031,7 @@ public class FloatingActionButton extends ImageButton {
      * @return true if <b>FloatingActionButton</b> is hidden, false otherwise
      */
     public boolean isHidden() {
-        return getVisibility() == INVISIBLE;
+        return ((getVisibility() == INVISIBLE)||(getVisibility() == GONE));
     }
 
     /**
@@ -1061,7 +1058,7 @@ public class FloatingActionButton extends ImageButton {
             if (animate) {
                 playHideAnimation();
             }
-            super.setVisibility(INVISIBLE);
+            setVisibility(GONE);
         }
     }
 
@@ -1286,7 +1283,7 @@ public class FloatingActionButton extends ImageButton {
     public void showButtonInMenu(boolean animate) {
         if (getVisibility() == VISIBLE) return;
 
-        setVisibility(INVISIBLE);
+        setVisibility(GONE);
         show(animate);
         Label label = getLabelView();
         if (label != null) {

@@ -30,10 +30,12 @@ import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionMenu;
+import com.github.clans.fab.Label;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -331,9 +333,9 @@ public class ChatService extends Service {
 
         //handling open the menu
         mFloatingActionMenu = (FloatingActionMenu) mView.findViewById(R.id.floatingMsgMenu);
-        //Cannot use because not covering whole screen
-        //mFloatingActionMenu.setClosedOnTouchOutside(true);
-
+        for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
+            mFloatingActionMenu.addMenuButton(_fab);
+        }
 
         AnimatorSet set = new AnimatorSet();
 
@@ -540,21 +542,14 @@ public class ChatService extends Service {
 
     private void clickEvent(){
         if(mStatus == 0) {
-            for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
-                mFloatingActionMenu.addMenuButton(_fab);
-            }
+            mFloatingActionMenu.toggle(true);
             mStatus = 1;
         }
         else if(mStatus > 0 ) {
-            /*
-            for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
-                mFloatingActionMenu.removeMenuButton(_fab);
-            }
-            */
-            mFloatingActionMenu.removeAllMenuButtons();
+            mFloatingActionMenu.toggle(true);
+
             mStatus = 0;
         }
-        mFloatingActionMenu.toggle(true);
     }
 
     public boolean addEvent(Event e){
@@ -714,3 +709,4 @@ public class ChatService extends Service {
         return false;
     }
 }
+
