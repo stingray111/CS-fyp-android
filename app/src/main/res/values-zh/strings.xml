@@ -38,8 +38,11 @@
     <string name="new_event_deadline_time">死線</string>
     <string name="new_event_deadline_time_hint">按此設定時間</string>
 
-    <string name="self_rate_skip_dialog_title">Skip this test</string>
-    <string name="self_rate_skip_dialog_message">really?</string>
+    <string name="self_rate_skip_dialog_title">跳過</string>
+    <string name="self_rate_skip_dialog_message">確定跳過這個測驗?</string>
+
+    <string name="set_not_attended_dialog_title">Attendance</string>
+    <string name="set_not_attended_dialog_message">Do you really want to change this user\'s attendance?</string>
 
     <string name="ok">確定</string>
     <string name="cancel">取消</string>

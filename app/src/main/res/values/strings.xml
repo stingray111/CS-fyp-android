@@ -39,8 +39,11 @@
     <string name="new_event_deadline_time">Event Deadline Time</string>
     <string name="new_event_deadline_time_hint">Click to set time</string>
 
-    <string name="self_rate_skip_dialog_title">Skip this test</string>
+    <string name="self_rate_skip_dialog_title">Skip</string>
     <string name="self_rate_skip_dialog_message">really?</string>
+
+    <string name="set_not_attended_dialog_title">Attendance</string>
+    <string name="set_not_attended_dialog_message">Do you really want to change this user\'s attendance?</string>
 
     <string name="ok">OK</string>
     <string name="cancel">cancel</string>
@@ -54,12 +57,12 @@
 
 
     <!--string for personality-->
+
     <string name="extraversion">Extraversion</string>
     <string name="agreeableness">Agreeableness</string>
     <string name="conscientiousness">Conscientiousness</string>
     <string name="openness">Openness</string>
     <string name="neuroticism">Neuroticism</string>
-    
     <string name="outgoing">Outgoing</string>
     <string name="enthusiastic">Enthusiastic</string>
     <string name="active">Active</string>
