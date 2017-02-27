@@ -1,6 +1,7 @@
 package csfyp.cs_fyp_android.event;
 
 import android.databinding.DataBindingUtil;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import java.util.List;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.PassedEventAttendanceItemBinding;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.NoticeDialogFragment;
 import csfyp.cs_fyp_android.lib.eventBus.RefreshFrg;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.ChangeAttendanceRequest;
@@ -26,6 +28,7 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
 
     private List<User> mUserList;
     private Fragment mFragment;
+    private NoticeDialogFragment mDialog;
 
     public AdtAttendanceUser(Fragment fragment) {
         mFragment = fragment;
@@ -107,27 +110,40 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
 
         public void onClickNotAttendItem(View view) {
 
-            binding.notAttendBtn.setVisibility(View.GONE);
-            binding.attendanceProgressBar.setVisibility(View.VISIBLE);
-
-            HTTP httpService = HTTP.retrofit.create(HTTP.class);
-            Call<ErrorMsgOnly> call = httpService.changeAttendance(new ChangeAttendanceRequest(binding.getItem().getId(), ((FrgPassedEvent)mFragment).getmEventId(), true));
-            call.enqueue(new Callback<ErrorMsgOnly>() {
+            mDialog = NoticeDialogFragment.newInstance(R.string.set_not_attended_dialog_title, R.string.set_not_attended_dialog_message);
+            mDialog.setDialogListener(new NoticeDialogFragment.NoticeDialogListener() {
                 @Override
-                public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
-                    if(response.isSuccessful() && response.body().getErrorMsg() == null) {
-                        binding.attendBtn.setVisibility(View.VISIBLE);
-                        binding.attendanceProgressBar.setVisibility(View.GONE);
-                        EventBus.getDefault().post(new RefreshFrg(FrgPassedEvent.TAG));
-                    }
+                public void onDialogPositiveClick(DialogFragment dialog) {
+                    binding.notAttendBtn.setVisibility(View.GONE);
+                    binding.attendanceProgressBar.setVisibility(View.VISIBLE);
+
+                    HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                    Call<ErrorMsgOnly> call = httpService.changeAttendance(new ChangeAttendanceRequest(binding.getItem().getId(), ((FrgPassedEvent)mFragment).getmEventId(), true));
+                    call.enqueue(new Callback<ErrorMsgOnly>() {
+                        @Override
+                        public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
+                            if(response.isSuccessful() && response.body().getErrorMsg() == null) {
+                                binding.attendBtn.setVisibility(View.VISIBLE);
+                                binding.attendanceProgressBar.setVisibility(View.GONE);
+                                EventBus.getDefault().post(new RefreshFrg(FrgPassedEvent.TAG));
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
+                            binding.notAttendBtn.setVisibility(View.VISIBLE);
+                            binding.attendanceProgressBar.setVisibility(View.GONE);
+                        }
+                    });
                 }
 
                 @Override
-                public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
-                    binding.notAttendBtn.setVisibility(View.VISIBLE);
-                    binding.attendanceProgressBar.setVisibility(View.GONE);
+                public void onDialogNegativeClick(DialogFragment dialog) {
+                    mDialog.dismiss();
                 }
             });
+            mDialog.show(mFragment.getFragmentManager(), "set_not_attended_dialog");
+
         }
 
         public PassedEventAttendanceItemBinding getBinding() {
