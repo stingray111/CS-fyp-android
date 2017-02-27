@@ -385,7 +385,9 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(RefreshFrg event) {
         Log.i("EventBus", "Received");
-        if (event.getTag() == TAG)
+        if (event.getTag() == TAG) {
+            getLoaderManager().restartLoader(EVENT_LOADER_ID, null, this);
             mUserAdapter.notifyDataSetChanged();
+        }
     }
 }
