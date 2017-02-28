@@ -1,20 +1,21 @@
 package csfyp.cs_fyp_android.event;
 
 import android.databinding.DataBindingUtil;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.EventItemUserBinding;
 import csfyp.cs_fyp_android.databinding.PassedEventItemBinding;
+import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.rating.FrgRating;
@@ -23,10 +24,15 @@ import csfyp.cs_fyp_android.rating.FrgRating;
 public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
 
     private List<User> mUserList;
-    private Fragment mFragment;
+    private int mode;
+    private int eventId;
 
-    public AdtUser(Fragment fragment) {
-        mFragment = fragment;
+    public static int NORMAL_MODE = 0;
+    public static int PASSED_EVENT_MODE = 1;
+
+    public AdtUser(int mode, int eventId) {
+        this.mode = mode;
+        this.eventId = eventId;
     }
 
     @Override
@@ -43,13 +49,13 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
         EventItemUserBinding binding;
         PassedEventItemBinding passedBinding;
         ViewHolder holder;
-        if (mFragment instanceof FrgEvent) {
+        if (mode == NORMAL_MODE) {
             binding = DataBindingUtil.inflate(inflater, R.layout.event_item_user, parent, false);
             holder = new ViewHolder(binding.getRoot());
             holder.setBinding(binding);
             return holder;
         }
-        else if (mFragment instanceof FrgPassedEvent) {
+        else if (mode == PASSED_EVENT_MODE) {
             passedBinding = DataBindingUtil.inflate(inflater, R.layout.passed_event_item, parent, false);
             holder = new ViewHolder(passedBinding.getRoot());
             holder.setPassedBinding(passedBinding);
@@ -64,7 +70,7 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (mFragment instanceof FrgPassedEvent) {
+        if (mode == PASSED_EVENT_MODE) {
             holder.getPassedBinding().setHandlers(holder);
 
             if (mUserList != null) {
@@ -81,7 +87,7 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
                 }
 
                 // is self?
-                if (mUserList.get(position).getId() == ((FrgPassedEvent)mFragment).getmSelfUserId())
+                if (mUserList.get(position).getId() == eventId)
                     holder.getPassedBinding().rateBtn.setVisibility(View.GONE);
                 // is attended?
                 if (!mUserList.get(position).isAttended()) {
@@ -116,21 +122,39 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
         // each data item is just a string in this case
         public void onClickUserItem(View view) {
 
-            FragmentTransaction ft = ((AppCompatActivity) binding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
-            ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
-                    .add(R.id.parent_fragment_container, FrgProfile.newInstance(binding.getItem().getId()))
-                    .hide(mFragment)
-                    .addToBackStack(null)
-                    .commit();
+            Bundle b = new Bundle();
+            b.putInt("userId", binding.getItem().getId());
+            SwitchFrg temp;
+            if (mode == NORMAL_MODE)
+                temp = new SwitchFrg(FrgEvent.TAG, FrgProfile.TAG, b);
+            else if (mode == PASSED_EVENT_MODE)
+                temp = new SwitchFrg(FrgPassedEvent.TAG, FrgProfile.TAG, b);
+            else
+                temp = null;
+            EventBus.getDefault().post(temp);
+
+//            FragmentTransaction ft = ((AppCompatActivity) binding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
+//            ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
+//                    .add(R.id.parent_fragment_container, FrgProfile.newInstance(binding.getItem().getId()))
+//                    .hide(mFragment)
+//                    .addToBackStack(null)
+//                    .commit();
         }
 
         public void onCLickRateItem(View view) {
-            FragmentTransaction ft = ((AppCompatActivity) passedBinding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
-            ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
-                    .add(R.id.parent_fragment_container, FrgRating.newInstance(passedBinding.getItem().getId(), passedBinding.getItem().getUserName(), ((FrgPassedEvent)mFragment).getmEventId()))
-                    .hide(mFragment)
-                    .addToBackStack(null)
-                    .commit();
+            Bundle b = new Bundle();
+            b.putInt("userId", binding.getItem().getId());
+            b.putString("username", passedBinding.getItem().getUserName());
+            b.putInt("eventId", eventId);
+            SwitchFrg temp = new SwitchFrg(FrgPassedEvent.TAG, FrgRating.TAG, b);
+            EventBus.getDefault().post(temp);
+
+//            FragmentTransaction ft = ((AppCompatActivity) passedBinding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
+//            ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
+//                    .add(R.id.parent_fragment_container, FrgRating.newInstance(passedBinding.getItem().getId(), passedBinding.getItem().getUserName(), eventId))
+//                    .hide(mFragment)
+//                    .addToBackStack(null)
+//                    .commit();
         }
 
         public EventItemUserBinding getBinding() {

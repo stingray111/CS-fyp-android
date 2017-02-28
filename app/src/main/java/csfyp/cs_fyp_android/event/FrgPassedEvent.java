@@ -40,6 +40,8 @@ import csfyp.cs_fyp_android.databinding.PassedEventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.eventBus.RefreshFrg;
+import csfyp.cs_fyp_android.lib.eventBus.ShowDialog;
+import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.Participation;
 import csfyp.cs_fyp_android.model.User;
@@ -54,6 +56,7 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
     public FrgPassedEvent() {}
     public static final int EVENT_LOADER_ID  = 2;
     public static final String TAG = "PassedEventFragment";
+
     private PassedEventFrgBinding mDataBinding;
     private boolean mIsSelfHold = false;
     private boolean mIsAttendence = false;
@@ -145,13 +148,13 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
         mAttendanceLayoutManager = new LinearLayoutManager(getContext());
         mUserRecyclerView = mDataBinding.rvUser;
         mUserRecyclerView.setLayoutManager(mUserLayoutManager);
-        mUserAdapter = new AdtUser(this);
+        mUserAdapter = new AdtUser(AdtUser.PASSED_EVENT_MODE, mEventId);
         mUserRecyclerView.setAdapter(mUserAdapter);
 
         // Setting up RecyclerView for attendace
         mAttandanceRecyclerView = mDataBinding.rvAttendaceUser;
         mAttandanceRecyclerView.setLayoutManager(mAttendanceLayoutManager);
-        mAttendanceUserAdapter = new AdtAttendanceUser(this);
+        mAttendanceUserAdapter = new AdtAttendanceUser(mEventId);
         mAttandanceRecyclerView.setAdapter(mAttendanceUserAdapter);
 
         // Tool Bar
@@ -385,7 +388,32 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(RefreshFrg event) {
         Log.i("EventBus", "Received");
-        if (event.getTag() == TAG)
+        if (event.getTag().equals(TAG)) {
+            getLoaderManager().restartLoader(EVENT_LOADER_ID, null, this);
             mUserAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMeesageEvent(SwitchFrg event) {
+        if (event.getFromTag().equals(TAG) && event.getToTag().equals(FrgRating.TAG)) {
+            switchFragment(this, FrgRating.newInstance(
+                    event.getBundle().getInt("userId"),
+                    event.getBundle().getString("username"),
+                    event.getBundle().getInt("eventId")
+            ));
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SwitchFrg event) {
+        if (event.getFromTag().equals(TAG) && event.getToTag().equals(FrgProfile.TAG)) {
+            switchFragment(this, FrgProfile.newInstance(event.getBundle().getInt("userId")));
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(ShowDialog event) {
+        event.getDialog().show(getFragmentManager(), "set_not_attended_dialog");
     }
 }

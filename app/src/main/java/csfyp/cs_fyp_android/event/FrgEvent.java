@@ -30,6 +30,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -40,6 +42,7 @@ import csfyp.cs_fyp_android.databinding.EventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.eventBus.RefreshLoader;
+import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
@@ -56,7 +59,7 @@ import static csfyp.cs_fyp_android.currentEvent.FrgCurrentEvent.CURRENT_EVENT_LO
 public class FrgEvent extends CustomFragment implements OnMapReadyCallback,LoaderManager.LoaderCallbacks<Event>{
     public FrgEvent() {}
     private static final int EVENT_LOADER_ID  = 2;
-    private static final String TAG = "EventFragment";
+    public static final String TAG = "EventFragment";
     private EventFrgBinding mDataBinding;
     private Event mEventObj;
     private boolean mIsSelfHold = false;
@@ -88,7 +91,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     }
 
     private void resetLoader() {
-        Log.i(TAG, "get event again");
+        Log.i(TAG, "refresh");
         getLoaderManager().restartLoader(EVENT_LOADER_ID, null, this);
     }
 
@@ -158,7 +161,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         mUserRecyclerView = mDataBinding.rvUser;
         mUserLayoutManager = new LinearLayoutManager(getContext());
         mUserRecyclerView.setLayoutManager(mUserLayoutManager);
-        mUserAdapter = new AdtUser(this);
+        mUserAdapter = new AdtUser(AdtUser.NORMAL_MODE, mEventId);
         mUserRecyclerView.setAdapter(mUserAdapter);
 
         // Tool Bar
@@ -194,10 +197,12 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 Toast.makeText(getContext(), "Joined successfully", Toast.LENGTH_SHORT).show();
                                 Log.i(TAG, "Joined successfully");
                                 mIsJoined = true;
+                                EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
+                                resetLoader();
+
                                 if(!((MainActivity)getActivity()).mChatService.addEvent(mEventObj)){
                                     Log.d(TAG,"messager service return false");
                                 }
-                                resetLoader();
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
@@ -226,10 +231,12 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                             if (response.body().getErrorMsg() == null) {
                                 Toast.makeText(getContext(), "Quited successfully", Toast.LENGTH_SHORT).show();
                                 mIsJoined = false;
+                                EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
+                                resetLoader();
+
                                 if(!((MainActivity)getActivity()).mChatService.dropEvent(mEventId)){
                                     Log.d(TAG,"Chat Service Return false");
                                 }
-                                resetLoader();
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
@@ -314,6 +321,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();
         AppIndex.AppIndexApi.start(client, getIndexApiAction());
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -324,6 +332,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -440,5 +449,13 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
     public void onClickHolder(View v) {
         switchFragment(this, FrgProfile.newInstance(mEventObj.getHolder().getId()));
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SwitchFrg event) {
+        if (event.getFromTag().equals(TAG) && event.getToTag().equals(FrgProfile.TAG)) {
+            switchFragment(this, FrgProfile.newInstance(event.getBundle().getInt("userId")));
+        }
+    }
+
 }
 

@@ -30,7 +30,7 @@ import retrofit2.Response;
 
 public class FrgRating extends CustomFragment {
 
-    private static String TAG = "RatingFragment";
+    public static String TAG = "RatingFragment";
 
     private int mUserId;
     private int mEventId;

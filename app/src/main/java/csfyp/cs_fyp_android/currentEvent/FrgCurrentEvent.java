@@ -24,10 +24,12 @@ import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.CurrentEventFrgBinding;
+import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.home.AdtEvent;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.eventBus.RefreshLoader;
+import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
@@ -79,7 +81,7 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
         mEventRecyclerView = mDatabinding.currentEventRV;
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
-        mEventAdapter = new AdtEvent(this);
+        mEventAdapter = new AdtEvent(AdtEvent.ONGOING_MODE);
         mEventRecyclerView.setAdapter(mEventAdapter);
 
         getLoaderManager().initLoader(CURRENT_EVENT_LOADER_ID, null, this);
@@ -142,4 +144,12 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
         getLoaderManager().restartLoader(event.getLoaderId(), null, this);
         mEventAdapter.notifyDataSetChanged();
     }
+
+    @Subscribe( threadMode = ThreadMode.MAIN )
+    public void onMessageEvent(SwitchFrg event) {
+        if (event.getFromTag().equals(TAG)) {
+            switchFragment(this, FrgEvent.newInstance(event.getBundle().getInt("eventId")));
+        }
+    }
+
 }
