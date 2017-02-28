@@ -2,7 +2,6 @@ package csfyp.cs_fyp_android.event;
 
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,7 @@ import csfyp.cs_fyp_android.databinding.PassedEventAttendanceItemBinding;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.NoticeDialogFragment;
 import csfyp.cs_fyp_android.lib.eventBus.RefreshFrg;
+import csfyp.cs_fyp_android.lib.eventBus.ShowDialog;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.ChangeAttendanceRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
@@ -27,11 +27,13 @@ import retrofit2.Response;
 public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.ViewHolder> {
 
     private List<User> mUserList;
-    private Fragment mFragment;
+    private int eventId;
+
     private NoticeDialogFragment mDialog;
 
-    public AdtAttendanceUser(Fragment fragment) {
-        mFragment = fragment;
+
+    public AdtAttendanceUser(int eventId) {
+        this.eventId = eventId;
     }
 
     @Override
@@ -88,7 +90,7 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
             binding.attendanceProgressBar.setVisibility(View.VISIBLE);
 
             HTTP httpService = HTTP.retrofit.create(HTTP.class);
-            Call<ErrorMsgOnly> call = httpService.changeAttendance(new ChangeAttendanceRequest(binding.getItem().getId(), ((FrgPassedEvent)mFragment).getmEventId(), false));
+            Call<ErrorMsgOnly> call = httpService.changeAttendance(new ChangeAttendanceRequest(binding.getItem().getId(), eventId, false));
 
             call.enqueue(new Callback<ErrorMsgOnly>() {
                 @Override
@@ -118,13 +120,14 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
                     binding.attendanceProgressBar.setVisibility(View.VISIBLE);
 
                     HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                    Call<ErrorMsgOnly> call = httpService.changeAttendance(new ChangeAttendanceRequest(binding.getItem().getId(), ((FrgPassedEvent)mFragment).getmEventId(), true));
+                    Call<ErrorMsgOnly> call = httpService.changeAttendance(new ChangeAttendanceRequest(binding.getItem().getId(), eventId, true));
                     call.enqueue(new Callback<ErrorMsgOnly>() {
                         @Override
                         public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
                             if(response.isSuccessful() && response.body().getErrorMsg() == null) {
                                 binding.attendBtn.setVisibility(View.VISIBLE);
                                 binding.attendanceProgressBar.setVisibility(View.GONE);
+
                                 EventBus.getDefault().post(new RefreshFrg(FrgPassedEvent.TAG));
                             }
                         }
@@ -142,7 +145,8 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
                     mDialog.dismiss();
                 }
             });
-            mDialog.show(mFragment.getFragmentManager(), "set_not_attended_dialog");
+
+            EventBus.getDefault().post(new ShowDialog(mDialog));
 
         }
 

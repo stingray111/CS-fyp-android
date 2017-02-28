@@ -7,7 +7,8 @@ public abstract class CustomBatchLoader<D> extends CustomLoader<D> {
     public static final String TASK_REFRESH_LOAD = "refreshLoad";
     public static final String TASK_LOAD_MORE = "loadMore";
 
-    private static final int BATCH_SIZE = 20;
+    public static final int BATCH_SIZE = 20;
+    public static final int FIRST_BATCH_SIZE = 50;
     private int nextBatchNo;
 
     public CustomBatchLoader(Context context) {
@@ -16,6 +17,9 @@ public abstract class CustomBatchLoader<D> extends CustomLoader<D> {
         nextBatchNo = 0;
     }
 
+    public int getNextBatchNo() {
+        return nextBatchNo;
+    }
 
     public void startFreshLoad() {
         reset();

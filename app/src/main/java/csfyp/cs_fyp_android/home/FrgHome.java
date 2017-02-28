@@ -1,13 +1,10 @@
 package csfyp.cs_fyp_android.home;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -15,6 +12,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -31,14 +29,15 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.StreetViewPanoramaCamera;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.InputStream;
-import java.sql.Types;
 import java.util.List;
 
-import csfyp.cs_fyp_android.lib.ClusterableMarker;
 import csfyp.cs_fyp_android.CustomMapFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
@@ -48,19 +47,18 @@ import csfyp.cs_fyp_android.currentEvent.FrgCurrentEvent;
 import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
 import csfyp.cs_fyp_android.event.FrgEvent;
 import csfyp.cs_fyp_android.history.FrgHistory;
-import csfyp.cs_fyp_android.lib.CustomLoader;
+import csfyp.cs_fyp_android.lib.ClusterableMarker;
+import csfyp.cs_fyp_android.lib.CustomBatchLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
+import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
 import csfyp.cs_fyp_android.model.Event;
-import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
-import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
 import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCallbacks<List<Event>> {
@@ -69,7 +67,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     public static final int HOME_LOCATION_SETTING_CALLBACK = 2;
     public static final int HOME_PERMISSION_CALLBACK = 1;
     public static final String TAG = "HomeFragment";
-
 
     private boolean mIsPanelExpanded;
     private boolean mIsPanelAnchored;
@@ -92,6 +89,9 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
     // For Left Drawer
     private DrawerLayout mDrawerLayout;
+
+    // For Swipe Layout
+    private SwipeRefreshLayout homeRefreshSwipe;
 
     // For Sliding Up Panel
     private SlidingUpPanelLayout mLayout;
@@ -243,8 +243,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         });
 
 
-
-
         // Setting up Pull-up Panel
         if (mIsPanelExpanded) {
             Fragment expandPanelAppBar = FrgExpandPanelAppBar.newInstance();
@@ -261,11 +259,20 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         // Setting up Navigation Drawer
         mDrawerLayout = mDataBinding.drawerLayout;
 
+        // Setting up swipe layout
+        homeRefreshSwipe = mDataBinding.homeRefreshSwipe;
+        homeRefreshSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                homeRefreshSwipe.setRefreshing(false);
+            }
+        });
+
         // Setting up RcyclerView for event
         mEventRecyclerView = mDataBinding.rvEvent;
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
-        mEventAdapter = new AdtEvent(this);
+        mEventAdapter = new AdtEvent(AdtEvent.HOME_MODE);
         mEventRecyclerView.setAdapter(mEventAdapter);
 
         // set self user
@@ -314,6 +321,18 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                 }
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -369,37 +388,39 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public Loader<List<Event>> onCreateLoader(int id, Bundle args) {
-        return new CustomLoader<List<Event>>(getContext()) {
-            @Override
-            public List<Event> loadInBackground() {
-                if(mCurrentLocation != null){
-                    HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                    Call<EventListRespond> call = httpService.getEvents(new EventListRequest(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1));
-                    try {
-                        mEventRespond = call.execute();
-                        if (mEventRespond.isSuccessful()) {
-                            if (mEventRespond.body().getErrorMsg() == null) {
-                                Log.i(TAG, "Event list load Success");
-                                return mEventRespond.body().getEvents();
-                            } else {
-                                Log.i(TAG, mEventRespond.body().getErrorMsg());
-                                Toast.makeText(getContext(),mEventRespond.body().getErrorMsg(), Toast.LENGTH_LONG).show();
-                                return null;
-                            }
-                        } else {
-                            Log.i(TAG, "Not 200");
-                            Toast.makeText(getContext(), "Not 200", Toast.LENGTH_LONG).show();
-                            return null;
-                        }
-                    } catch (Exception e) {
-                        Log.i(TAG, "Connect exception:" + e.getMessage());
-                        return null;
-                    }
-                } else
-                    return null;
-            }
-        };
+    public BLoader onCreateLoader(int id, Bundle args) {
+
+        return new BLoader(getContext());
+//        return new CustomLoader<List<Event>>(getContext()) {
+//            @Override
+//            public List<Event> loadInBackground() {
+//                if(mCurrentLocation != null){
+//                    HTTP httpService = HTTP.retrofit.create(HTTP.class);
+//                    Call<EventListRespond> call = httpService.getEvents(new EventListRequest(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1));
+//                    try {
+//                        mEventRespond = call.execute();
+//                        if (mEventRespond.isSuccessful()) {
+//                            if (mEventRespond.body().getErrorMsg() == null) {
+//                                Log.i(TAG, "Event list load Success");
+//                                return mEventRespond.body().getEvents();
+//                            } else {
+//                                Log.i(TAG, mEventRespond.body().getErrorMsg());
+//                                Toast.makeText(getContext(),mEventRespond.body().getErrorMsg(), Toast.LENGTH_LONG).show();
+//                                return null;
+//                            }
+//                        } else {
+//                            Log.i(TAG, "Not 200");
+//                            Toast.makeText(getContext(), "Not 200", Toast.LENGTH_LONG).show();
+//                            return null;
+//                        }
+//                    } catch (Exception e) {
+//                        Log.i(TAG, "Connect exception:" + e.getMessage());
+//                        return null;
+//                    }
+//                } else
+//                    return null;
+//            }
+//        };
     }
 
     @Override
@@ -462,6 +483,36 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
     private MainActivity getMainActivity(){
         return (MainActivity)getActivity();
+    }
+
+    @Subscribe( threadMode = ThreadMode.MAIN )
+    public void onMessageEvent(SwitchFrg event) {
+        if (event.getFromTag().equals(TAG)) {
+            switchFragment(FrgEvent.newInstance(event.getBundle().getInt("eventId")));
+        }
+    }
+
+    public static class BLoader extends CustomBatchLoader<List<Event>> {
+
+        public BLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        public List<Event> loadMore() {
+            getNextBatchNo();   // this is for marking the loading point
+            return null;
+        }
+
+        @Override
+        public List<Event> refreshLoad() {
+            return null;
+        }
+
+        @Override
+        public List<Event> freshLoad() {
+            return null;
+        }
     }
 
 
