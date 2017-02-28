@@ -964,6 +964,9 @@ public class FloatingActionMenu extends ViewGroup {
         addView(fab, mButtonsCount - 2);
         mButtonsCount++;
         addLabel(fab);
+        fab.requestLayout();
+        this.requestLayout()
+        ;
     }
 
     public void removeMenuButton(FloatingActionButton fab) {
