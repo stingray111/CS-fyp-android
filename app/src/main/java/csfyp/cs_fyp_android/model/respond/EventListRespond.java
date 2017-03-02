@@ -7,6 +7,7 @@ import csfyp.cs_fyp_android.model.Event;
 public class EventListRespond {
     String errorMsg;
     List<Event> data;
+    long startId;
 
     public String getErrorMsg() {
         return errorMsg;
@@ -14,5 +15,9 @@ public class EventListRespond {
 
     public List<Event> getEvents() {
         return data;
+    }
+
+    public long getStartId() {
+        return startId;
     }
 }

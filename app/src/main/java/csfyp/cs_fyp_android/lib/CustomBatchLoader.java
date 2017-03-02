@@ -1,6 +1,7 @@
 package csfyp.cs_fyp_android.lib;
 
 import android.content.Context;
+import android.util.Log;
 
 public abstract class CustomBatchLoader<D> extends CustomLoader<D> {
     public static final String TASK_FRESH_LOAD = "freshLoad";
@@ -9,16 +10,25 @@ public abstract class CustomBatchLoader<D> extends CustomLoader<D> {
 
     public static final int BATCH_SIZE = 20;
     public static final int FIRST_BATCH_SIZE = 50;
-    private int nextBatchNo;
+    private int offset;
+
 
     public CustomBatchLoader(Context context) {
         super(context);
         setTaskName(TASK_FRESH_LOAD);
-        nextBatchNo = 0;
+        offset = 0;
     }
 
-    public int getNextBatchNo() {
-        return nextBatchNo;
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public void increaseOffset(int offset){
+        this.offset += offset;
     }
 
     public void startFreshLoad() {
@@ -47,13 +57,18 @@ public abstract class CustomBatchLoader<D> extends CustomLoader<D> {
     @Override
     public D loadInBackground() {
         if (TASK_FRESH_LOAD.equals(getTaskName())) {
+            Log.d("here","1");
             return freshLoad();
         } else if (TASK_REFRESH_LOAD.equals(getTaskName())) {
+            Log.d("here","2");
             return refreshLoad();
         } else if (TASK_LOAD_MORE.equals(getTaskName())) {
+            Log.d("here","3");
             return loadMore();
-        } else
+        } else {
+            Log.d("here","4");
             return loadOther();
+        }
     }
 
     public D loadOther() {

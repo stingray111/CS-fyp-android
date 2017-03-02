@@ -36,6 +36,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import csfyp.cs_fyp_android.CustomMapFragment;
@@ -51,6 +52,7 @@ import csfyp.cs_fyp_android.lib.ClusterableMarker;
 import csfyp.cs_fyp_android.lib.CustomBatchLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
+import csfyp.cs_fyp_android.lib.eventBus.ScrollEvent;
 import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
@@ -71,6 +73,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     private boolean mIsPanelExpanded;
     private boolean mIsPanelAnchored;
     private boolean mIsLoadFinished = false;
+    private boolean mIsBLoaderLoaded = false;
 
     private List<Event> mData;
 
@@ -85,7 +88,12 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     // For Event Recycler View
     private RecyclerView mEventRecyclerView;
     private AdtEvent mEventAdapter;
-    private RecyclerView.LayoutManager mEventLayoutManager;
+    private LinearLayoutManager mEventLayoutManager;
+    private EndlessRecyclerViewScrollListener mScrollListener;
+    private BLoader mbloader;
+    private static long mStartAt;
+    private int mOffset;
+    private Location mCurrentListLocation;
 
     // For Left Drawer
     private DrawerLayout mDrawerLayout;
@@ -97,7 +105,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     private SlidingUpPanelLayout mLayout;
 
     // For HTTP
-    private Response<EventListRespond> mEventRespond;
 
     public FrgHome() {}
 
@@ -133,7 +140,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
         setHasOptionsMenu(true);
 
-
         InputStream is = (InputStream) this.getResources().openRawResource(R.raw.server);
         try {
             SSL.setServerCert(is);
@@ -160,10 +166,16 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                         if(EventRespond.isSuccessful() && EventRespond.body().getErrorMsg() == null) {
                             eventList = EventRespond.body().getEvents();
                             break;
-                        } else
+                        } else {
                             continue;
+                        }
                     } catch(Exception e) {
-                        e.printStackTrace();
+                        Log.d("Home","cannot connect to server");
+                        try{
+                            Thread.sleep(1000);
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                         continue;
                     }
 
@@ -264,7 +276,9 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         homeRefreshSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                homeRefreshSwipe.setRefreshing(false);
+                homeRefreshSwipe.setRefreshing(true);
+                mIsLoadFinished = false;
+                EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
             }
         });
 
@@ -272,12 +286,21 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         mEventRecyclerView = mDataBinding.rvEvent;
         mEventLayoutManager = new LinearLayoutManager(getContext());
         mEventRecyclerView.setLayoutManager(mEventLayoutManager);
+        mScrollListener = new EndlessRecyclerViewScrollListener(mEventLayoutManager){
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                Log.d("here","trigger");
+                EventBus.getDefault().post(new ScrollEvent(ScrollEvent.OTHERS));
+            }
+        };
+        mEventRecyclerView.addOnScrollListener(mScrollListener);
         mEventAdapter = new AdtEvent(AdtEvent.HOME_MODE);
         mEventRecyclerView.setAdapter(mEventAdapter);
 
         // set self user
         mDataBinding.homeUsername.setText(((MainActivity)getActivity()).getmUsername());
 
+        getLoaderManager().initLoader(HOME_LOADER_ID,null,this);
         return v;
     }
 
@@ -384,55 +407,41 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     @Override // TODO: 3/1/2017 override super here
     public void onLocationChanged(Location location) {
         super.onLocationChanged(location);
-        getLoaderManager().restartLoader(HOME_LOADER_ID, null, this);
+        if(!mIsBLoaderLoaded) {
+            mIsBLoaderLoaded = true;
+            mCurrentListLocation = location;
+            EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
+        }
     }
 
     @Override
     public BLoader onCreateLoader(int id, Bundle args) {
-
-        return new BLoader(getContext());
-//        return new CustomLoader<List<Event>>(getContext()) {
-//            @Override
-//            public List<Event> loadInBackground() {
-//                if(mCurrentLocation != null){
-//                    HTTP httpService = HTTP.retrofit.create(HTTP.class);
-//                    Call<EventListRespond> call = httpService.getEvents(new EventListRequest(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1));
-//                    try {
-//                        mEventRespond = call.execute();
-//                        if (mEventRespond.isSuccessful()) {
-//                            if (mEventRespond.body().getErrorMsg() == null) {
-//                                Log.i(TAG, "Event list load Success");
-//                                return mEventRespond.body().getEvents();
-//                            } else {
-//                                Log.i(TAG, mEventRespond.body().getErrorMsg());
-//                                Toast.makeText(getContext(),mEventRespond.body().getErrorMsg(), Toast.LENGTH_LONG).show();
-//                                return null;
-//                            }
-//                        } else {
-//                            Log.i(TAG, "Not 200");
-//                            Toast.makeText(getContext(), "Not 200", Toast.LENGTH_LONG).show();
-//                            return null;
-//                        }
-//                    } catch (Exception e) {
-//                        Log.i(TAG, "Connect exception:" + e.getMessage());
-//                        return null;
-//                    }
-//                } else
-//                    return null;
-//            }
-//        };
+        String task;
+        if(args != null)
+            task = args.getString("task");
+        else
+            task = BLoader.TASK_FRESH_LOAD;
+        homeRefreshSwipe.setRefreshing(true);
+        if(task.equals(BLoader.TASK_LOAD_MORE)){
+            mbloader = new BLoader(getContext(),mStartAt,mOffset,mCurrentListLocation,mData,BLoader.TASK_LOAD_MORE);
+        }else{//refresh
+            mCurrentListLocation = mCurrentLocation;
+            mbloader = new BLoader(getContext(),mCurrentListLocation);
+        }
+        return mbloader;
     }
 
     @Override
     public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
-        mData = data;
-        if (mData != null) {
+        if (data != null) {
+            mData = data;
+            mOffset = mData.size();
             mEventAdapter.setmEventList(data);
             mIsLoadFinished = true;
             mEventAdapter.notifyDataSetChanged();
             populateMapMarker();
+            homeRefreshSwipe.setRefreshing(false);
         }
-
         mDataBinding.slideProgessBar.setVisibility(View.GONE);
     }
 
@@ -492,29 +501,112 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         }
     }
 
-    public static class BLoader extends CustomBatchLoader<List<Event>> {
-
-        public BLoader(Context context) {
-            super(context);
+    @Subscribe( threadMode = ThreadMode.MAIN)
+    public void onScrollEvent(ScrollEvent se) {
+        Bundle temp = new Bundle();
+        if (se.getMode() == ScrollEvent.FIRST) {
+            temp.putString("task",BLoader.TASK_FRESH_LOAD);
         }
+        else if(se.getMode() == ScrollEvent.OTHERS) {
+            temp.putString("task",BLoader.TASK_LOAD_MORE);
+        }
+        getLoaderManager().restartLoader(HOME_LOADER_ID,temp, this);
+    }
+
+    public static class BLoader extends CustomBatchLoader<List<Event>> {
+        public BLoader(Context context,long startAt,int offset,Location currentLocation,List<Event> eventList,String mode) {
+            super(context);
+            setTaskName(mode);
+            setOffset(offset);
+            mStartAt = startAt;
+            this.mCurrentLocation = currentLocation;
+            this.eventList = eventList;
+        }
+        public BLoader(Context context,Location mCurrentLocation){
+            super(context);
+            setTaskName(BLoader.TASK_FRESH_LOAD);
+            mStartAt = MAX_DATE;
+            this.mCurrentLocation = mCurrentLocation;
+            setOffset(0);
+            eventList = new ArrayList<Event>();
+        }
+
+        public final long MAX_DATE = 4102444800000L;
+        private final int FIRST_REQUEST = 0;
+        private final int OTHER_REQUEST = 1;
+        private Location mCurrentLocation;
+        private List<Event> eventList;
 
         @Override
         public List<Event> loadMore() {
-            getNextBatchNo();   // this is for marking the loading point
-            return null;
+            Log.d("here","hiddsafasdf");
+            eventList.addAll(homeFrgReqSender(OTHER_REQUEST));
+            return eventList;
         }
 
         @Override
         public List<Event> refreshLoad() {
-            return null;
+            return freshLoad();
         }
 
         @Override
         public List<Event> freshLoad() {
+            List<Event> temp = homeFrgReqSender(FIRST_REQUEST);
+            if(temp == null) {
+                return null;
+            } else if(eventList == null){
+                return temp;
+            }
+            eventList.clear();
+            eventList.addAll(temp);
+            return eventList;
+        }
+
+        private List<Event> homeFrgReqSender(int mode){
+            if(mode == FIRST_REQUEST){
+                return homeFrgReqSender(MAX_DATE,0,mode);
+            }else if(mode == OTHER_REQUEST){
+                return homeFrgReqSender(mStartAt,getOffset(),mode);
+            }
+            return null;
+        }
+
+        private List<Event> homeFrgReqSender(long startAt, int offset,int mode){
+            if(mCurrentLocation != null){
+                HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                Call<EventListRespond> call = httpService.getEvents(new EventListRequest(
+                        mCurrentLocation.getLatitude(),
+                        mCurrentLocation.getLongitude(),
+                        1,
+                        offset,
+                        startAt
+                ));
+                try{
+                    Response<EventListRespond> mEventRespond = call.execute();
+                    if(mEventRespond.isSuccessful()){
+                        if(mEventRespond.body().getErrorMsg() == null){
+                            List<Event> temp = mEventRespond.body().getEvents();
+                            mStartAt = mEventRespond.body().getStartId();
+                            return mEventRespond.body().getEvents();
+                        }else{
+                            Log.d("here",mEventRespond.body().getErrorMsg());
+                        }
+                    }else{
+                        Log.i("here", "Not 200");
+                        //Toast.makeText(getMainActivity(), "Not 200", Toast.LENGTH_LONG).show();
+                    }
+                }catch(Exception e){
+                    Log.d("here","no internet");
+                    e.printStackTrace();
+                    //Toast.makeText(getMainActivity(), "You do not have an active internet connection, try again later.", Toast.LENGTH_LONG ).show();
+                }
+            }else{
+                Log.d("here","location fail");
+                // Toast.makeText(getMainActivity(), "You do not have an valid location service now, try again later.", Toast.LENGTH_LONG ).show();
+            }
             return null;
         }
     }
-
 
 }
 
