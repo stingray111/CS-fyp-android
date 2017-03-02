@@ -199,6 +199,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 mIsJoined = true;
                                 EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
                                 resetLoader();
+                                showQuit();
 
                                 if(!((MainActivity)getActivity()).mChatService.addEvent(mEventObj)){
                                     Log.d(TAG,"messager service return false");
@@ -233,6 +234,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 mIsJoined = false;
                                 EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
                                 resetLoader();
+                                showJoin();
 
                                 if(!((MainActivity)getActivity()).mChatService.dropEvent(mEventId)){
                                     Log.d(TAG,"Chat Service Return false");
