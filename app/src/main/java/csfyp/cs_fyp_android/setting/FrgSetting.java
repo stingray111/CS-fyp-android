@@ -76,7 +76,10 @@ public class FrgSetting extends CustomFragment{
                                 editor.remove("userToken");
                                 editor.remove("userId");
                                 editor.remove("username");
+                                editor.remove("msgToken");
                                 editor.commit();
+
+                                ((MainActivity)getActivity()).unbindService(((MainActivity)getActivity()).connection);
                                 ((MainActivity) getActivity()).setmHome(FrgHome.newInstance());
 //                                FragmentManager fm = getActivity().getSupportFragmentManager();
 //                                for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
