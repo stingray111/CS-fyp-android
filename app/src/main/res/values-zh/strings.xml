@@ -1,4 +1,6 @@
 <resources>
+
+    <string name="facebook_app_id">626107437580125</string>
     <string name="app_name">MeetUs</string>
     <string name="title_activity_main">MeetUs</string>
 
