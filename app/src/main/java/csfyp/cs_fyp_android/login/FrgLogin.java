@@ -128,6 +128,14 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
         });
 
+        mDataBinding.googleSignInBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, GOOGLE_SIGN_IN_CODE);
+            }
+        });
+
         return v;
     }
 
@@ -234,11 +242,6 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
     public void onClickLogin(View view) {
         mValidator.validate();
-    }
-
-    public void onClickHere(View view) {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, GOOGLE_SIGN_IN_CODE);
     }
 
     @Subscribe (threadMode = ThreadMode.MAIN)
