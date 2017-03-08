@@ -109,6 +109,18 @@
             android:layout_marginRight="20dp"
             android:layout_width="match_parent"
             android:layout_height="40dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="or"/>
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/facebookSignInBtn"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="22dp"
+            android:layout_gravity="center_horizontal"
+            />
 
         <TextView
             android:id="@+id/registerBtn"

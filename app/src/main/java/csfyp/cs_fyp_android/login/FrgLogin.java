@@ -20,6 +20,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -27,6 +35,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.quest.Quests;
 import com.google.gson.Gson;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -36,7 +45,9 @@ import com.mobsandgeeks.saripaar.annotation.Password;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,6 +62,8 @@ import csfyp.cs_fyp_android.register.FrgRegister;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import com.facebook.FacebookSdk;
 
 
 public class FrgLogin extends CustomFragment implements Validator.ValidationListener, GoogleApiClient.OnConnectionFailedListener{
@@ -74,6 +87,9 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     private ProgressBar mProgressBar;
     private SignInButton mGoogleSignInBtn;
     private GoogleApiClient mGoogleApiClient;
+    private LoginButton mFacebookLoginButton;
+    private AccessToken accessToken;
+    public CallbackManager callbackManager;
 
     public static FrgLogin newInstance() {
 
@@ -89,6 +105,13 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("here","hi");
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -98,7 +121,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                 .enableAutoManage(getActivity(), this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-
+        callbackManager = CallbackManager.Factory.create();
     }
 
     @Nullable
@@ -135,6 +158,47 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                 startActivityForResult(signInIntent, GOOGLE_SIGN_IN_CODE);
             }
         });
+
+
+        mFacebookLoginButton = mDataBinding.facebookSignInBtn;
+        ArrayList<String> permission = new ArrayList<String>();
+        permission.add("public_profile");
+        permission.add("email");
+        mFacebookLoginButton.setReadPermissions(permission);
+        mFacebookLoginButton.setFragment(this);
+        mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d("here","success");
+                AccessToken accessToken = loginResult.getAccessToken();
+                GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        Log.d("here","complete");
+                        Log.d("here",object.optString("id"));
+                        Log.d("here",object.optString("cover"));
+                        Log.d("here",object.optString("first_name"));
+                        Log.d("here",object.optString("last_name"));
+                        Log.d("here",object.optString("gender"));
+                    }
+                });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields","id,cover,first_name,last_name,gender");
+                request.setParameters(parameters);
+                request.executeAsync();
+            }
+
+            @Override
+            public void onCancel() {
+                //NO NEED TO HANDLE
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                error.printStackTrace();
+            }
+        });
+
 
         return v;
     }
