@@ -13,15 +13,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.HistoryFrgBinding;
+import csfyp.cs_fyp_android.event.FrgPassedEvent;
 import csfyp.cs_fyp_android.home.AdtEvent;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
@@ -86,6 +92,18 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
     public Loader<List<Event>> onCreateLoader(int id, Bundle args) {
         return new CustomLoader<List<Event>>(getContext()) {
             @Override
@@ -122,4 +140,12 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
     public void onLoaderReset(Loader<List<Event>> loader) {
 
     }
+
+    @Subscribe (threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SwitchFrg event) {
+        if (event.getFromTag().equals(FrgHistory.TAG)) {
+            switchFragment(this, FrgPassedEvent.newInstance(event.getBundle().getInt("eventId")));
+        }
+    }
+
 }

@@ -63,6 +63,8 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
         holder.getBinding().setHandlers(holder);
         if (mUserList != null) {
             holder.getBinding().setItem(mUserList.get(position));
+            holder.getBinding().notAttendBtn.setVisibility(View.VISIBLE);
+            holder.getBinding().attendBtn.setVisibility(View.VISIBLE);
             if (mUserList.get(position).isAttended())
                 holder.getBinding().notAttendBtn.setVisibility(View.GONE);
             else
@@ -86,25 +88,25 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
         // each data item is just a string in this case
         public void onClickAttendItem(View view) {
 
-            binding.attendBtn.setVisibility(View.GONE);
+            binding.notAttendBtn.setVisibility(View.GONE);
             binding.attendanceProgressBar.setVisibility(View.VISIBLE);
 
             HTTP httpService = HTTP.retrofit.create(HTTP.class);
-            Call<ErrorMsgOnly> call = httpService.changeAttendance(new ChangeAttendanceRequest(binding.getItem().getId(), eventId, false));
+            Call<ErrorMsgOnly> call = httpService.changeAttendance(new ChangeAttendanceRequest(binding.getItem().getId(), eventId, true));
 
             call.enqueue(new Callback<ErrorMsgOnly>() {
                 @Override
                 public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
                     if(response.isSuccessful() && response.body().getErrorMsg() == null) {
-                        binding.notAttendBtn.setVisibility(View.VISIBLE);
+                        binding.attendBtn.setVisibility(View.VISIBLE);
                         binding.attendanceProgressBar.setVisibility(View.GONE);
-                        EventBus.getDefault().post(1);
+                        EventBus.getDefault().post(new RefreshFrg(FrgPassedEvent.TAG));
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
-                    binding.attendBtn.setVisibility(View.VISIBLE);
+                    binding.notAttendBtn.setVisibility(View.VISIBLE);
                     binding.attendanceProgressBar.setVisibility(View.GONE);
                 }
             });
@@ -116,16 +118,16 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
             mDialog.setDialogListener(new NoticeDialogFragment.NoticeDialogListener() {
                 @Override
                 public void onDialogPositiveClick(DialogFragment dialog) {
-                    binding.notAttendBtn.setVisibility(View.GONE);
+                    binding.attendBtn.setVisibility(View.GONE);
                     binding.attendanceProgressBar.setVisibility(View.VISIBLE);
 
                     HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                    Call<ErrorMsgOnly> call = httpService.changeAttendance(new ChangeAttendanceRequest(binding.getItem().getId(), eventId, true));
+                    Call<ErrorMsgOnly> call = httpService.changeAttendance(new ChangeAttendanceRequest(binding.getItem().getId(), eventId, false));
                     call.enqueue(new Callback<ErrorMsgOnly>() {
                         @Override
                         public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
                             if(response.isSuccessful() && response.body().getErrorMsg() == null) {
-                                binding.attendBtn.setVisibility(View.VISIBLE);
+                                binding.notAttendBtn.setVisibility(View.VISIBLE);
                                 binding.attendanceProgressBar.setVisibility(View.GONE);
 
                                 EventBus.getDefault().post(new RefreshFrg(FrgPassedEvent.TAG));
@@ -134,7 +136,7 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
 
                         @Override
                         public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
-                            binding.notAttendBtn.setVisibility(View.VISIBLE);
+                            binding.attendBtn.setVisibility(View.VISIBLE);
                             binding.attendanceProgressBar.setVisibility(View.GONE);
                         }
                     });

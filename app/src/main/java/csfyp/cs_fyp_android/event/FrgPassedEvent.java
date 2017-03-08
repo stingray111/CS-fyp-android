@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -389,6 +390,7 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
     public void onMessageEvent(RefreshFrg event) {
         Log.i("EventBus", "Received");
         if (event.getTag().equals(TAG)) {
+            Toast.makeText(getContext(), "refresh", Toast.LENGTH_SHORT).show();
             getLoaderManager().restartLoader(EVENT_LOADER_ID, null, this);
             mUserAdapter.notifyDataSetChanged();
         }

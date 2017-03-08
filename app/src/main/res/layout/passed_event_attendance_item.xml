@@ -42,14 +42,14 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:background="@drawable/ic_attendance_yes"
-            android:onClick="@{handlers::onClickAttendItem}"/>
+            android:onClick="@{handlers::onClickNotAttendItem}"/>
 
         <ImageButton
             android:id="@+id/notAttendBtn"
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:background="@drawable/ic_attendance_no"
-            android:onClick="@{handlers::onClickNotAttendItem}"/>
+            android:onClick="@{handlers::onClickAttendItem}"/>
 
         <LinearLayout
             android:visibility="gone"

@@ -192,7 +192,9 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                 call.enqueue(new Callback<ErrorMsgOnly>() {
                     @Override
                     public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
+                        Log.i(TAG, "responese here");
                         if (response.isSuccessful()) {
+                            Log.i(TAG, "is 200");
                             if (response.body().getErrorMsg() == null) {
                                 Toast.makeText(getContext(), "Joined successfully", Toast.LENGTH_SHORT).show();
                                 Log.i(TAG, "Joined successfully");
@@ -207,11 +209,13 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
-                        }
+                        } else
+                            Log.i(TAG, "is not 200");
                     }
 
                     @Override
                     public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
+                        Log.i(TAG, "err" + t.getMessage());
                         Toast.makeText(getContext(), "Cannot join event: unknown err", Toast.LENGTH_SHORT);
                     }
                 });

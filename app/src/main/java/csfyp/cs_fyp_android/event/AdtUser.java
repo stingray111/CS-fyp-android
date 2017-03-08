@@ -143,7 +143,7 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
 
         public void onCLickRateItem(View view) {
             Bundle b = new Bundle();
-            b.putInt("userId", binding.getItem().getId());
+            b.putInt("userId", passedBinding.getItem().getId());
             b.putString("username", passedBinding.getItem().getUserName());
             b.putInt("eventId", eventId);
             SwitchFrg temp = new SwitchFrg(FrgPassedEvent.TAG, FrgRating.TAG, b);
