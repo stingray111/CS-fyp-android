@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
@@ -126,6 +127,9 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                                 editor.putInt("userId", response.body().getUserId());
                                 editor.putString("username", response.body().getUsername());
                                 editor.putString("msgToken", response.body().getMsgToken());
+                                Gson gson = new Gson();
+                                String selfStr = gson.toJson(response.body().getSelf());
+                                editor.putString("self", selfStr);
                                 editor.commit();
 
                                 MainActivity parent = (MainActivity)getActivity();
@@ -133,7 +137,6 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                                 parent.setmUserId(response.body().getUserId());
                                 parent.setmUsername(response.body().getUsername());
                                 parent.setmSelf(response.body().getSelf());
-                                Log.d("fuck you ", "token"+response.body().getMsgToken());
                                 parent.setmMsgToken(response.body().getMsgToken());
                                 replaceFragment(((MainActivity) getActivity()).getmHome());
 

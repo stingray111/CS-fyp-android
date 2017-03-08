@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.LocalizationActivity;
+import com.google.gson.Gson;
 
 import java.io.InputStream;
 
@@ -108,12 +109,25 @@ public class MainActivity extends LocalizationActivity {
 //        startActivity(refresh);
 //    }
 
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         setTheme(R.style.AppTheme);
 
         super.onCreate(savedInstanceState);
+
+        if (mSelf == null) {
+            SharedPreferences  mPrefs = getPreferences(MODE_PRIVATE);
+            Gson gson = new Gson();
+            String self = mPrefs.getString("self", "");
+            mSelf = gson.fromJson(self, User.class);
+        }
 
 //        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 //                .detectDiskReads()
