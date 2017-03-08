@@ -143,6 +143,8 @@ public class ChatService extends Service {
         if(mAuthListener!=null){
             mAuth.removeAuthStateListener(mAuthListener);
         }
+        FirebaseAuth.getInstance().signOut();
+
     }
 
     public void runOnUiThread(Runnable runnable) {
@@ -360,7 +362,7 @@ public class ChatService extends Service {
         mLinearLayoutManager.setStackFromEnd(true);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
