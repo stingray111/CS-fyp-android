@@ -14,6 +14,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -103,6 +105,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     private static long mStartAt;
     private int mOffset;
     private Location mCurrentListLocation;
+    private ImageButton mSortButton;
 
     // For Left Drawer
     private DrawerLayout mDrawerLayout;
@@ -147,7 +150,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             mIsPanelExpanded = savedInstanceState.getBoolean("isPanelExpanded");
         }
 
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
 
         InputStream is = (InputStream) this.getResources().openRawResource(R.raw.server);
         try {
@@ -306,6 +309,15 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         mEventAdapter = new AdtEvent(AdtEvent.HOME_MODE);
         mEventRecyclerView.setAdapter(mEventAdapter);
 
+        mSortButton = mDataBinding.sortButton;
+        mSortButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSortMenu();
+            }
+        });
+
+
         // set self user
         mDataBinding.homeUsername.setText(((MainActivity)getActivity()).getmUsername());
 
@@ -367,30 +379,35 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.option_menu, menu);
+    public void showSortMenu(){
+        PopupMenu popup = new PopupMenu(getContext(),mSortButton);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.option_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                mSortState = 1;
+                switch (item.getItemId()) {
+                    case R.id.sortDistance:
+                        mSortState = SORT_DISTANCE;
+                        EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
+                        return true;
+                    case R.id.sortPopularity:
+                        mSortState = SORT_POP;
+                        EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
+                        return true;
+                    case R.id.sortName:
+                        mSortState = SORT_NAME;
+                        EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+        popup.show();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //TODO: add action
-        //mEventAdapter.sortEventList(item);
-        mSortState = 1;
-        switch(item.getItemId()){
-            case R.id.sortDistance:
-                mSortState = SORT_DISTANCE;
-                break;
-            case R.id.sortPopularity:
-                mSortState = SORT_POP;
-                break;
-            case R.id.sortName:
-                mSortState = SORT_NAME;
-                break;
-        }
-        EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override // TODO: 3/1/2017 override super here
     public void onMapReady(GoogleMap googleMap) {
