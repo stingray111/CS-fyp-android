@@ -51,6 +51,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
     private final String mRegexUserName = "^[a-zA-Z0-9]{5,20}$";
     private final String mRegexPhone = "^\\d{0,20}$";
     private final String mRegexPwd= "^([a-zA-z0-9]){8,15}$";
+
     @NotEmpty
     @Pattern(regex = mRegexUserName, message = "Username should be numbers or letters with length 5 to 20.")
     private EditText mUsernameField;
@@ -79,7 +80,6 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
 
     private ProgressBar mProgressBar;
 
-
     public static FrgRegister newInstance() {
 
         Bundle args = new Bundle();
@@ -88,8 +88,6 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
         fragment.setArguments(args);
         return fragment;
     }
-
-
 
     @Nullable
     @Override

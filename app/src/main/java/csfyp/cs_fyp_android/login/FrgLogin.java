@@ -1,8 +1,11 @@
 package csfyp.cs_fyp_android.login;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -17,11 +20,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.mobsandgeeks.saripaar.annotation.Password;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,6 +43,7 @@ import java.util.UUID;
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.databinding.LoginFrgBinding;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
@@ -38,12 +53,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class FrgLogin extends CustomFragment implements Validator.ValidationListener{
+public class FrgLogin extends CustomFragment implements Validator.ValidationListener, GoogleApiClient.OnConnectionFailedListener{
     public FrgLogin(){
         super();
     }
 
     public final static String TAG = "login";
+    public static final int GOOGLE_SIGN_IN_CODE = 9001;
+
+    private LoginFrgBinding mDataBinding;
+
     private Toolbar mToolBar;
     private Button mLoginBtn;
     @NotEmpty
@@ -53,6 +72,8 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     private TextView mRegisterBtn;
     private Validator mValidator;
     private ProgressBar mProgressBar;
+    private SignInButton mGoogleSignInBtn;
+    private GoogleApiClient mGoogleApiClient;
 
     public static FrgLogin newInstance() {
 
@@ -67,21 +88,38 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
         super.switchFragment(this, to);
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                .enableAutoManage(getActivity(), this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View v = inflater.inflate(R.layout.login_frg,container,false);
-        AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
+        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.login_frg, container, false);
+        mDataBinding.setHandlers(this);
 
-        mLoginBtn = (Button) v.findViewById(R.id.loginBtn);
-        mInputEmailOrUsername = (EditText) v.findViewById(R.id.inputEmailOrUsername);
+        View v = mDataBinding.getRoot();
+
+        mLoginBtn = mDataBinding.loginBtn;
+        mInputEmailOrUsername = mDataBinding.inputEmailOrUsername;
 
         mValidator = new Validator(this);
         mValidator.setValidationListener(this);
-        mProgressBar = (ProgressBar) v.findViewById(R.id.loginProgressBar);
-        mInputPassword = (EditText) v.findViewById(R.id.inputPassword);
-        mRegisterBtn = (TextView) v.findViewById(R.id.registerBtn);
+
+        mProgressBar = mDataBinding.loginProgressBar;
+        mInputPassword = mDataBinding.inputPassword;
+        mRegisterBtn = mDataBinding.registerBtn;
+
         mRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,13 +127,20 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
             }
 
         });
-        mLoginBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                mValidator.validate();
-            }
-        });
+
         return v;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -180,6 +225,32 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
             }
         }
 
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    public void onClickLogin(View view) {
+        mValidator.validate();
+    }
+
+    public void onClickHere(View view) {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, GOOGLE_SIGN_IN_CODE);
+    }
+
+    @Subscribe (threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(GoogleSignInResult result) {
+        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount account = result.getSignInAccount();
+            mDataBinding.inputEmailOrUsername.setText(account.getDisplayName());
+        } else {
+            // Signed out, show unauthenticated UI.
+        }
     }
 }
 
