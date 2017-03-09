@@ -14,6 +14,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +39,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import csfyp.cs_fyp_android.CustomMapFragment;
@@ -63,7 +66,15 @@ import csfyp.cs_fyp_android.setting.FrgSetting;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.decending;
+import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.getComparator;
+
 public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCallbacks<List<Event>> {
+
+    private static final int SORT_DISTANCE =1;
+    private static final int SORT_POP =2;
+    private static final int SORT_NAME =3;
+    private int mSortState = 1;
 
     public static final int HOME_LOADER_ID = 1;
     public static final int HOME_LOCATION_SETTING_CALLBACK = 2;
@@ -94,6 +105,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     private static long mStartAt;
     private int mOffset;
     private Location mCurrentListLocation;
+    private ImageButton mSortButton;
 
     // For Left Drawer
     private DrawerLayout mDrawerLayout;
@@ -138,7 +150,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             mIsPanelExpanded = savedInstanceState.getBoolean("isPanelExpanded");
         }
 
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
 
         InputStream is = (InputStream) this.getResources().openRawResource(R.raw.server);
         try {
@@ -296,6 +308,15 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         mEventAdapter = new AdtEvent(AdtEvent.HOME_MODE);
         mEventRecyclerView.setAdapter(mEventAdapter);
 
+        mSortButton = mDataBinding.sortButton;
+        mSortButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSortMenu();
+            }
+        });
+
+
         // set self user
         mDataBinding.homeUsername.setText(((MainActivity)getActivity()).getmUsername());
 
@@ -357,17 +378,35 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.option_menu, menu);
+    public void showSortMenu(){
+        PopupMenu popup = new PopupMenu(getContext(),mSortButton);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.option_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                mSortState = 1;
+                switch (item.getItemId()) {
+                    case R.id.sortDistance:
+                        mSortState = SORT_DISTANCE;
+                        EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
+                        return true;
+                    case R.id.sortPopularity:
+                        mSortState = SORT_POP;
+                        EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
+                        return true;
+                    case R.id.sortName:
+                        mSortState = SORT_NAME;
+                        EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+        popup.show();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //TODO: add action
-        mEventAdapter.sortEventList(item);
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override // TODO: 3/1/2017 override super here
     public void onMapReady(GoogleMap googleMap) {
@@ -422,10 +461,10 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             task = BLoader.TASK_FRESH_LOAD;
         homeRefreshSwipe.setRefreshing(true);
         if(task.equals(BLoader.TASK_LOAD_MORE)){
-            mbloader = new BLoader(getContext(),mStartAt,mOffset,mCurrentListLocation,mData,BLoader.TASK_LOAD_MORE);
+            mbloader = new BLoader(getContext(),mStartAt,mOffset,mCurrentListLocation,mData,BLoader.TASK_LOAD_MORE,mSortState);
         }else{//refresh
             mCurrentListLocation = mCurrentLocation;
-            mbloader = new BLoader(getContext(),mCurrentListLocation);
+            mbloader = new BLoader(getContext(),mCurrentListLocation,mSortState);
         }
         return mbloader;
     }
@@ -513,21 +552,23 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     }
 
     public static class BLoader extends CustomBatchLoader<List<Event>> {
-        public BLoader(Context context,long startAt,int offset,Location currentLocation,List<Event> eventList,String mode) {
+        public BLoader(Context context,long startAt,int offset,Location currentLocation,List<Event> eventList,String mode,int sortMode) {
             super(context);
             setTaskName(mode);
             setOffset(offset);
             mStartAt = startAt;
             this.mCurrentLocation = currentLocation;
             this.eventList = eventList;
+            this.mSortMode = sortMode;
         }
-        public BLoader(Context context,Location mCurrentLocation){
+        public BLoader(Context context,Location mCurrentLocation,int sortMode){
             super(context);
             setTaskName(BLoader.TASK_FRESH_LOAD);
             mStartAt = MAX_DATE;
             this.mCurrentLocation = mCurrentLocation;
             setOffset(0);
             eventList = new ArrayList<Event>();
+            mSortMode = sortMode;
         }
 
         public final long MAX_DATE = 4102444800000L;
@@ -535,11 +576,11 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         private final int OTHER_REQUEST = 1;
         private Location mCurrentLocation;
         private List<Event> eventList;
+        private int mSortMode;
 
         @Override
         public List<Event> loadMore() {
-            Log.d("here","hiddsafasdf");
-            eventList.addAll(homeFrgReqSender(OTHER_REQUEST));
+            eventList.addAll(homeFrgReqSender(OTHER_REQUEST,mSortMode));
             return eventList;
         }
 
@@ -550,7 +591,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
         @Override
         public List<Event> freshLoad() {
-            List<Event> temp = homeFrgReqSender(FIRST_REQUEST);
+            List<Event> temp = homeFrgReqSender(FIRST_REQUEST,mSortMode);
             if(temp == null) {
                 return null;
             } else if(eventList == null){
@@ -561,24 +602,28 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             return eventList;
         }
 
-        private List<Event> homeFrgReqSender(int mode){
+        private List<Event> homeFrgReqSender(int mode,int sortMode){
             if(mode == FIRST_REQUEST){
-                return homeFrgReqSender(MAX_DATE,0,mode);
+                Log.d("here","first"+MAX_DATE);
+                return homeFrgReqSender(MAX_DATE,0,mode,sortMode);
             }else if(mode == OTHER_REQUEST){
-                return homeFrgReqSender(mStartAt,getOffset(),mode);
+                Log.d("here","other"+mStartAt);
+                return homeFrgReqSender(mStartAt,getOffset(),mode,sortMode);
             }
             return null;
         }
 
-        private List<Event> homeFrgReqSender(long startAt, int offset,int mode){
+        private List<Event> homeFrgReqSender(long startAt, int offset,int mode,int sortMode){
             if(mCurrentLocation != null){
+                Log.d("here","sortMode"+sortMode);
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 Call<EventListRespond> call = httpService.getEvents(new EventListRequest(
                         mCurrentLocation.getLatitude(),
                         mCurrentLocation.getLongitude(),
                         1,
                         offset,
-                        startAt
+                        startAt,
+                        sortMode
                 ));
                 try{
                     Response<EventListRespond> mEventRespond = call.execute();
