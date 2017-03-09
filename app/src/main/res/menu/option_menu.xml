@@ -2,6 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/sortDistance"
             android:title="@string/sort_menu_by_distance" />
@@ -11,4 +12,5 @@
         <item
             android:id="@+id/sortName"
             android:title="@string/sort_menu_by_name" />
+    </group>
 </menu>

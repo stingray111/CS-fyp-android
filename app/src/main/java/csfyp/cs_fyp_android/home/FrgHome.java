@@ -150,8 +150,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             mIsPanelExpanded = savedInstanceState.getBoolean("isPanelExpanded");
         }
 
-        //setHasOptionsMenu(true);
-
         InputStream is = (InputStream) this.getResources().openRawResource(R.raw.server);
         try {
             SSL.setServerCert(is);
@@ -317,6 +315,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         });
 
 
+
         // set self user
         mDataBinding.homeUsername.setText(((MainActivity)getActivity()).getmUsername());
 
@@ -389,14 +388,17 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                 switch (item.getItemId()) {
                     case R.id.sortDistance:
                         mSortState = SORT_DISTANCE;
+                        item.setChecked(true);
                         EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
                         return true;
                     case R.id.sortPopularity:
                         mSortState = SORT_POP;
+                        item.setChecked(true);
                         EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
                         return true;
                     case R.id.sortName:
                         mSortState = SORT_NAME;
+                        item.setChecked(true);
                         EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
                         return true;
                     default:
@@ -404,6 +406,19 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                 }
             }
         });
+        switch (mSortState){
+            case SORT_DISTANCE:
+                popup.getMenu().findItem(R.id.sortDistance).setChecked(true);
+                break;
+            case SORT_POP:
+                popup.getMenu().findItem(R.id.sortPopularity).setChecked(true);
+                break;
+            case SORT_NAME:
+                popup.getMenu().findItem(R.id.sortName).setChecked(true);
+                break;
+            default:
+                popup.getMenu().findItem(R.id.sortDistance).setChecked(true);
+        }
         popup.show();
     }
 
