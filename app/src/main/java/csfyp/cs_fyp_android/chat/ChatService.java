@@ -228,10 +228,11 @@ public class ChatService extends Service {
             mFloatingActionButtonList.add(btn);
         }
 
-        //handling open the menu
         mFloatingActionMenu = (FloatingActionMenu) mView.findViewById(R.id.floatingMsgMenu);
+        mFloatingActionMenu.setVisibility(View.GONE);
         for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
             mFloatingActionMenu.addMenuButton(_fab);
+            mFloatingActionMenu.setVisibility(View.VISIBLE);
         }
 
         AnimatorSet set = new AnimatorSet();
