@@ -13,6 +13,7 @@ public class ChatServiceSetting {
     public static final int INIT = 0;
     public static final int SET_PARAM= 1;
     private int mode;
+    private int delay;
     private List<Event> mEventList;
     private String mMsgToken;
 
@@ -20,6 +21,7 @@ public class ChatServiceSetting {
         this.mode = mode;
         this.mEventList = mEventList;
         this.mMsgToken = mMsgToken;
+        this.delay = 0;
     }
 
     public ChatServiceSetting(int mode){
@@ -36,5 +38,13 @@ public class ChatServiceSetting {
 
     public String getmMsgToken() {
         return mMsgToken;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
+
+    public int getDelay() {
+        return delay;
     }
 }

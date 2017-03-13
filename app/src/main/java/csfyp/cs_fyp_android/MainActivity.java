@@ -232,8 +232,14 @@ public class MainActivity extends LocalizationActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void chatServiceHandle(ChatServiceSetting chatServiceSetting){
+    public void chatServiceHandle(final ChatServiceSetting chatServiceSetting){
         if (chatServiceSetting.getMode() == ChatServiceSetting.INIT) {
+            if(chatServiceSetting.getDelay() > 0){
+                try{
+                    Thread.sleep(chatServiceSetting.getDelay());
+                }catch (Exception e){
+                }
+            }
             HTTP httpService = HTTP.retrofit.create(HTTP.class);
             Call<EventListRespond> call = httpService.getEvents(new EventListRequest(mUserId, 3));
             call.enqueue(new Callback<EventListRespond>() {
@@ -255,8 +261,9 @@ public class MainActivity extends LocalizationActivity {
 
                 @Override
                 public void onFailure(Call<EventListRespond> call, Throwable t) {
-                    EventBus.getDefault().post(new ErrorMsg("Cannot connect to messaging service, will try again",ErrorMsg.LENGTH_SHORT));
-                    call.clone().enqueue(this);
+                    EventBus.getDefault().post(new ErrorMsg("Cannot connect to messaging service, will try again",ErrorMsg.LENGTH_LONG));
+                    chatServiceSetting.setDelay(5000);
+                    EventBus.getDefault().post(chatServiceSetting);
                 }
             });
         }
