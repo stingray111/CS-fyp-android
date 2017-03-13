@@ -93,7 +93,7 @@
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
                 android:text="login"
-                android:onClick="@{handlers.onClickLogin}"
+                android:onClick="@{handlers::onClickLogin}"
                 style="@style/DefaultButton"/>
 
         </LinearLayout>

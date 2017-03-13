@@ -156,8 +156,8 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
         final HTTP httpService = HTTP.retrofit.create(HTTP.class);
         User user = new User(mUsernameField.getText().toString()
                 , mPasswordField.getText().toString()
-                , mFirstNameField.getText().toString(),
-                mLastNameField.getText().toString()
+                , mFirstNameField.getText().toString()
+                , mLastNameField.getText().toString()
                 , mNickNameField.getText().toString()
                 , isMale, 0, 0, 0
                 , mEmailField.getText().toString(),

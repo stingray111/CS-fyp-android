@@ -1,5 +1,6 @@
 package csfyp.cs_fyp_android.login;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,10 +34,6 @@ import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.mobsandgeeks.saripaar.annotation.Password;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -53,7 +50,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class FrgLogin extends CustomFragment implements Validator.ValidationListener, GoogleApiClient.OnConnectionFailedListener{
+public class FrgLogin extends CustomFragment implements Validator.ValidationListener, GoogleApiClient.OnConnectionFailedListener {
     public FrgLogin(){
         super();
     }
@@ -62,6 +59,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     public static final int GOOGLE_SIGN_IN_CODE = 9001;
 
     private LoginFrgBinding mDataBinding;
+    private ProgressDialog mProgressDialog;
 
     private Toolbar mToolBar;
     private Button mLoginBtn;
@@ -93,6 +91,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
         super.onCreate(savedInstanceState);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                //.requestIdToken("810264811350-daj0ct3pt81b2c1n8iscqrv69ttmeacj.apps.googleusercontent.com")
                 .build();
         mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                 .enableAutoManage(getActivity(), this)
@@ -128,13 +127,13 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
         });
 
-        mDataBinding.googleSignInBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                startActivityForResult(signInIntent, GOOGLE_SIGN_IN_CODE);
-            }
-        });
+//        mDataBinding.googleSignInBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+//                startActivityForResult(signInIntent, GOOGLE_SIGN_IN_CODE);
+//            }
+//        });
 
         return v;
     }
@@ -142,13 +141,29 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+//        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+//        if (opr.isDone()) {
+//
+//            Log.d(TAG, "Got cached sign-in");
+//            GoogleSignInResult result = opr.get();
+//            handleSignInResult(result);
+//        } else {
+//
+//            showProgressDialog();
+//            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+//                @Override
+//                public void onResult(GoogleSignInResult googleSignInResult) {
+//                    hideProgressDialog();
+//                    handleSignInResult(googleSignInResult);
+//                }
+//            });
+//        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        EventBus.getDefault().unregister(this);
+        //EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -219,6 +234,18 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GOOGLE_SIGN_IN_CODE) {
+            Log.d("Main", "Google Sign in");
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            Log.d("Main", "handleSignInResult:" + result.isSuccess());
+
+            handleSignInResult(result);
+        }
+    }
+
+    @Override
     public void onValidationFailed(List<ValidationError> errors) {
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
         for (ValidationError error : errors) {
@@ -237,19 +264,47 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Log.i(TAG, "Google Connection Fail");
     }
 
     public void onClickLogin(View view) {
         mValidator.validate();
     }
 
-    @Subscribe (threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(GoogleSignInResult result) {
+    private void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(getActivity());
+            mProgressDialog.setMessage("Loading");
+            mProgressDialog.setIndeterminate(true);
+        }
+        mProgressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.hide();
+        }
+    }
+
+    private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount account = result.getSignInAccount();
+            Log.i("GoogleLogin", account.getId() + " " + account.getEmail() + " " + account.getIdToken());
+
+//            final HTTP httpService = HTTP.retrofit.create(HTTP.class);
+//            User user = new User(mUsernameField.getText().toString(),
+//                    mPasswordField.getText().toString(),
+//                    mFirstNameField.getText().toString(),
+//                    mLastNameField.getText().toString(),
+//                    mNickNameField.getText().toString(),
+//                    isMale, 0, 0, 0,
+//                    mEmailField.getText().toString(),
+//                    mPhoneField.getText().toString(),
+//                    mDescriptField.getText().toString(), 1);
+//            Call<RegisterRespond> call = httpService.createUser(user);
+
             mDataBinding.inputEmailOrUsername.setText(account.getDisplayName());
         } else {
             // Signed out, show unauthenticated UI.

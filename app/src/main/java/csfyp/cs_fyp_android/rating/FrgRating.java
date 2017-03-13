@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import com.cunoraz.tagview.Tag;
 import com.cunoraz.tagview.TagView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +22,10 @@ import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.RatingFrgBinding;
+import csfyp.cs_fyp_android.event.FrgPassedEvent;
 import csfyp.cs_fyp_android.lib.CustomTag;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.RefreshFrg;
 import csfyp.cs_fyp_android.model.request.Rate;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
 import retrofit2.Call;
@@ -242,6 +246,7 @@ public class FrgRating extends CustomFragment {
         call.enqueue(new Callback<ErrorMsgOnly>() {
             @Override
             public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
+                EventBus.getDefault().post(new RefreshFrg(FrgPassedEvent.TAG));
                 onBack(null);
             }
 

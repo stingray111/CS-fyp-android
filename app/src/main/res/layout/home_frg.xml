@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
             name="handlers"
@@ -115,12 +116,20 @@
                 android:background="@color/colorAccent"
                 android:onClick="@{handlers::onClickProfile}">
 
-                <ImageView
+                <!--<ImageView-->
+                    <!--android:id="@+id/homeProPic"-->
+                    <!--android:background="@drawable/bg_circle"-->
+                    <!--android:layout_width="64dp"-->
+                    <!--android:layout_height="64dp" />-->
+
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:id="@+id/homeProPic"
+                    android:layout_margin="12dp"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:layout_margin="8dp"
                     android:src="@drawable/ic_propic_big"
-                    android:clickable="false"/>
+                    android:scaleType="centerCrop"
+                    app:civ_border="false" />
 
                 <TextView
                     android:id="@+id/homeUsername"

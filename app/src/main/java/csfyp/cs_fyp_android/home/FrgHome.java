@@ -30,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -150,6 +151,8 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         //chat messaging service
         Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
         getMainActivity().bindService(serviceIntent, getMainActivity().connection, Context.BIND_AUTO_CREATE);
+
+
 
         new Thread(new Runnable() {
             @Override
@@ -295,6 +298,14 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         mEventRecyclerView.addOnScrollListener(mScrollListener);
         mEventAdapter = new AdtEvent(AdtEvent.HOME_MODE);
         mEventRecyclerView.setAdapter(mEventAdapter);
+
+        // load propic
+        Picasso.with(getContext())
+                .load("https://lh3.googleusercontent.com/l6JAkhvfxbP61_FWN92j4ulDMXJNH3HT1DR6xrE7MtwW-2AxpZl_WLnBzTpWhCuYkbHihgBQ=s640-h400-e365")
+                .resize(100,100)
+                .centerCrop()
+                .placeholder(R.drawable.ic_propic_big)
+                .into(mDataBinding.homeProPic);
 
         // set self user
         mDataBinding.homeUsername.setText(((MainActivity)getActivity()).getmUsername());

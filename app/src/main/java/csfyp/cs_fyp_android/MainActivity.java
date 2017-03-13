@@ -13,8 +13,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.LocalizationActivity;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
@@ -26,8 +24,6 @@ import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.SSL;
 import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.model.User;
-
-import static csfyp.cs_fyp_android.login.FrgLogin.GOOGLE_SIGN_IN_CODE;
 
 public class MainActivity extends LocalizationActivity {
 
@@ -102,9 +98,6 @@ public class MainActivity extends LocalizationActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FrgHome.HOME_LOCATION_SETTING_CALLBACK) {
             mHome.onActivityResult(requestCode, resultCode, data);
-        } else if (requestCode == GOOGLE_SIGN_IN_CODE) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            EventBus.getDefault().post(result);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -208,5 +201,17 @@ public class MainActivity extends LocalizationActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().register(this);
     }
 }

@@ -25,6 +25,7 @@ import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -175,6 +176,14 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
         l.setTextColor(Color.BLACK);
 
         getLoaderManager().initLoader(USER_LOADER_ID, null, this);
+
+        // load propic
+        Picasso.with(getContext())
+                .load("https://lh3.googleusercontent.com/l6JAkhvfxbP61_FWN92j4ulDMXJNH3HT1DR6xrE7MtwW-2AxpZl_WLnBzTpWhCuYkbHihgBQ=s640-h400-e365")
+                .resize(300,300)
+                .centerCrop()
+                .placeholder(R.drawable.ic_propic_big)
+                .into(mDatabinding.profileProPic);
 
         return v;
     }
