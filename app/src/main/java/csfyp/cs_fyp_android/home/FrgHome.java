@@ -420,7 +420,10 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             mData = data;
             mOffset = mData.size();
             mEventAdapter.setmEventList(data);
-            if(mOffset < 30) mScrollListener.resetState();
+            if(mOffset < 30) {
+                if(mOffset != 0) mEventLayoutManager.scrollToPosition(0);
+                mScrollListener.resetState();
+            }
             mIsLoadFinished = true;
             mEventAdapter.notifyDataSetChanged();
             populateMapMarker();

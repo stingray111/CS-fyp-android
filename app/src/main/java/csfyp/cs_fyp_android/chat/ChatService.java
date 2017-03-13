@@ -586,28 +586,30 @@ public class ChatService extends Service {
         if(chatServiceSetting.getMode() == ChatServiceSetting.SET_PARAM) {
             mMsgToken = chatServiceSetting.getmMsgToken();
             mEventList = chatServiceSetting.getmEventList();
-            Log.d(TAG,mMsgToken);
+            Log.d(TAG,"Token: "+ mMsgToken);
+
             mAuth.signInWithCustomToken(mMsgToken)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@android.support.annotation.NonNull Task<AuthResult> task) {
-                            if(!task.isSuccessful()){
-                                EventBus.getDefault().post(new ErrorMsg("Cannot login to messaging service",ErrorMsg.LENGTH_LONG));
-                            }else{
+                            if(task.isSuccessful()){
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         startMsg();
                                     }
                                 });
+                            } else {
+                                EventBus.getDefault().post(new ErrorMsg("Cannot login to messaging service", ErrorMsg.LENGTH_LONG));
                             }
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    e.printStackTrace();
-                }
-            });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
 
         }
     }
