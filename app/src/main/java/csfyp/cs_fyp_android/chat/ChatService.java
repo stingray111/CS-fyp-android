@@ -37,6 +37,7 @@ import android.widget.TextView;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.clans.fab.Label;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,12 +47,24 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.LinkedList;
 import java.util.List;
 
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
+import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.request.EventListRequest;
+import csfyp.cs_fyp_android.model.respond.EventListRespond;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.view.View.GONE;
 import static android.widget.ListPopupWindow.MATCH_PARENT;
@@ -86,7 +99,6 @@ public class ChatService extends Service {
     private LinearLayoutManager mLinearLayoutManager;
     private DatabaseReference mFirebaseDatabaseReference;
 
-    //private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> mFirebaseAdapter;
     private FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder> mFirebaseAdapter;
     public static final String MESSAGES_CHILD = "testMsg";
     private static final String MESSAGE_URL = "https://cs-fyp.firebaseio.com/testMsg";
@@ -105,8 +117,10 @@ public class ChatService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.INIT));
         return myBinder;
     }
+
 
     @Override
     public void onCreate() {
@@ -127,6 +141,7 @@ public class ChatService extends Service {
         };
         mAuth = FirebaseAuth.getInstance();
         mAuth.addAuthStateListener(mAuthListener);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -144,6 +159,11 @@ public class ChatService extends Service {
             mAuth.removeAuthStateListener(mAuthListener);
         }
         FirebaseAuth.getInstance().signOut();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void temp (){
 
     }
 
@@ -165,7 +185,6 @@ public class ChatService extends Service {
 
     public void startMsg(){
         //put the event list in
-
 
         Log.d(TAG, "start messaging interface");
 
@@ -362,7 +381,6 @@ public class ChatService extends Service {
         mLinearLayoutManager.setStackFromEnd(true);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -391,28 +409,6 @@ public class ChatService extends Service {
 
     }
 
-    public void login(){
-        Log.d("here",mMsgToken);
-        mAuth.signInWithCustomToken(mMsgToken)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@android.support.annotation.NonNull Task<AuthResult> task) {
-                        if(!task.isSuccessful()){
-                            Log.d("login firebase: ", "login failed");
-                        }
-                    }
-                });
-    }
-
-    public void setmEventList(List<Event> mEventList) {
-        this.mEventList = mEventList;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                startMsg();
-            }
-        });
-    }
 
     public List<Event> getmEventList() {
         return mEventList;
@@ -582,6 +578,38 @@ public class ChatService extends Service {
         });
         btn.setImageResource(R.drawable.bg_event);
         return btn;
+    }
+
+    @Subscribe (threadMode = ThreadMode.ASYNC)
+    public void loginWithContent(ChatServiceSetting chatServiceSetting){
+        if(chatServiceSetting.getMode() == ChatServiceSetting.SET_PARAM) {
+            mMsgToken = chatServiceSetting.getmMsgToken();
+            mEventList = chatServiceSetting.getmEventList();
+            Log.d(TAG,mMsgToken);
+            mAuth.signInWithCustomToken(mMsgToken)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@android.support.annotation.NonNull Task<AuthResult> task) {
+                            if(!task.isSuccessful()){
+                                EventBus.getDefault().post(new ErrorMsg("Cannot login to messaging service",ErrorMsg.LENGTH_LONG));
+                                Log.d(TAG, "firebase login failed");
+                            }else{
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startMsg();
+                                    }
+                                });
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+        }
     }
 
 }

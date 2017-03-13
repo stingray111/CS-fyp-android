@@ -102,6 +102,7 @@ public interface HTTP {
             .readTimeout(10, TimeUnit.SECONDS)
             .connectTimeout(10, TimeUnit.SECONDS)
             .sslSocketFactory(SSL.getNewSSL(),SSL.getTm())
+            .retryOnConnectionFailure(false)
             .build();
 
     Retrofit retrofit = new Retrofit.Builder()

@@ -12,7 +12,8 @@
         android:background="@color/colorPrimary"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:weightSum="1">
 
 
         <ImageView
@@ -116,11 +117,11 @@
         <com.facebook.login.widget.LoginButton
             android:id="@+id/facebookSignInBtn"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginLeft="22dp"
-            android:layout_marginRight="22dp"
-            android:layout_gravity="center_horizontal"
-            />
+            android:layout_height="24dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_gravity="center_horizontal" />
 
         <TextView
             android:id="@+id/registerBtn"
