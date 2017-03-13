@@ -15,6 +15,7 @@ import csfyp.cs_fyp_android.model.request.SelfRate;
 import csfyp.cs_fyp_android.model.request.UserRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
+import csfyp.cs_fyp_android.model.respond.EventRespond;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
 import csfyp.cs_fyp_android.model.respond.Logout;
 import csfyp.cs_fyp_android.model.respond.RegisterRespond;
@@ -64,7 +65,7 @@ public interface HTTP {
     );
 
     @POST("/api/push-event")
-    Call<ErrorMsgOnly> pushEvent (
+    Call<EventRespond> pushEvent (
             @Body EventCreateRequest eventPost
     );
 
@@ -102,7 +103,6 @@ public interface HTTP {
             .readTimeout(10, TimeUnit.SECONDS)
             .connectTimeout(10, TimeUnit.SECONDS)
             .sslSocketFactory(SSL.getNewSSL(),SSL.getTm())
-            .retryOnConnectionFailure(false)
             .build();
 
     Retrofit retrofit = new Retrofit.Builder()

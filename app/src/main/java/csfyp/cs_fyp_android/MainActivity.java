@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -131,6 +132,7 @@ public class MainActivity extends LocalizationActivity {
 
         super.onCreate(savedInstanceState);
 
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         if (mSelf == null) {
             SharedPreferences  mPrefs = getPreferences(MODE_PRIVATE);
             Gson gson = new Gson();
@@ -211,7 +213,6 @@ public class MainActivity extends LocalizationActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         EventBus.getDefault().register(this);
     }
 
@@ -251,7 +252,7 @@ public class MainActivity extends LocalizationActivity {
                 public void onResponse(Call<EventListRespond> call, Response<EventListRespond> response) {
                     if(response.isSuccessful() && response.body().getErrorMsg() == null){
                         eventList = response.body().getEvents();
-                        Log.d(TAG,"here"+mMsgToken);
+                        Log.d(TAG,"here: "+mMsgToken);
                         EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.SET_PARAM,eventList,mMsgToken));
                     }else{
                         EventBus.getDefault().post(new ErrorMsg("Server Error",ErrorMsg.LENGTH_SHORT));
@@ -260,10 +261,25 @@ public class MainActivity extends LocalizationActivity {
                 }
 
                 @Override
-                public void onFailure(Call<EventListRespond> call, Throwable t) {
+                public void onFailure(final Call<EventListRespond> call, Throwable t) {
                     EventBus.getDefault().post(new ErrorMsg("Cannot connect to messaging service, will try again",ErrorMsg.LENGTH_LONG));
-                    chatServiceSetting.setDelay(5000);
-                    EventBus.getDefault().post(chatServiceSetting);
+                    new Handler().postDelayed(
+                        new EnqueueAgain(call,this)
+                        , 5000);
+                    Log.d(TAG,"on Failure");
+                }
+
+                class EnqueueAgain implements Runnable{
+                    Call<EventListRespond> mCall;
+                    Callback<EventListRespond> mBack;
+                    public EnqueueAgain(Call<EventListRespond> call,Callback<EventListRespond> back){
+                        mCall = call;
+                        mBack = back;
+                    }
+                    @Override
+                    public void run() {
+                        mCall.clone().enqueue(mBack);
+                    }
                 }
             });
         }

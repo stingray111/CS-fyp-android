@@ -592,7 +592,6 @@ public class ChatService extends Service {
                         public void onComplete(@android.support.annotation.NonNull Task<AuthResult> task) {
                             if(!task.isSuccessful()){
                                 EventBus.getDefault().post(new ErrorMsg("Cannot login to messaging service",ErrorMsg.LENGTH_LONG));
-                                Log.d(TAG, "firebase login failed");
                             }else{
                                 runOnUiThread(new Runnable() {
                                     @Override
