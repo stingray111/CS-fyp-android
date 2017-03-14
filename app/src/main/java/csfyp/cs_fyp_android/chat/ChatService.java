@@ -582,7 +582,7 @@ public class ChatService extends Service {
     }
 
     @Subscribe (threadMode = ThreadMode.ASYNC)
-    public void loginWithContent(ChatServiceSetting chatServiceSetting){
+    public void loginWithContent(final ChatServiceSetting chatServiceSetting){
         if(chatServiceSetting.getMode() == ChatServiceSetting.SET_PARAM) {
             mMsgToken = chatServiceSetting.getmMsgToken();
             mEventList = chatServiceSetting.getmEventList();
@@ -593,14 +593,25 @@ public class ChatService extends Service {
                         @Override
                         public void onComplete(@android.support.annotation.NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
+                                Log.d(TAG,"messaging service started");
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         startMsg();
                                     }
                                 });
-                            } else {
+                            }
+                            else {
                                 EventBus.getDefault().post(new ErrorMsg("Cannot login to messaging service", ErrorMsg.LENGTH_LONG));
+                                new Handler().postDelayed(
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                EventBus.getDefault().post(chatServiceSetting);
+                                            }
+                                        },
+                                        5000
+                                );
                             }
                         }
                     })

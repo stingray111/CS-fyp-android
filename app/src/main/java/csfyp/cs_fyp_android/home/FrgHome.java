@@ -56,6 +56,7 @@ import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
 import csfyp.cs_fyp_android.lib.eventBus.ScrollEvent;
 import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
+import csfyp.cs_fyp_android.model.BatchLoaderBundle;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
@@ -66,10 +67,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.view.View.GONE;
 import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.decending;
 import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.getComparator;
 
-public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCallbacks<List<Event>> {
+public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCallbacks<BatchLoaderBundle> {
 
     private static final int SORT_DISTANCE =1;
     private static final int SORT_POP =2;
@@ -404,10 +406,10 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             task = args.getString("task");
         else
             task = BLoader.TASK_FRESH_LOAD;
-        homeRefreshSwipe.setRefreshing(true);
         if(task.equals(BLoader.TASK_LOAD_MORE)){
             mbloader = new BLoader(getContext(),mStartAt,mOffset,mCurrentListLocation,mData,BLoader.TASK_LOAD_MORE,mSortState);
         }else{//refresh
+            homeRefreshSwipe.setRefreshing(true);
             mCurrentListLocation = mCurrentLocation;
             mbloader = new BLoader(getContext(),mCurrentListLocation,mSortState);
         }
@@ -415,11 +417,17 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
+    public void onLoadFinished(Loader<BatchLoaderBundle> loader, BatchLoaderBundle data) {
         if (data != null) {
-            mData = data;
+            mData = new ArrayList<Event>(data.list);
             mOffset = mData.size();
-            mEventAdapter.setmEventList(data);
+            if (data.getStatus() == BatchLoaderBundle.LIST_NOT_END) {
+                //add the loading item
+                Event fake = new Event();
+                fake.setId(-1);
+                data.list.add(fake);
+            }
+            mEventAdapter.setmEventList(data.list);
             if(mOffset < 30) {
                 if(mOffset != 0) mEventLayoutManager.scrollToPosition(0);
                 mScrollListener.resetState();
@@ -429,11 +437,11 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             populateMapMarker();
             homeRefreshSwipe.setRefreshing(false);
         }
-        mDataBinding.slideProgessBar.setVisibility(View.GONE);
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Event>> loader) {
+    public void onLoaderReset(Loader<BatchLoaderBundle> loader) {
+
     }
 
     @Override
@@ -499,7 +507,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         getLoaderManager().restartLoader(HOME_LOADER_ID,temp, this);
     }
 
-    public static class BLoader extends CustomBatchLoader<List<Event>> {
+    public static class BLoader extends CustomBatchLoader<BatchLoaderBundle> {
         public BLoader(Context context,long startAt,int offset,Location currentLocation,List<Event> eventList,String mode,int sortMode) {
             super(context);
             setTaskName(mode);
@@ -527,35 +535,40 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         private int mSortMode;
 
         @Override
-        public List<Event> loadMore() {
-            eventList.addAll(homeFrgReqSender(OTHER_REQUEST,mSortMode));
-            return eventList;
+        public BatchLoaderBundle loadMore() {
+            List<Event> list = homeFrgReqSender(OTHER_REQUEST,mSortMode);
+            eventList.addAll(list);
+            if(list.size() != 0 ) {
+                return new BatchLoaderBundle(eventList, BatchLoaderBundle.LIST_NOT_END);
+            }else
+                return new BatchLoaderBundle(eventList, BatchLoaderBundle.LIST_END);
         }
 
         @Override
-        public List<Event> refreshLoad() {
+        public BatchLoaderBundle refreshLoad() {
             return freshLoad();
         }
 
         @Override
-        public List<Event> freshLoad() {
+        public BatchLoaderBundle freshLoad() {
             List<Event> temp = homeFrgReqSender(FIRST_REQUEST,mSortMode);
             if(temp == null) {
                 return null;
             } else if(eventList == null){
-                return temp;
+                eventList = new ArrayList<Event>();
             }
             eventList.clear();
             eventList.addAll(temp);
-            return eventList;
+            if (eventList.size() !=  0 )
+                return new BatchLoaderBundle(eventList,BatchLoaderBundle.LIST_NOT_END);
+            else
+                return new BatchLoaderBundle(eventList,BatchLoaderBundle.LIST_END);
         }
 
         private List<Event> homeFrgReqSender(int mode,int sortMode){
             if(mode == FIRST_REQUEST){
-                Log.d("here","first"+MAX_DATE);
                 return homeFrgReqSender(MAX_DATE,0,mode,sortMode);
             }else if(mode == OTHER_REQUEST){
-                Log.d("here","other"+mStartAt);
                 return homeFrgReqSender(mStartAt,getOffset(),mode,sortMode);
             }
             return null;
@@ -563,7 +576,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
         private List<Event> homeFrgReqSender(long startAt, int offset,int mode,int sortMode){
             if(mCurrentLocation != null){
-                Log.d("here","sortMode"+sortMode);
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 Call<EventListRespond> call = httpService.getEvents(new EventListRequest(
                         mCurrentLocation.getLatitude(),

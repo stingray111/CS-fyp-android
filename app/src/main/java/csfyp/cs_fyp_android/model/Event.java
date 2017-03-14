@@ -26,6 +26,9 @@ public class Event {
     private List<Rate> rates;
     private List<Participation> attendance;
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getId() {
         return id;

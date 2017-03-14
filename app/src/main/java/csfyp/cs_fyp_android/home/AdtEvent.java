@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +30,7 @@ import csfyp.cs_fyp_android.model.Event;
 import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.decending;
 import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.getComparator;
 
-public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
+public class AdtEvent extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Event> mEventList;
     private int mode;
@@ -37,6 +38,7 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
     public static int HOME_MODE = 0;
     public static int ONGOING_MODE = 1;
     public static int HISTORY_MODE = 2;
+    private static final String TAG = "AdtEvent";
 
     public AdtEvent(int mode) {
         this.mode = mode;
@@ -52,20 +54,38 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        HomeItemEventBinding binding = DataBindingUtil.inflate(inflater, R.layout.home_item_event, parent, false);
-        ViewHolder holder = new ViewHolder(binding.getRoot());
-        holder.setBinding(binding);
-        return holder;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == 0){
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            HomeItemEventBinding binding = DataBindingUtil.inflate(inflater, R.layout.home_item_event, parent, false);
+            ViewHolder holder = new ViewHolder(binding.getRoot());
+            holder.setBinding(binding);
+            return holder;
+        }else {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_item_event_progress,parent,false);
+            RecyclerView.ViewHolder holder = new RecyclerView.ViewHolder(v){};
+            return holder;
+        }
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.getBinding().setHandlers(holder);
-        if (mEventList != null) {
-            holder.getBinding().setItem(mEventList.get(position));
-            holder.getBinding().executePendingBindings();
+    public int getItemViewType(int position) {
+        Event e = mEventList.get(position);
+        if(e.getId() >= 0){
+            return 0;
+        }else{
+            return 1;
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if(holder instanceof AdtEvent.ViewHolder) {
+            ((AdtEvent.ViewHolder)holder).getBinding().setHandlers(((AdtEvent.ViewHolder)holder));
+            if (mEventList != null) {
+                ((AdtEvent.ViewHolder)holder).getBinding().setItem(mEventList.get(position));
+                ((AdtEvent.ViewHolder)holder).getBinding().executePendingBindings();
+            }
         }
     }
 
@@ -153,7 +173,7 @@ public class AdtEvent extends RecyclerView.Adapter<AdtEvent.ViewHolder> {
                 float distance1 = o1.retrieveLocation().distanceTo(MainActivity.mCurrentLocation);
                 float distance2 = o2.retrieveLocation().distanceTo(MainActivity.mCurrentLocation);
                 return Float.compare(distance1,distance2);
-        }};
+            }};
 
 
         public static Comparator<Event> decending(final Comparator<Event> other) {
