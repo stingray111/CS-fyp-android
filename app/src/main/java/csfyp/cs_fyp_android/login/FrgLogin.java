@@ -26,6 +26,8 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.Profile;
+import com.facebook.internal.CallbackManagerImpl;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -33,9 +35,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.vision.text.Text;
 import com.google.gson.Gson;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -109,8 +111,12 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("here","hi");
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GOOGLE_SIGN_IN_CODE) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            EventBus.getDefault().post(result);
+        }else if(requestCode == CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode()){
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override
@@ -124,7 +130,10 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestProfile()
                 .requestEmail()
+                .requestId()
+                .requestIdToken(getString(R.string.oauth_client_id))
                 .build();
         mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                 .enableAutoManage(getActivity(), this)
@@ -155,8 +164,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
         mGoogleSignInBtn = mDataBinding.googleSignInBtn;
         mGoogleSignInBtn.setSize(SIZE_WIDE);
-        int count = mGoogleSignInBtn.getChildCount();
-        for (int i = 0 ;i <count;i++){
+        for (int i = 0 ;i < mGoogleSignInBtn.getChildCount();i++){
             View view = mGoogleSignInBtn.getChildAt(i);
             if(view instanceof TextView){
                 ((TextView)view).setPadding(0,view.getPaddingTop(),18,view.getPaddingBottom());
@@ -180,23 +188,10 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d("here","success");
-                AccessToken accessToken = loginResult.getAccessToken();
-                GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject object, GraphResponse response) {
-                        Log.d("here","complete");
-                        Log.d("here",object.optString("id"));
-                        Log.d("here",object.optString("cover"));
-                        Log.d("here",object.optString("first_name"));
-                        Log.d("here",object.optString("last_name"));
-                        Log.d("here",object.optString("gender"));
-                    }
-                });
-                Bundle parameters = new Bundle();
-                parameters.putString("fields","id,cover,first_name,last_name,gender");
-                request.setParameters(parameters);
-                request.executeAsync();
+                Log.d(TAG,"facebook success");
+                EventBus.getDefault().post(loginResult);
+
+
             }
 
             @Override
@@ -237,69 +232,69 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
     @Override
     public void onValidationSucceeded() {
-            String strEmailOrUsername = mInputEmailOrUsername.getText().toString();
-            String strPassword = mInputPassword.getText().toString();
+        String strEmailOrUsername = mInputEmailOrUsername.getText().toString();
+        String strPassword = mInputPassword.getText().toString();
 
-            if (!strEmailOrUsername.matches("") && !strPassword.matches("")) {
+        if (!strEmailOrUsername.matches("") && !strPassword.matches("")) {
 
-                String uuidInString = UUID.randomUUID().toString();
+            String uuidInString = UUID.randomUUID().toString();
 
-                //mProgressBar.setVisibility(View.VISIBLE);
-                //mLoginBtn.setVisibility(View.GONE);
+            //mProgressBar.setVisibility(View.VISIBLE);
+            //mLoginBtn.setVisibility(View.GONE);
 
-                HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                Login login = new Login(strEmailOrUsername, strPassword, uuidInString);
-                Call<LoginRespond> call = httpService.login(login);
+            HTTP httpService = HTTP.retrofit.create(HTTP.class);
+            Login login = new Login(strEmailOrUsername, strPassword, uuidInString);
+            Call<LoginRespond> call = httpService.login(login);
 
-                call.enqueue(new Callback<LoginRespond>() {
-                    @Override
-                    public void onResponse(Call<LoginRespond> call, Response<LoginRespond> response) {
-                        if (response.isSuccessful()) {
-                            if (response.body().isSuccessful()) {
+            call.enqueue(new Callback<LoginRespond>() {
+                @Override
+                public void onResponse(Call<LoginRespond> call, Response<LoginRespond> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body().isSuccessful()) {
 
-                                // save token to cache
-                                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPref.edit();
-                                editor.putString("userToken", response.body().getToken());
-                                editor.putInt("userId", response.body().getUserId());
-                                editor.putString("username", response.body().getUsername());
-                                editor.putString("msgToken", response.body().getMsgToken());
-                                Gson gson = new Gson();
-                                String selfStr = gson.toJson(response.body().getSelf());
-                                editor.putString("self", selfStr);
-                                editor.commit();
+                            // save token to cache
+                            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putString("userToken", response.body().getToken());
+                            editor.putInt("userId", response.body().getUserId());
+                            editor.putString("username", response.body().getUsername());
+                            editor.putString("msgToken", response.body().getMsgToken());
+                            Gson gson = new Gson();
+                            String selfStr = gson.toJson(response.body().getSelf());
+                            editor.putString("self", selfStr);
+                            editor.commit();
 
-                                MainActivity parent = (MainActivity)getActivity();
-                                parent.setmToken(response.body().getToken());
-                                parent.setmUserId(response.body().getUserId());
-                                parent.setmUsername(response.body().getUsername());
-                                parent.setmSelf(response.body().getSelf());
-                                parent.setmMsgToken(response.body().getMsgToken());
-                                replaceFragment(((MainActivity) getActivity()).getmHome());
+                            MainActivity parent = (MainActivity)getActivity();
+                            parent.setmToken(response.body().getToken());
+                            parent.setmUserId(response.body().getUserId());
+                            parent.setmUsername(response.body().getUsername());
+                            parent.setmSelf(response.body().getSelf());
+                            parent.setmMsgToken(response.body().getMsgToken());
+                            replaceFragment(((MainActivity) getActivity()).getmHome());
 
 
-                            } else {
-                                // TODO: 6/11/2016 print error msg to user
-                                if (response.body().getErrorMsg().matches("passwordWrong"))
-                                    mInputPassword.setError("Wrong Password");
-                                if (response.body().getErrorMsg().matches("userNotfound"))
-                                    mInputEmailOrUsername.setError("User Not Found");
-                                Log.i(TAG, response.body().getErrorMsg());
-                                mProgressBar.setVisibility(View.GONE);
-                                mLoginBtn.setVisibility(View.VISIBLE);
-                            }
+                        } else {
+                            // TODO: 6/11/2016 print error msg to user
+                            if (response.body().getErrorMsg().matches("passwordWrong"))
+                                mInputPassword.setError("Wrong Password");
+                            if (response.body().getErrorMsg().matches("userNotfound"))
+                                mInputEmailOrUsername.setError("User Not Found");
+                            Log.i(TAG, response.body().getErrorMsg());
+                            mProgressBar.setVisibility(View.GONE);
+                            mLoginBtn.setVisibility(View.VISIBLE);
                         }
                     }
+                }
 
-                    @Override
-                    public void onFailure(Call<LoginRespond> call, Throwable t) {
-                        Log.i(TAG, "Connect exception:" + t.getMessage());
-                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                        mProgressBar.setVisibility(View.GONE);
-                        mLoginBtn.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
+                @Override
+                public void onFailure(Call<LoginRespond> call, Throwable t) {
+                    Log.i(TAG, "Connect exception:" + t.getMessage());
+                    Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                    mProgressBar.setVisibility(View.GONE);
+                    mLoginBtn.setVisibility(View.VISIBLE);
+                }
+            });
+        }
     }
 
     @Override
@@ -321,6 +316,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG,"connect fail");
 
     }
 
@@ -329,15 +325,44 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     }
 
     @Subscribe (threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(GoogleSignInResult result) {
+    public void googleLoginCallback(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount account = result.getSignInAccount();
-            mDataBinding.inputEmailOrUsername.setText(account.getDisplayName());
+            try {
+                GoogleSignInAccount account = result.getSignInAccount();
+                Log.d(TAG, "email: " + account.getEmail());
+                Log.d(TAG, "id: " + account.getId());
+                Log.d(TAG, "token: " + account.getIdToken());
+                Log.d(TAG, "photo: " + String.valueOf(account.getPhotoUrl()));
+                mDataBinding.inputEmailOrUsername.setText(account.getDisplayName());
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
         } else {
             // Signed out, show unauthenticated UI.
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void facebookLoginCallback(LoginResult loginResult){
+        AccessToken accessToken = loginResult.getAccessToken();
+        GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+                    Log.d(TAG, "complete");
+                    Log.d(TAG, object.optString("id"));
+                    Log.d(TAG, object.optString("cover"));
+                    Log.d(TAG, object.optString("first_name"));
+                    Log.d(TAG, object.optString("last_name"));
+                    Log.d(TAG, object.optString("gender"));
+            }
+        });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields","id,cover,first_name,last_name,gender");
+        request.setParameters(parameters);
+        request.executeAsync();
     }
 }
 

@@ -14,8 +14,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.LocalizationActivity;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 
@@ -103,9 +101,6 @@ public class MainActivity extends LocalizationActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FrgHome.HOME_LOCATION_SETTING_CALLBACK) {
             mHome.onActivityResult(requestCode, resultCode, data);
-        } else if (requestCode == GOOGLE_SIGN_IN_CODE) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            EventBus.getDefault().post(result);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
