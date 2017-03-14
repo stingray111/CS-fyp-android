@@ -35,7 +35,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.games.quest.Quests;
+import com.google.android.gms.vision.text.Text;
 import com.google.gson.Gson;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -64,6 +64,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import com.facebook.FacebookSdk;
+
+import static com.google.android.gms.common.SignInButton.SIZE_WIDE;
 
 
 public class FrgLogin extends CustomFragment implements Validator.ValidationListener, GoogleApiClient.OnConnectionFailedListener{
@@ -151,7 +153,16 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
         });
 
-        mDataBinding.googleSignInBtn.setOnClickListener(new View.OnClickListener() {
+        mGoogleSignInBtn = mDataBinding.googleSignInBtn;
+        mGoogleSignInBtn.setSize(SIZE_WIDE);
+        int count = mGoogleSignInBtn.getChildCount();
+        for (int i = 0 ;i <count;i++){
+            View view = mGoogleSignInBtn.getChildAt(i);
+            if(view instanceof TextView){
+                ((TextView)view).setPadding(0,view.getPaddingTop(),18,view.getPaddingBottom());
+            }
+        }
+        mGoogleSignInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
