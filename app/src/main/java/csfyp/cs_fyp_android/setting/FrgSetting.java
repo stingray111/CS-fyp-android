@@ -62,8 +62,11 @@ public class FrgSetting extends CustomFragment{
 
         mlogoutBtn = (Button) v.findViewById(R.id.logoutBtn);
         mlogoutBtn.setOnClickListener(new View.OnClickListener() {
+            View.OnClickListener _this = this;
+
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
+                view.setOnClickListener(null);
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 Call<ErrorMsgOnly> call = httpService.logout(new Logout(((MainActivity)getActivity()).getmToken()));
                 call.enqueue(new Callback<ErrorMsgOnly>() {
@@ -95,6 +98,7 @@ public class FrgSetting extends CustomFragment{
 
                     @Override
                     public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
+                        view.setOnClickListener(_this);
                         Toast.makeText(getContext(), "Logout fail", Toast.LENGTH_SHORT).show();
                     }
                 });
