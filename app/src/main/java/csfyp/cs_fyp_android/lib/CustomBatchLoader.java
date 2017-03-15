@@ -57,16 +57,12 @@ public abstract class CustomBatchLoader<D> extends CustomLoader<D> {
     @Override
     public D loadInBackground() {
         if (TASK_FRESH_LOAD.equals(getTaskName())) {
-            Log.d("here","1");
             return freshLoad();
         } else if (TASK_REFRESH_LOAD.equals(getTaskName())) {
-            Log.d("here","2");
             return refreshLoad();
         } else if (TASK_LOAD_MORE.equals(getTaskName())) {
-            Log.d("here","3");
             return loadMore();
         } else {
-            Log.d("here","4");
             return loadOther();
         }
     }

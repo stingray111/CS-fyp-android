@@ -14,6 +14,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +57,7 @@ import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
 import csfyp.cs_fyp_android.lib.eventBus.ScrollEvent;
 import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
+import csfyp.cs_fyp_android.model.BatchLoaderBundle;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
@@ -62,9 +65,19 @@ import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCallbacks<List<Event>> {
+import static android.view.View.GONE;
+import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.decending;
+import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.getComparator;
+
+public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCallbacks<BatchLoaderBundle> {
+
+    private static final int SORT_DISTANCE =1;
+    private static final int SORT_POP =2;
+    private static final int SORT_NAME =3;
+    private int mSortState = 1;
 
     public static final int HOME_LOADER_ID = 1;
     public static final int HOME_LOCATION_SETTING_CALLBACK = 10;
@@ -95,6 +108,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     private static long mStartAt;
     private int mOffset;
     private Location mCurrentListLocation;
+    private ImageButton mSortButton;
 
     // For Left Drawer
     private DrawerLayout mDrawerLayout;
@@ -139,8 +153,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             mIsPanelExpanded = savedInstanceState.getBoolean("isPanelExpanded");
         }
 
-        setHasOptionsMenu(true);
-
         InputStream is = (InputStream) this.getResources().openRawResource(R.raw.server);
         try {
             SSL.setServerCert(is);
@@ -151,78 +163,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         //chat messaging service
         Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
         getMainActivity().bindService(serviceIntent, getMainActivity().connection, Context.BIND_AUTO_CREATE);
-
-
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Response<EventListRespond> EventRespond;
-                List<Event> eventList;
-
-                while(true){
-                    HTTP httpService = HTTP.retrofit.create(HTTP.class);
-                    Call<EventListRespond> call = httpService.getEvents(new EventListRequest(((MainActivity)getActivity()).getmUserId(), 3));
-                    try {
-                        EventRespond = call.execute();
-                        if(EventRespond.isSuccessful() && EventRespond.body().getErrorMsg() == null) {
-                            eventList = EventRespond.body().getEvents();
-                            break;
-                        } else {
-                            continue;
-                        }
-                    } catch(Exception e) {
-                        Log.d("Home","cannot connect to server");
-                        try{
-                            Thread.sleep(1000);
-                        }catch (Exception ex){
-                            ex.printStackTrace();
-                        }
-                        continue;
-                    }
-
-                }
-
-                //check bound
-                while(!getMainActivity().getmIsBound()){
-                    try{
-                        Thread.sleep(1000);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-                // set the token
-                while(getMainActivity().getmMsgToken() == null){
-                    try{
-                        Thread.sleep(1000);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-                Log.d("TAG","token"+getMainActivity().getmMsgToken());
-                Log.d("TAG","event"+eventList.size());
-                getMainActivity().mChatService.setmMsgToken(getMainActivity().getmMsgToken());
-                getMainActivity().mChatService.setmEventList(eventList);
-
-                int count = 0;
-                while(getMainActivity().mChatService.getmMsgToken() == null || getMainActivity().mChatService.getmEventList() == null) {
-                    try{
-                        Thread.sleep(1000);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    count++;
-                    if(count>8){
-                        Log.d("TAG", "fucked");
-                        count = 0;
-                    }
-                }
-
-                // connect to firebase
-                getMainActivity().mChatService.login();
-
-            }
-        }).start();
 
     }
 
@@ -299,6 +239,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         mEventAdapter = new AdtEvent(AdtEvent.HOME_MODE);
         mEventRecyclerView.setAdapter(mEventAdapter);
 
+<<<<<<< HEAD
         // load propic
         Picasso.with(getContext())
                 .load(((MainActivity)getActivity()).getmSelf().getProPic())
@@ -306,6 +247,17 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                 .centerCrop()
                 .placeholder(R.drawable.ic_propic_big)
                 .into(mDataBinding.homeProPic);
+=======
+        mSortButton = mDataBinding.sortButton;
+        mSortButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSortMenu();
+            }
+        });
+
+
+>>>>>>> facebookLogin
 
         // set self user
         mDataBinding.homeUsername.setText(((MainActivity)getActivity()).getmUsername());
@@ -368,17 +320,51 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.option_menu, menu);
+    public void showSortMenu(){
+        PopupMenu popup = new PopupMenu(getContext(),mSortButton);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.option_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                mSortState = 1;
+                switch (item.getItemId()) {
+                    case R.id.sortDistance:
+                        mSortState = SORT_DISTANCE;
+                        item.setChecked(true);
+                        EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
+                        return true;
+                    case R.id.sortPopularity:
+                        mSortState = SORT_POP;
+                        item.setChecked(true);
+                        EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
+                        return true;
+                    case R.id.sortName:
+                        mSortState = SORT_NAME;
+                        item.setChecked(true);
+                        EventBus.getDefault().post(new ScrollEvent(ScrollEvent.FIRST));
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+        switch (mSortState){
+            case SORT_DISTANCE:
+                popup.getMenu().findItem(R.id.sortDistance).setChecked(true);
+                break;
+            case SORT_POP:
+                popup.getMenu().findItem(R.id.sortPopularity).setChecked(true);
+                break;
+            case SORT_NAME:
+                popup.getMenu().findItem(R.id.sortName).setChecked(true);
+                break;
+            default:
+                popup.getMenu().findItem(R.id.sortDistance).setChecked(true);
+        }
+        popup.show();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //TODO: add action
-        mEventAdapter.sortEventList(item);
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override // TODO: 3/1/2017 override super here
     public void onMapReady(GoogleMap googleMap) {
@@ -431,32 +417,41 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             task = args.getString("task");
         else
             task = BLoader.TASK_FRESH_LOAD;
-        homeRefreshSwipe.setRefreshing(true);
         if(task.equals(BLoader.TASK_LOAD_MORE)){
-            mbloader = new BLoader(getContext(),mStartAt,mOffset,mCurrentListLocation,mData,BLoader.TASK_LOAD_MORE);
+            mbloader = new BLoader(getContext(),mStartAt,mOffset,mCurrentListLocation,mData,BLoader.TASK_LOAD_MORE,mSortState);
         }else{//refresh
+            homeRefreshSwipe.setRefreshing(true);
             mCurrentListLocation = mCurrentLocation;
-            mbloader = new BLoader(getContext(),mCurrentListLocation);
+            mbloader = new BLoader(getContext(),mCurrentListLocation,mSortState);
         }
         return mbloader;
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
+    public void onLoadFinished(Loader<BatchLoaderBundle> loader, BatchLoaderBundle data) {
         if (data != null) {
-            mData = data;
+            mData = new ArrayList<Event>(data.list);
             mOffset = mData.size();
-            mEventAdapter.setmEventList(data);
+            if (data.getStatus() == BatchLoaderBundle.LIST_NOT_END) {
+                //add the loading item
+                Event fake = new Event();
+                fake.setId(-1);
+                data.list.add(fake);
+            }
+            mEventAdapter.setmEventList(data.list);
+            if(mOffset < 30) {
+                if(mOffset != 0) mEventLayoutManager.scrollToPosition(0);
+                mScrollListener.resetState();
+            }
             mIsLoadFinished = true;
             mEventAdapter.notifyDataSetChanged();
             populateMapMarker();
             homeRefreshSwipe.setRefreshing(false);
         }
-        mDataBinding.slideProgessBar.setVisibility(View.GONE);
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Event>> loader) {
+    public void onLoaderReset(Loader<BatchLoaderBundle> loader) {
 
     }
 
@@ -523,22 +518,24 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         getLoaderManager().restartLoader(HOME_LOADER_ID,temp, this);
     }
 
-    public static class BLoader extends CustomBatchLoader<List<Event>> {
-        public BLoader(Context context,long startAt,int offset,Location currentLocation,List<Event> eventList,String mode) {
+    public static class BLoader extends CustomBatchLoader<BatchLoaderBundle> {
+        public BLoader(Context context,long startAt,int offset,Location currentLocation,List<Event> eventList,String mode,int sortMode) {
             super(context);
             setTaskName(mode);
             setOffset(offset);
             mStartAt = startAt;
             this.mCurrentLocation = currentLocation;
             this.eventList = eventList;
+            this.mSortMode = sortMode;
         }
-        public BLoader(Context context,Location mCurrentLocation){
+        public BLoader(Context context,Location mCurrentLocation,int sortMode){
             super(context);
             setTaskName(BLoader.TASK_FRESH_LOAD);
             mStartAt = MAX_DATE;
             this.mCurrentLocation = mCurrentLocation;
             setOffset(0);
             eventList = new ArrayList<Event>();
+            mSortMode = sortMode;
         }
 
         public final long MAX_DATE = 4102444800000L;
@@ -546,42 +543,49 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         private final int OTHER_REQUEST = 1;
         private Location mCurrentLocation;
         private List<Event> eventList;
+        private int mSortMode;
 
         @Override
-        public List<Event> loadMore() {
-            Log.d("here","hiddsafasdf");
-            eventList.addAll(homeFrgReqSender(OTHER_REQUEST));
-            return eventList;
+        public BatchLoaderBundle loadMore() {
+            List<Event> list = homeFrgReqSender(OTHER_REQUEST,mSortMode);
+            eventList.addAll(list);
+            if(list.size() != 0 ) {
+                return new BatchLoaderBundle(eventList, BatchLoaderBundle.LIST_NOT_END);
+            }else
+                return new BatchLoaderBundle(eventList, BatchLoaderBundle.LIST_END);
         }
 
         @Override
-        public List<Event> refreshLoad() {
+        public BatchLoaderBundle refreshLoad() {
             return freshLoad();
         }
 
         @Override
-        public List<Event> freshLoad() {
-            List<Event> temp = homeFrgReqSender(FIRST_REQUEST);
+        public BatchLoaderBundle freshLoad() {
+            List<Event> temp = homeFrgReqSender(FIRST_REQUEST,mSortMode);
             if(temp == null) {
                 return null;
             } else if(eventList == null){
-                return temp;
+                eventList = new ArrayList<Event>();
             }
             eventList.clear();
             eventList.addAll(temp);
-            return eventList;
+            if (eventList.size() !=  0 )
+                return new BatchLoaderBundle(eventList,BatchLoaderBundle.LIST_NOT_END);
+            else
+                return new BatchLoaderBundle(eventList,BatchLoaderBundle.LIST_END);
         }
 
-        private List<Event> homeFrgReqSender(int mode){
+        private List<Event> homeFrgReqSender(int mode,int sortMode){
             if(mode == FIRST_REQUEST){
-                return homeFrgReqSender(MAX_DATE,0,mode);
+                return homeFrgReqSender(MAX_DATE,0,mode,sortMode);
             }else if(mode == OTHER_REQUEST){
-                return homeFrgReqSender(mStartAt,getOffset(),mode);
+                return homeFrgReqSender(mStartAt,getOffset(),mode,sortMode);
             }
             return null;
         }
 
-        private List<Event> homeFrgReqSender(long startAt, int offset,int mode){
+        private List<Event> homeFrgReqSender(long startAt, int offset,int mode,int sortMode){
             if(mCurrentLocation != null){
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 Call<EventListRespond> call = httpService.getEvents(new EventListRequest(
@@ -589,7 +593,8 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                         mCurrentLocation.getLongitude(),
                         1,
                         offset,
-                        startAt
+                        startAt,
+                        sortMode
                 ));
                 try{
                     Response<EventListRespond> mEventRespond = call.execute();

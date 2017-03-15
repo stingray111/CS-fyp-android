@@ -15,6 +15,7 @@ import csfyp.cs_fyp_android.model.request.SelfRate;
 import csfyp.cs_fyp_android.model.request.UserRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
+import csfyp.cs_fyp_android.model.respond.EventRespond;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
 import csfyp.cs_fyp_android.model.respond.Logout;
 import csfyp.cs_fyp_android.model.respond.RegisterRespond;
@@ -28,8 +29,8 @@ import retrofit2.http.POST;
 
 public interface HTTP {
 
-    //String theURL ="https://stingray.space:3001";
-    String theURL = "https://stingray.space:3000";
+    String theURL ="https://stingray.space:3001";
+    //String theURL = "https://stingray.space:3000";
     //String theURL = "http://192.168.1.5:3000";
 
 
@@ -64,7 +65,7 @@ public interface HTTP {
     );
 
     @POST("/api/push-event")
-    Call<ErrorMsgOnly> pushEvent (
+    Call<EventRespond> pushEvent (
             @Body EventCreateRequest eventPost
     );
 

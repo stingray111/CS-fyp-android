@@ -32,6 +32,9 @@ android {
     }
 }
 
+repositories{
+    mavenCentral()
+}
 
 
 dependencies {
@@ -74,7 +77,7 @@ dependencies {
     compile 'com.firebaseui:firebase-ui-database:0.4.0'
     // eventBus
     compile 'org.greenrobot:eventbus:3.0.0'
-
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile project(':FloatingActionButton')
 }
 

@@ -9,27 +9,44 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.LocalizationActivity;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.mikelau.croperino.Croperino;
 import com.mikelau.croperino.CroperinoConfig;
 import com.mikelau.croperino.CroperinoFileUtil;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.InputStream;
+import java.util.List;
 
 import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.home.FrgHome;
+import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
+<<<<<<< HEAD
 import csfyp.cs_fyp_android.lib.eventBus.PropicUpdate;
+=======
+import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
+import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
+>>>>>>> facebookLogin
 import csfyp.cs_fyp_android.login.FrgLogin;
+import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
+import csfyp.cs_fyp_android.model.request.EventListRequest;
+import csfyp.cs_fyp_android.model.respond.EventListRespond;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends LocalizationActivity {
 
@@ -40,16 +57,7 @@ public class MainActivity extends LocalizationActivity {
     private int mUserId;
     public static String mUsername;
     private String mMsgToken;
-    private boolean mIsBound = false;
     public ChatService mChatService;
-
-    public void setmIsBound(boolean mIsBound) {
-        this.mIsBound = mIsBound;
-    }
-
-    public boolean getmIsBound(){
-        return this.mIsBound;
-    }
 
     public void setmMsgToken(String mMsgToken) {
         this.mMsgToken = mMsgToken;
@@ -80,10 +88,6 @@ public class MainActivity extends LocalizationActivity {
 
     }
 
-    public String getmMsgToken() {
-        return mMsgToken;
-    }
-
     public String getmToken() {
         return mToken;
     }
@@ -102,6 +106,7 @@ public class MainActivity extends LocalizationActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+<<<<<<< HEAD
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case FrgHome.HOME_LOCATION_SETTING_CALLBACK:
@@ -128,9 +133,14 @@ public class MainActivity extends LocalizationActivity {
                 break;
             default:
                 break;
+=======
+        if (requestCode == FrgHome.HOME_LOCATION_SETTING_CALLBACK) {
+            mHome.onActivityResult(requestCode, resultCode, data);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+>>>>>>> facebookLogin
         }
     }
-
 
 //    @Override
 //    public void onConfigurationChanged(Configuration newConfig) {
@@ -153,6 +163,7 @@ public class MainActivity extends LocalizationActivity {
 
         super.onCreate(savedInstanceState);
 
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         if (mSelf == null) {
             SharedPreferences  mPrefs = getPreferences(MODE_PRIVATE);
             Gson gson = new Gson();
@@ -216,7 +227,6 @@ public class MainActivity extends LocalizationActivity {
             Log.d("main", "MainActivity onServiceConnected");
             mChatService = (((ChatService.LocalBinder)service).getService());
             //mChatService.startMsg();
-            mIsBound = true;
         }
         // 與 Service 建立連線失敗
         @Override
@@ -234,10 +244,84 @@ public class MainActivity extends LocalizationActivity {
     @Override
     protected void onStart() {
         super.onStart();
+<<<<<<< HEAD
+=======
+        EventBus.getDefault().register(this);
+>>>>>>> facebookLogin
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+<<<<<<< HEAD
     }
+=======
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void errorToast(ErrorMsg err) {
+        if (err.getDuration() == Toast.LENGTH_LONG){
+            Toast.makeText(this, err.getErrorMsg(), Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(this, err.getErrorMsg(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void chatServiceHandle(final ChatServiceSetting chatServiceSetting){
+        if (chatServiceSetting.getMode() == ChatServiceSetting.INIT) {
+            if(chatServiceSetting.getDelay() > 0){
+                try{
+                    Thread.sleep(chatServiceSetting.getDelay());
+                }catch (Exception e){
+                }
+            }
+            HTTP httpService = HTTP.retrofit.create(HTTP.class);
+            Call<EventListRespond> call = httpService.getEvents(new EventListRequest(mUserId, 3));
+            call.enqueue(new Callback<EventListRespond>() {
+                Response<EventListRespond> EventRespond;
+                List<Event> eventList;
+                String TAG = "ChatService(Activity)";
+
+                @Override
+                public void onResponse(Call<EventListRespond> call, Response<EventListRespond> response) {
+                    if(response.isSuccessful() && response.body().getErrorMsg() == null){
+                        eventList = response.body().getEvents();
+                        Log.d(TAG,"here: "+mMsgToken);
+                        EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.SET_PARAM,eventList,mMsgToken));
+                    }else{
+                        EventBus.getDefault().post(new ErrorMsg("Server Error",ErrorMsg.LENGTH_SHORT));
+                        Log.d(TAG,response.body().getErrorMsg());
+                    }
+                }
+
+                @Override
+                public void onFailure(final Call<EventListRespond> call, Throwable t) {
+                    EventBus.getDefault().post(new ErrorMsg("Cannot connect to messaging service, will try again",ErrorMsg.LENGTH_LONG));
+                    new Handler().postDelayed(
+                        new EnqueueAgain(call,this)
+                        , 5000);
+                    Log.d(TAG,"on Failure");
+                }
+
+                class EnqueueAgain implements Runnable{
+                    Call<EventListRespond> mCall;
+                    Callback<EventListRespond> mBack;
+                    public EnqueueAgain(Call<EventListRespond> call,Callback<EventListRespond> back){
+                        mCall = call;
+                        mBack = back;
+                    }
+                    @Override
+                    public void run() {
+                        mCall.clone().enqueue(mBack);
+                    }
+                }
+            });
+        }
+    }
+
+
+>>>>>>> facebookLogin
 }

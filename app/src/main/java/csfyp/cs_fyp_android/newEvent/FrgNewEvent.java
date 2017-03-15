@@ -46,6 +46,8 @@ import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.TimeConverter;
 import csfyp.cs_fyp_android.model.request.EventCreateRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
+import csfyp.cs_fyp_android.model.respond.EventListRespond;
+import csfyp.cs_fyp_android.model.respond.EventRespond;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -413,22 +415,21 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
                     TimeConverter.localToUTC(mEventStartString),
                     TimeConverter.localToUTC(mEventDeadlineString),
                     mDataBinding.eventDescription.getText().toString());
-            Call<ErrorMsgOnly> call = httpService.pushEvent(event);
-            call.enqueue(new Callback<ErrorMsgOnly>() {
+            Call<EventRespond> call = httpService.pushEvent(event);
+            call.enqueue(new Callback<EventRespond>() {
                 @Override
-                public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
+                public void onResponse(Call<EventRespond> call, Response<EventRespond> response) {
                     if (response.isSuccessful()) {
                         Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
-                        //((MainActivity)getActivity()).mChatService.add();
-                        //TODO
+                        ((MainActivity)getActivity()).mChatService.addEvent(response.body().getEvent());
                         onBack(null);
                     } else {
-                        Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), response.errorBody().toString(), Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
-                public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
+                public void onFailure(Call<EventRespond> call, Throwable t) {
                     Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });

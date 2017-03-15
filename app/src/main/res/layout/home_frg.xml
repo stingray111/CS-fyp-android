@@ -69,15 +69,33 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/rvEvent"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingLeft="4dp"
-                        android:paddingRight="4dp"
-                        android:scrollbars="vertical" />
+                        android:layout_height="wrap_content">
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rvEvent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="4dp"
+                            android:paddingRight="4dp"
+                            android:scrollbars="vertical" />
+
+                        <ImageButton
+                            android:id="@+id/sortButton"
+                            android:layout_width="@dimen/fab_size_mini"
+                            android:layout_height="@dimen/fab_size_mini"
+                            android:layout_gravity="top|right"
+                            android:translationX="-10dp"
+                            android:translationY="10dp"
+                            android:background="@drawable/bg_sort_button"
+                            android:elevation="4dp"
+                            android:src="@drawable/ic_sort"/>
+
+                    </FrameLayout>
 
                 </android.support.v4.widget.SwipeRefreshLayout>
+
 
                 <LinearLayout
                     android:id="@+id/slideProgessBar"
