@@ -125,6 +125,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         callbackManager = CallbackManager.Factory.create();
+        EventBus.getDefault().register(this);
     }
 
     @Nullable
@@ -244,7 +245,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     @Override
     public void onStop() {
         super.onStop();
-        //EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -314,17 +315,6 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == GOOGLE_SIGN_IN_CODE) {
-            Log.d("Main", "Google Sign in");
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            Log.d("Main", "handleSignInResult:" + result.isSuccess());
-
-            handleSignInResult(result);
-        }
-    }
 
     @Override
     public void onValidationFailed(List<ValidationError> errors) {

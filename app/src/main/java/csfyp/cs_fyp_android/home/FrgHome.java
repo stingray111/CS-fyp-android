@@ -239,7 +239,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         mEventAdapter = new AdtEvent(AdtEvent.HOME_MODE);
         mEventRecyclerView.setAdapter(mEventAdapter);
 
-<<<<<<< HEAD
         // load propic
         Picasso.with(getContext())
                 .load(((MainActivity)getActivity()).getmSelf().getProPic())
@@ -247,7 +246,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                 .centerCrop()
                 .placeholder(R.drawable.ic_propic_big)
                 .into(mDataBinding.homeProPic);
-=======
         mSortButton = mDataBinding.sortButton;
         mSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,8 +254,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             }
         });
 
-
->>>>>>> facebookLogin
 
         // set self user
         mDataBinding.homeUsername.setText(((MainActivity)getActivity()).getmUsername());

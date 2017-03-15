@@ -33,12 +33,9 @@ import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
-<<<<<<< HEAD
 import csfyp.cs_fyp_android.lib.eventBus.PropicUpdate;
-=======
 import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
->>>>>>> facebookLogin
 import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
@@ -106,7 +103,6 @@ public class MainActivity extends LocalizationActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-<<<<<<< HEAD
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case FrgHome.HOME_LOCATION_SETTING_CALLBACK:
@@ -133,12 +129,6 @@ public class MainActivity extends LocalizationActivity {
                 break;
             default:
                 break;
-=======
-        if (requestCode == FrgHome.HOME_LOCATION_SETTING_CALLBACK) {
-            mHome.onActivityResult(requestCode, resultCode, data);
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
->>>>>>> facebookLogin
         }
     }
 
@@ -244,18 +234,12 @@ public class MainActivity extends LocalizationActivity {
     @Override
     protected void onStart() {
         super.onStart();
-<<<<<<< HEAD
-=======
         EventBus.getDefault().register(this);
->>>>>>> facebookLogin
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-<<<<<<< HEAD
-    }
-=======
         EventBus.getDefault().unregister(this);
     }
 
@@ -323,5 +307,4 @@ public class MainActivity extends LocalizationActivity {
     }
 
 
->>>>>>> facebookLogin
 }
