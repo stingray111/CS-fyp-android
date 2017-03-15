@@ -1,11 +1,13 @@
 package csfyp.cs_fyp_android;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentTransaction;
@@ -14,6 +16,9 @@ import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.LocalizationActivity;
 import com.google.gson.Gson;
+import com.mikelau.croperino.Croperino;
+import com.mikelau.croperino.CroperinoConfig;
+import com.mikelau.croperino.CroperinoFileUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -22,6 +27,7 @@ import java.io.InputStream;
 import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.SSL;
+import csfyp.cs_fyp_android.lib.eventBus.PropicUpdate;
 import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.model.User;
 
@@ -96,10 +102,32 @@ public class MainActivity extends LocalizationActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FrgHome.HOME_LOCATION_SETTING_CALLBACK) {
-            mHome.onActivityResult(requestCode, resultCode, data);
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case FrgHome.HOME_LOCATION_SETTING_CALLBACK:
+                mHome.onActivityResult(requestCode, resultCode, data);
+                break;
+            case CroperinoConfig.REQUEST_TAKE_PHOTO:
+                if (resultCode == Activity.RESULT_OK) {
+                    /* Parameters of runCropImage = File, Activity Context, Image is Scalable or Not, Aspect Ratio X, Aspect Ratio Y, Button Bar Color, Background Color */
+                    Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), this, true, 1, 1, 0, 0);
+                }
+                break;
+            case CroperinoConfig.REQUEST_PICK_FILE:
+                if (resultCode == Activity.RESULT_OK) {
+                    CroperinoFileUtil.newGalleryFile(data, this);
+                    Croperino.runCropImage(CroperinoFileUtil.getmFileTemp(), this, true, 1, 1, 0, 0);
+                }
+                break;
+            case CroperinoConfig.REQUEST_CROP_PHOTO:
+                if (resultCode == Activity.RESULT_OK) {
+                    Uri i = Uri.fromFile(CroperinoFileUtil.getmFileTemp());
+                    //Log.i("Propic", i.toString());
+                    EventBus.getDefault().postSticky(new PropicUpdate(CroperinoFileUtil.getmFileTemp()));
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -206,12 +234,10 @@ public class MainActivity extends LocalizationActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        EventBus.getDefault().register(this);
     }
 }

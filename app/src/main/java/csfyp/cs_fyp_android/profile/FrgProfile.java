@@ -30,6 +30,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.ProfileFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
@@ -47,7 +48,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
     private int mUserId;
     private User mUserObj;
     private RadarChart mChart;
-    private ProfileFrgBinding mDatabinding;
+    private ProfileFrgBinding mDataBinding;
     private Response<UserRespond> mUserRespond;
 
     public FrgProfile(){}
@@ -89,7 +90,6 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
 
         RadarData data = new RadarData(sets);
         data.setValueTextSize(8f);
-        data.setDrawValues(true);
         data.setValueTextColor(Color.BLACK);
 
         mChart.setData(data);
@@ -104,8 +104,8 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
         Bundle args = getArguments();
         mUserId = args.getInt("userId");
 
-        mDatabinding = DataBindingUtil.inflate(inflater, R.layout.profile_frg, container, false);
-        View v  = mDatabinding.getRoot();
+        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.profile_frg, container, false);
+        View v  = mDataBinding.getRoot();
 
         mToolBar = (Toolbar) v.findViewById(R.id.profileToolBar);
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
@@ -118,7 +118,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
             }
         });
 
-        mChart = mDatabinding.radarChart;
+        mChart = mDataBinding.radarChart;
 
         mChart.getDescription().setEnabled(false);
 
@@ -179,11 +179,11 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
 
         // load propic
         Picasso.with(getContext())
-                .load("https://lh3.googleusercontent.com/l6JAkhvfxbP61_FWN92j4ulDMXJNH3HT1DR6xrE7MtwW-2AxpZl_WLnBzTpWhCuYkbHihgBQ=s640-h400-e365")
+                .load(((MainActivity)getActivity()).getmSelf().getProPic())
                 .resize(300,300)
                 .centerCrop()
                 .placeholder(R.drawable.ic_propic_big)
-                .into(mDatabinding.profileProPic);
+                .into(mDataBinding.profileProPic);
 
         return v;
     }
@@ -216,8 +216,8 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
         mUserObj = data;
         if (mUserObj != null) {
             mToolBar.setTitle(mUserObj.getUserName());
-            mDatabinding.setUserObj(mUserObj);
-            mDatabinding.profileProgressBar.setVisibility(View.GONE);
+            mDataBinding.setUserObj(mUserObj);
+            mDataBinding.profileProgressBar.setVisibility(View.GONE);
 
             float e = mUserObj.getSelfExtraversion() + mUserObj.getAdjustmentExtraversionWeightedSum()/mUserObj.getAdjustmentWeight();
             float a = mUserObj.getSelfAgreeableness() + mUserObj.getAdjustmentAgreeablenessWeightedSum()/mUserObj.getAdjustmentWeight();
@@ -231,7 +231,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
                 data.setDescription(getResources().getString(R.string.profile_no_description));
             if (data.getPhone() == null || data.getPhone().replace(" ","").isEmpty()) {
                 data.setPhone(getResources().getString(R.string.profile_no_phone));
-                mDatabinding.profilePhoneNo.setText(R.string.profile_no_phone);
+                mDataBinding.profilePhoneNo.setText(R.string.profile_no_phone);
             }
         }
     }

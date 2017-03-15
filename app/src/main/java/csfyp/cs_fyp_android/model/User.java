@@ -7,6 +7,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String nickName;
+    private String proPic;
     private boolean isMale;
     private boolean isRatedbyOther;
     private boolean isSelfRated;
@@ -38,6 +39,24 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickName = nickName;
+        this.isMale = isMale;
+        this.attendEventNum = attendEventNum;
+        this.missingEventNum = missingEventNum;
+        this.holdingEventNum = holdingEventNum;
+        this.email = email;
+        this.phone = phone;
+        this.description = description;
+        this.level = level;
+        this.isSelfRated = false;
+    }
+
+    public User(String userName, String password, String firstName, String lastName, String nickName, String propic, boolean isMale, int attendEventNum, int missingEventNum, int holdingEventNum, String email, String phone, String description, int level) {
+        this.userName = userName;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.nickName = nickName;
+        this.proPic = propic;
         this.isMale = isMale;
         this.attendEventNum = attendEventNum;
         this.missingEventNum = missingEventNum;
@@ -84,6 +103,10 @@ public class User {
 
     public String getNickName() {
         return this.nickName;
+    }
+
+    public String getProPic() {
+        return proPic;
     }
 
     public boolean getIsMale() {

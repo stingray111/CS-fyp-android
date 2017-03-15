@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -19,6 +20,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_event"
+                android:elevation="2dp"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:gravity="center">
+
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:id="@+id/registerProPic"
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:src="@drawable/ic_propic_big"
+                    android:scaleType="centerCrop"
+                    app:civ_border="false" />
+
+                <ImageButton
+                    android:id="@+id/addPropicBtn"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_margin="60dp"
+                    android:background="@null"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_camera" />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

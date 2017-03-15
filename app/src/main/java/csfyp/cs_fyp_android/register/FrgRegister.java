@@ -2,9 +2,11 @@ package csfyp.cs_fyp_android.register;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -14,10 +16,22 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.android.annotations.NonNull;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
+import com.mikelau.croperino.Croperino;
+import com.mikelau.croperino.CroperinoConfig;
+import com.mikelau.croperino.CroperinoFileUtil;
+import com.mikhaellopez.circularimageview.CircularImageView;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.ConfirmPassword;
@@ -25,6 +39,11 @@ import com.mobsandgeeks.saripaar.annotation.Email;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import com.mobsandgeeks.saripaar.annotation.Password;
 import com.mobsandgeeks.saripaar.annotation.Pattern;
+import com.squareup.picasso.Picasso;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 import java.util.Random;
@@ -34,6 +53,7 @@ import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.PropicUpdate;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
@@ -47,6 +67,8 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
 
     public final static String TAG = "register";
     private Toolbar mToolBar;
+    private CircularImageView mPropic;
+    private Uri mPropicUri;
     private final String mRegexName = "^[a-zA-Z0-9 ]{0,20}$";
     private final String mRegexUserName = "^[a-zA-Z0-9]{5,20}$";
     private final String mRegexPhone = "^\\d{0,20}$";
@@ -106,6 +128,22 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
             }
         });
 
+        //Initialize on every usage
+        new CroperinoConfig("IMG_" + System.currentTimeMillis() + ".jpg", "/MeetUs/Pictures", "/sdcard/MeetUs/Pictures");
+        CroperinoFileUtil.verifyStoragePermissions(getActivity());
+        CroperinoFileUtil.setupDirectory(getActivity());
+
+        ((ImageButton) v.findViewById(R.id.addPropicBtn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Croperino.prepareChooser(getActivity(), "Select photo for the profile...", ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
+            }
+        });
+
+//
+        mPropic = (CircularImageView) v.findViewById(R.id.registerProPic);
+
+        // validation
         mValidator = new Validator(this);
         mValidator.setValidationListener(this);
         mProgressBar = (ProgressBar) v.findViewById(R.id.registerProgressBar);
@@ -151,24 +189,52 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
             return;
         }
 
-        boolean isMale = mMaleBtn.isChecked();
-
-        final HTTP httpService = HTTP.retrofit.create(HTTP.class);
-        User user = new User(mUsernameField.getText().toString()
-                , mPasswordField.getText().toString()
-                , mFirstNameField.getText().toString()
-                , mLastNameField.getText().toString()
-                , mNickNameField.getText().toString()
-                , isMale, 0, 0, 0
-                , mEmailField.getText().toString(),
-                mPhoneField.getText().toString(),
-                mDescriptField.getText().toString(), 1);
-        Call<RegisterRespond> call = httpService.createUser(user);
+        final boolean isMale = mMaleBtn.isChecked();
 
         mProgressBar.setVisibility(View.VISIBLE);
         mSubmitBtn.setVisibility(View.GONE);
 
-        call.enqueue(new Callback<RegisterRespond>() {
+        final HTTP httpService = HTTP.retrofit.create(HTTP.class);
+
+        final Callback<LoginRespond> loginCallback = new Callback<LoginRespond>() {
+            @Override
+            public void onResponse(Call<LoginRespond> call, Response<LoginRespond> response) {
+                if(response.isSuccessful() && response.body().isSuccessful()){
+
+                    // save token to cache
+                    SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("userToken", response.body().getToken());
+                    editor.putInt("userId", response.body().getUserId());
+                    editor.putString("username", response.body().getUsername());
+                    editor.putString("msgToken", response.body().getMsgToken());
+                    Log.d(TAG, "onResponse: "+response.body().getUserId());
+
+                    Gson gson = new Gson();
+                    String selfStr = gson.toJson(response.body().getSelf());
+                    editor.putString("self", selfStr);
+                    editor.commit();
+                    MainActivity parent = (MainActivity)getActivity();
+
+                    // set information in Main Activity for later use
+                    parent.setmToken(response.body().getToken());
+                    parent.setmUserId(response.body().getUserId());
+                    parent.setmUsername(response.body().getUsername());
+                    parent.setmSelf(response.body().getSelf());
+                    Log.d("fuck you ", "Token"+response.body().getMsgToken());
+                    parent.setmMsgToken(response.body().getMsgToken());
+
+                    switchFragment(FrgSelfRating.newInstance());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginRespond> call, Throwable t) {
+                Toast.makeText(getContext(), t.toString() , Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        final Callback<RegisterRespond> respondCallback = new Callback<RegisterRespond>() {
             @Override
             public void onResponse(Call<RegisterRespond> call, Response<RegisterRespond> response) {
                 if(response.isSuccessful()) {
@@ -176,40 +242,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                         Toast.makeText(getContext(), "Register Successful!!" , Toast.LENGTH_SHORT).show();
                         String uuidInString = UUID.randomUUID().toString();
                         Call<LoginRespond> loginCall = httpService.login(new Login(mUsernameField.getText().toString(), mPasswordField.getText().toString(), uuidInString));
-                        loginCall.enqueue(new Callback<LoginRespond>() {
-                            @Override
-                            public void onResponse(Call<LoginRespond> call, Response<LoginRespond> response) {
-                                if(response.isSuccessful() && response.body().isSuccessful()){
-
-                                    // save token to cache
-                                    SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedPref.edit();
-                                    editor.putString("userToken", response.body().getToken());
-                                    editor.putInt("userId", response.body().getUserId());
-                                    editor.putString("username", response.body().getUsername());
-                                    editor.putString("msgToken", response.body().getMsgToken());
-                                    Log.d(TAG, "onResponse: "+response.body().getUserId());
-                                    editor.commit();
-                                    MainActivity parent = (MainActivity)getActivity();
-
-                                    // set information in Main Activity for later use
-                                    parent.setmToken(response.body().getToken());
-                                    parent.setmUserId(response.body().getUserId());
-                                    parent.setmUsername(response.body().getUsername());
-                                    Log.d("fuck you ", "Token"+response.body().getMsgToken());
-                                    parent.setmMsgToken(response.body().getMsgToken());
-
-
-                                    switchFragment(FrgSelfRating.newInstance());
-                                    //replaceFragment(((MainActivity) getActivity()).getmHome());
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<LoginRespond> call, Throwable t) {
-                                Toast.makeText(getContext(), t.toString() , Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        loginCall.enqueue(loginCallback);
                     } else {
                         Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
                         mProgressBar.setVisibility(View.GONE);
@@ -222,7 +255,75 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
             public void onFailure(Call<RegisterRespond> call, Throwable t) {
 
             }
-        });
+        };
+
+        if (mPropicUri == null) {
+            // no propic
+            User user = new User(mUsernameField.getText().toString(),
+                    mPasswordField.getText().toString(),
+                    mFirstNameField.getText().toString(),
+                    mLastNameField.getText().toString(),
+                    mNickNameField.getText().toString(),
+                    isMale, 0, 0, 0,
+                    mEmailField.getText().toString(),
+                    mPhoneField.getText().toString(),
+                    mDescriptField.getText().toString(), 1);
+
+            Call<RegisterRespond> call = httpService.createUser(user);
+            call.enqueue(respondCallback);
+
+        } else {
+            // with propic
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+
+            StorageReference storageRef = storage.getReference();
+            StorageReference riversRef = storageRef.child(mPropicUri.getLastPathSegment());
+            UploadTask uploadTask = riversRef.putFile(mPropicUri);
+
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // todo post to MainActivity error
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    Log.i("FirebaseS", downloadUrl.toString());
+
+                    User user = new User(mUsernameField.getText().toString(),
+                            mPasswordField.getText().toString(),
+                            mFirstNameField.getText().toString(),
+                            mLastNameField.getText().toString(),
+                            mNickNameField.getText().toString(),
+                            downloadUrl.toString(),
+                            isMale, 0, 0, 0,
+                            mEmailField.getText().toString(),
+                            mPhoneField.getText().toString(),
+                            mDescriptField.getText().toString(), 1);
+
+                    Call<RegisterRespond> call = httpService.createUser(user);
+                    call.enqueue(respondCallback);
+                }
+            });
+        }
+
+
+
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -253,6 +354,14 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
 
     public void switchFragment(Fragment to) {
         super.switchFragment(this, to);
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(PropicUpdate event) {
+        Toast.makeText(getContext(), event.getFile().toString(), Toast.LENGTH_SHORT).show();
+
+        mPropicUri = Uri.fromFile(event.getFile());
+        Picasso.with(getContext()).load(event.getFile()).into(mPropic);
     }
 }
 

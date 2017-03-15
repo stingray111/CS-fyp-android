@@ -67,8 +67,8 @@ import retrofit2.Response;
 public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCallbacks<List<Event>> {
 
     public static final int HOME_LOADER_ID = 1;
-    public static final int HOME_LOCATION_SETTING_CALLBACK = 2;
-    public static final int HOME_PERMISSION_CALLBACK = 1;
+    public static final int HOME_LOCATION_SETTING_CALLBACK = 10;
+    public static final int HOME_PERMISSION_CALLBACK = 11;
     public static final String TAG = "HomeFragment";
 
     private boolean mIsPanelExpanded;
@@ -301,7 +301,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
         // load propic
         Picasso.with(getContext())
-                .load("https://lh3.googleusercontent.com/l6JAkhvfxbP61_FWN92j4ulDMXJNH3HT1DR6xrE7MtwW-2AxpZl_WLnBzTpWhCuYkbHihgBQ=s640-h400-e365")
+                .load(((MainActivity)getActivity()).getmSelf().getProPic())
                 .resize(100,100)
                 .centerCrop()
                 .placeholder(R.drawable.ic_propic_big)
