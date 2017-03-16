@@ -19,6 +19,7 @@ import csfyp.cs_fyp_android.model.respond.EventRespond;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
 import csfyp.cs_fyp_android.model.respond.Logout;
 import csfyp.cs_fyp_android.model.respond.RegisterRespond;
+import csfyp.cs_fyp_android.model.respond.ThirdPartySignInRespond;
 import csfyp.cs_fyp_android.model.respond.UserRespond;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -97,6 +98,11 @@ public interface HTTP {
     @POST("/api/change-attendance")
     Call<ErrorMsgOnly> changeAttendance (
             @Body ChangeAttendanceRequest attendance
+    );
+
+    @POST("/api/third-party-sign-in")
+    Call<ThirdPartySignInRespond> thirdPartySignIn(
+            @Body User user
     );
 
     final OkHttpClient okHttpClient = new OkHttpClient.Builder()

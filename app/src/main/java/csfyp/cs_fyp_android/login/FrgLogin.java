@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.LauncherApps;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -39,6 +40,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.plus.People;
+import com.google.android.gms.plus.model.people.Person;
+import com.google.firebase.appindexing.builders.PersonBuilder;
 import com.google.gson.Gson;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -60,7 +65,9 @@ import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.LoginFrgBinding;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.model.Login;
+import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
+import csfyp.cs_fyp_android.model.respond.ThirdPartySignInRespond;
 import csfyp.cs_fyp_android.register.FrgRegister;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -125,7 +132,6 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         callbackManager = CallbackManager.Factory.create();
-        EventBus.getDefault().register(this);
     }
 
     @Nullable
@@ -137,6 +143,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                 .requestEmail()
                 .requestId()
                 .requestIdToken(getString(R.string.oauth_client_id))
+                .requestScopes(new Scope(Scopes.PROFILE))
                 .build();
         mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                 .enableAutoManage(getActivity(), this)
@@ -192,8 +199,6 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG,"facebook success");
                 EventBus.getDefault().post(loginResult);
-
-
             }
 
             @Override
@@ -223,6 +228,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     @Override
     public void onStart() {
         super.onStart();
+        EventBus.getDefault().register(this);
 //        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
 //        if (opr.isDone()) {
 //
@@ -359,16 +365,27 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
     @Subscribe (threadMode = ThreadMode.MAIN)
     public void googleLoginCallback(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
-            // Signed in successfully, show authenticated UI.
             try {
                 GoogleSignInAccount account = result.getSignInAccount();
-                Log.d(TAG, "email: " + account.getEmail());
+                /*
                 Log.d(TAG, "id: " + account.getId());
                 Log.d(TAG, "token: " + account.getIdToken());
+                Log.d(TAG, "first: " + account.getGivenName());
+                Log.d(TAG, "last: " + account.getFamilyName());
                 Log.d(TAG, "photo: " + String.valueOf(account.getPhotoUrl()));
-                mDataBinding.inputEmailOrUsername.setText(account.getDisplayName());
+                Log.d(TAG, "email" + account.getEmail());
+                */
+                User user = new User(
+                        "gg+"+account.getId(),
+                        1,
+                        account.getGivenName(),
+                        account.getFamilyName(),
+                        String.valueOf(account.getPhotoUrl()),
+                        0,
+                        account.getEmail()
+                );
+                thirdPartySignIn(user);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -383,18 +400,106 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
         GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
-                    Log.d(TAG, "complete");
-                    Log.d(TAG, object.optString("id"));
-                    Log.d(TAG, object.optString("cover"));
-                    Log.d(TAG, object.optString("first_name"));
-                    Log.d(TAG, object.optString("last_name"));
-                    Log.d(TAG, object.optString("gender"));
+                String photoURL = "";
+                try {
+                    photoURL = (new JSONObject(object.optString("cover")).optString("source"));
+                }catch (Exception e){
+                }
+                int gender = 0;
+                if(object.optString("gender").equals("male")) gender = 1;
+                if(object.optString("gender").equals("female")) gender = 2;
+
+                /*
+                Log.d(TAG, "complete");
+                Log.d(TAG, object.optString("id"));
+                Log.d(TAG, photoURL);
+                Log.d(TAG, object.optString("first_name"));
+                Log.d(TAG, object.optString("last_name"));
+                Log.d(TAG, object.optString("gender"));
+                Log.d(TAG, object.optString("gender"));
+                */
+
+                User user = new User(
+                        "fb+"+object.optString("id"),
+                        2,
+                        object.optString("first_name"),
+                        object.optString("last_name"),
+                        photoURL,
+                        gender,
+                        ""
+                );
+                thirdPartySignIn(user);
             }
         });
         Bundle parameters = new Bundle();
         parameters.putString("fields","id,cover,first_name,last_name,gender");
         request.setParameters(parameters);
         request.executeAsync();
+    }
+
+    private void thirdPartySignIn(User user){
+        Log.d(TAG, user.getUserName());
+        Log.d(TAG, user.getProPic());
+        Log.d(TAG, user.getFirstName());
+        Log.d(TAG, user.getLastName());
+        Log.d(TAG, user.getEmail());
+        Log.d(TAG, "" + user.getGender());
+        Log.d(TAG, ""+ user.getActype());
+        final HTTP httpService = HTTP.retrofit.create(HTTP.class);
+        Call<ThirdPartySignInRespond> thirdPartyCall = httpService.thirdPartySignIn(user);
+        final Callback<ThirdPartySignInRespond> thirdPartySignInRespondCallback = new Callback<ThirdPartySignInRespond>() {
+            @Override
+            public void onResponse(Call<ThirdPartySignInRespond> call, Response<ThirdPartySignInRespond> response) {
+                if(response.isSuccessful()){
+                    if(response.body().isSuccessful()) {
+                        Log.d(TAG, "uid: "+ response.body().getUserId());
+                        Log.d(TAG, "uid: "+ response.body().getMsgToken());
+                        Log.d(TAG, "uid: "+ response.body().getToken());
+                        Log.d(TAG, "uid: "+ response.body().getUsername());
+                        Log.d(TAG, "uid: "+ response.body().getAcType());
+
+                        // save token to cache
+                        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString("userToken", response.body().getToken());
+                        editor.putInt("userId", response.body().getUserId());
+                        editor.putString("username", response.body().getUsername());
+                        editor.putString("msgToken", response.body().getMsgToken());
+                        editor.putInt("acType", response.body().getAcType());
+                        Gson gson = new Gson();
+                        String selfStr = gson.toJson(response.body().getSelf());
+                        editor.putString("self", selfStr);
+                        editor.commit();
+
+                        MainActivity parent = (MainActivity)getActivity();
+                        parent.setmToken(response.body().getToken());
+                        parent.setmUserId(response.body().getUserId());
+                        parent.setmUsername(response.body().getUsername());
+                        parent.setmSelf(response.body().getSelf());
+                        parent.setmMsgToken(response.body().getMsgToken());
+                        parent.setmAcType(response.body().getAcType());
+
+                        if(response.body().isSignIn()){
+                            replaceFragment(((MainActivity) getActivity()).getmHome());
+                        }
+                        else{
+                            //TODO: let people rate them self first
+                        }
+
+                    }else{
+                        Log.d(TAG, "message: " + response.body().getErrorMsg());
+                    }
+                }else{
+                    Log.d(TAG,"message: "+response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ThirdPartySignInRespond> call, Throwable t) {
+                Log.d(TAG,"fail");
+            }
+        };
+        thirdPartyCall.enqueue(thirdPartySignInRespondCallback);
     }
 }
 

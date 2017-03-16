@@ -200,7 +200,6 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
             @Override
             public void onResponse(Call<LoginRespond> call, Response<LoginRespond> response) {
                 if(response.isSuccessful() && response.body().isSuccessful()){
-
                     // save token to cache
                     SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
@@ -221,7 +220,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                     parent.setmUserId(response.body().getUserId());
                     parent.setmUsername(response.body().getUsername());
                     parent.setmSelf(response.body().getSelf());
-                    Log.d("fuck you ", "Token"+response.body().getMsgToken());
+                    Log.d(TAG, "Token"+response.body().getMsgToken());
                     parent.setmMsgToken(response.body().getMsgToken());
 
                     switchFragment(FrgSelfRating.newInstance());

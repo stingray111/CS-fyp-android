@@ -8,7 +8,7 @@ public class User {
     private String lastName;
     private String nickName;
     private String proPic;
-    private boolean isMale;
+    private int gender; //0:unknown 1:male 2:female
     private boolean isRatedbyOther;
     private boolean isSelfRated;
     private boolean isAttended = false;
@@ -18,6 +18,7 @@ public class User {
     private String email;
     private String phone;
     private String description;
+    private int acType;
 
     private float selfExtraversion;
     private float selfAgreeableness;
@@ -31,6 +32,7 @@ public class User {
     private float adjustmentOpennessWeightedSum;
     private float adjustmentWeight;
     private String msgToken;
+    private String apiToken;
     private int level;
 
     public User(String userName, String password, String firstName, String lastName, String nickName, boolean isMale, int attendEventNum, int missingEventNum, int holdingEventNum, String email, String phone, String description, int level) {
@@ -39,7 +41,8 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickName = nickName;
-        this.isMale = isMale;
+        if(isMale) this.gender = 1;
+        else this.gender = 2;
         this.attendEventNum = attendEventNum;
         this.missingEventNum = missingEventNum;
         this.holdingEventNum = holdingEventNum;
@@ -48,6 +51,7 @@ public class User {
         this.description = description;
         this.level = level;
         this.isSelfRated = false;
+        this.acType = 0;
     }
 
     public User(String userName, String password, String firstName, String lastName, String nickName, String propic, boolean isMale, int attendEventNum, int missingEventNum, int holdingEventNum, String email, String phone, String description, int level) {
@@ -57,7 +61,8 @@ public class User {
         this.lastName = lastName;
         this.nickName = nickName;
         this.proPic = propic;
-        this.isMale = isMale;
+        if(isMale) this.gender = 1;
+        else this.gender = 2;
         this.attendEventNum = attendEventNum;
         this.missingEventNum = missingEventNum;
         this.holdingEventNum = holdingEventNum;
@@ -66,6 +71,26 @@ public class User {
         this.description = description;
         this.level = level;
         this.isSelfRated = false;
+        this.acType = 0;
+    }
+    public User(String userName, int actype, String firstName, String lastName, String proPic, int gender, String email){
+        this.userName = userName;
+        this.password = "";
+        this.acType = actype;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.nickName = "";
+        this.attendEventNum = 0;
+        this.missingEventNum = 0;
+        this.holdingEventNum = 0;
+        this.phone = "";
+        this.description = "";
+        this.email = email;
+        this.level = 1;
+        this.gender = gender;
+        this.proPic = proPic;
+        this.isSelfRated = false;
+        this.level = 1;
     }
 
     public String getFullName(){
@@ -107,10 +132,6 @@ public class User {
 
     public String getProPic() {
         return proPic;
-    }
-
-    public boolean getIsMale() {
-        return this.isMale;
     }
 
     public int getAttendEventNum() {
@@ -211,5 +232,13 @@ public class User {
 
     public boolean isAttended() {
         return isAttended;
+    }
+
+    public int getActype() {
+        return acType;
+    }
+
+    public int getGender() {
+        return gender;
     }
 }

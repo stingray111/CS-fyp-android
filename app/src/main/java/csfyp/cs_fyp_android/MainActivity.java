@@ -55,6 +55,15 @@ public class MainActivity extends LocalizationActivity {
     public static String mUsername;
     private String mMsgToken;
     public ChatService mChatService;
+    private int mAcType;
+
+    public void setmAcType(int mAcType) {
+        this.mAcType = mAcType;
+    }
+
+    public int getmAcType() {
+        return mAcType;
+    }
 
     public void setmMsgToken(String mMsgToken) {
         this.mMsgToken = mMsgToken;
