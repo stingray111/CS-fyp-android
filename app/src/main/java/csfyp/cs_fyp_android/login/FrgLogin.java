@@ -69,6 +69,7 @@ import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
 import csfyp.cs_fyp_android.model.respond.ThirdPartySignInRespond;
 import csfyp.cs_fyp_android.register.FrgRegister;
+import csfyp.cs_fyp_android.register.FrgSelfRating;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -483,7 +484,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                             replaceFragment(((MainActivity) getActivity()).getmHome());
                         }
                         else{
-                            //TODO: let people rate them self first
+                            switchFragment(FrgSelfRating.newInstance());
                         }
 
                     }else{

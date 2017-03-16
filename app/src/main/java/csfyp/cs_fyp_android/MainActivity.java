@@ -183,6 +183,7 @@ public class MainActivity extends LocalizationActivity {
         mUserId = sharedPref.getInt("userId", 0);
         mUsername = sharedPref.getString("username", "user");
         mMsgToken = sharedPref.getString("msgToken", null);
+        mAcType = sharedPref.getInt("acType",0);
 
         mHome = FrgHome.newInstance();
 
@@ -216,7 +217,6 @@ public class MainActivity extends LocalizationActivity {
                 ft.commit();
             }
         }
-
     }
 
     public ServiceConnection connection = new ServiceConnection() {
