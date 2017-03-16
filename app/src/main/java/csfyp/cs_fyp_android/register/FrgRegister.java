@@ -361,6 +361,11 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
 
         mPropicUri = Uri.fromFile(event.getFile());
         Picasso.with(getContext()).load(event.getFile()).into(mPropic);
+
+        PropicUpdate update = EventBus.getDefault().getStickyEvent(PropicUpdate.class);
+        if(update != null) {
+            EventBus.getDefault().removeStickyEvent(update);
+        }
     }
 }
 
