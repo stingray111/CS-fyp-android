@@ -30,7 +30,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import csfyp.cs_fyp_android.CustomFragment;
-import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.ProfileFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
@@ -177,13 +176,13 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
 
         getLoaderManager().initLoader(USER_LOADER_ID, null, this);
 
-        // load propic
-        Picasso.with(getContext())
-                .load(((MainActivity)getActivity()).getmSelf().getProPic())
-                .resize(300,300)
-                .centerCrop()
-                .placeholder(R.drawable.ic_propic_big)
-                .into(mDataBinding.profileProPic);
+//        // load propic
+//        Picasso.with(getContext())
+//                .load(((MainActivity)getActivity()).getmSelf().getProPic())
+//                .resize(300,300)
+//                .centerCrop()
+//                .placeholder(R.drawable.ic_propic_big)
+//                .into(mDataBinding.profileProPic);
 
         return v;
     }
@@ -233,6 +232,13 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
                 data.setPhone(getResources().getString(R.string.profile_no_phone));
                 mDataBinding.profilePhoneNo.setText(R.string.profile_no_phone);
             }
+
+            Picasso.with(getContext())
+                    .load(mUserObj.getProPic())
+                    .resize(300,300)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_propic_big)
+                    .into(mDataBinding.profileProPic);
         }
     }
 
