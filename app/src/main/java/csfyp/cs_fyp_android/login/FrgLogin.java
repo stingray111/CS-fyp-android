@@ -369,14 +369,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
         if (result.isSuccess()) {
             try {
                 GoogleSignInAccount account = result.getSignInAccount();
-                /*
-                Log.d(TAG, "id: " + account.getId());
-                Log.d(TAG, "token: " + account.getIdToken());
-                Log.d(TAG, "first: " + account.getGivenName());
-                Log.d(TAG, "last: " + account.getFamilyName());
-                Log.d(TAG, "photo: " + String.valueOf(account.getPhotoUrl()));
-                Log.d(TAG, "email" + account.getEmail());
-                */
+
                 User user = new User(
                         "gg+"+account.getId(),
                         1,
@@ -402,30 +395,16 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
                 String photoURL = "";
-                try {
-                    photoURL = (new JSONObject(object.optString("cover")).optString("source"));
-                }catch (Exception e){
-                }
                 int gender = 0;
                 if(object.optString("gender").equals("male")) gender = 1;
                 if(object.optString("gender").equals("female")) gender = 2;
-
-                /*
-                Log.d(TAG, "complete");
-                Log.d(TAG, object.optString("id"));
-                Log.d(TAG, photoURL);
-                Log.d(TAG, object.optString("first_name"));
-                Log.d(TAG, object.optString("last_name"));
-                Log.d(TAG, object.optString("gender"));
-                Log.d(TAG, object.optString("gender"));
-                */
 
                 User user = new User(
                         "fb+"+object.optString("id"),
                         2,
                         object.optString("first_name"),
                         object.optString("last_name"),
-                        photoURL,
+                        "https://graph.facebook.com/" + object.optString("id")+ "/picture?type=large",
                         gender,
                         ""
                 );
