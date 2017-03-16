@@ -28,6 +28,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
@@ -109,6 +110,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     private int mOffset;
     private Location mCurrentListLocation;
     private ImageButton mSortButton;
+    public GoogleSignInAccount googleAccout;
 
     // For Left Drawer
     private DrawerLayout mDrawerLayout;

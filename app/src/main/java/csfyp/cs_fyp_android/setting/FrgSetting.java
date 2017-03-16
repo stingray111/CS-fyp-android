@@ -4,14 +4,25 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInApi;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
@@ -26,12 +37,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FrgSetting extends CustomFragment{
+public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnConnectionFailedListener {
     public FrgSetting(){super();}
     public static final String TAG = "Setting";
     private Toolbar mToolBar;
     private Button mlogoutBtn;
     private SettingFrgBinding mBinding;
+    private GoogleApiClient mGoogleApiClient;
 
     public static FrgSetting newInstance() {
         Bundle args = new Bundle();
@@ -44,6 +56,19 @@ public class FrgSetting extends CustomFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater,container,savedInstanceState);
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestProfile()
+                .requestEmail()
+                .requestId()
+                .requestIdToken(getString(R.string.oauth_client_id))
+                .requestScopes(new Scope(Scopes.PROFILE))
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                .enableAutoManage(getActivity(), this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
         mBinding = DataBindingUtil.inflate(inflater, R.layout.setting_frg, container, false);
         mBinding.setHandlers(this);
 
@@ -56,7 +81,7 @@ public class FrgSetting extends CustomFragment{
         mToolBar.setNavigationOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-               onBack(TAG);
+                onBack(TAG);
             }
         });
 
@@ -74,13 +99,27 @@ public class FrgSetting extends CustomFragment{
                     public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
                         if (response.isSuccessful()) {
                             if (response.body().getErrorMsg() == null) {
+                                int acType = ((MainActivity)getActivity()).getmAcType();
+                                if(acType == FrgLogin.FB){
+                                    LoginManager.getInstance().logOut();
+                                }else if(acType == FrgLogin.GOOGLE){
+                                    if(mGoogleApiClient.isConnected()) {
+                                        Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                                        Log.d(TAG, "signout google");
+                                    }else{
+                                        Log.d(TAG, "no signout google");
+                                    }
+                                }
+
                                 SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.remove("userToken");
                                 editor.remove("userId");
                                 editor.remove("username");
                                 editor.remove("msgToken");
+                                editor.remove("acType");
                                 editor.commit();
+
 
                                 ((MainActivity)getActivity()).unbindService(((MainActivity)getActivity()).connection);
                                 ((MainActivity) getActivity()).setmHome(FrgHome.newInstance());
@@ -109,6 +148,15 @@ public class FrgSetting extends CustomFragment{
         return v;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.stopAutoManage(getActivity());
+            mGoogleApiClient.disconnect();
+        }
+    }
+
     public void onClickChinese(View view) {
         Toast.makeText(getContext(), "set Chinese", Toast.LENGTH_SHORT).show();
         //setLocale("zh");
@@ -119,5 +167,10 @@ public class FrgSetting extends CustomFragment{
         Toast.makeText(getContext(), "set English", Toast.LENGTH_SHORT).show();
         //setLocale("en");
         ((MainActivity)getActivity()).setLanguage("en");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.i(TAG, "Google Connection Fail");
     }
 }

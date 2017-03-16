@@ -16,6 +16,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.LocalizationActivity;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.mikelau.croperino.Croperino;

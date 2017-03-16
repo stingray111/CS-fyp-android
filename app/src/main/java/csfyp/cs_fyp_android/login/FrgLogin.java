@@ -84,6 +84,8 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
         super();
     }
 
+    public static final int FB = 2;
+    public static final int GOOGLE =1;
     public final static String TAG = "login";
     public static final int GOOGLE_SIGN_IN_CODE = 9001;
 
@@ -152,6 +154,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                 .build();
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.login_frg, container, false);
         mDataBinding.setHandlers(this);
+
 
         View v = mDataBinding.getRoot();
 
@@ -230,23 +233,6 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-//        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-//        if (opr.isDone()) {
-//
-//            Log.d(TAG, "Got cached sign-in");
-//            GoogleSignInResult result = opr.get();
-//            handleSignInResult(result);
-//        } else {
-//
-//            showProgressDialog();
-//            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-//                @Override
-//                public void onResult(GoogleSignInResult googleSignInResult) {
-//                    hideProgressDialog();
-//                    handleSignInResult(googleSignInResult);
-//                }
-//            });
-//        }
     }
 
     @Override
@@ -372,7 +358,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
                 User user = new User(
                         "gg+"+account.getId(),
-                        1,
+                        FrgLogin.GOOGLE,
                         account.getGivenName(),
                         account.getFamilyName(),
                         String.valueOf(account.getPhotoUrl()),
@@ -401,7 +387,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
 
                 User user = new User(
                         "fb+"+object.optString("id"),
-                        2,
+                        FrgLogin.FB,
                         object.optString("first_name"),
                         object.optString("last_name"),
                         "https://graph.facebook.com/" + object.optString("id")+ "/picture?type=large",
