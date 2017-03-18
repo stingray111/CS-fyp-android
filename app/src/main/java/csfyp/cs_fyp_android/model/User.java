@@ -1,5 +1,7 @@
 package csfyp.cs_fyp_android.model;
 
+import android.util.Log;
+
 public class User {
     private int id;
     private String userName;
@@ -104,6 +106,20 @@ public class User {
             return firstName+" "+lastName;
         }
         return lastName;
+    }
+
+    public String getDisplayName(){
+        if(nickName != null && nickName != "") {
+            Log.d("nickname", "n" + nickName);
+            return nickName;
+        }
+        else if(firstName != null && firstName != "") {
+            Log.d("fl", "n" + firstName);
+            return firstName + " " + lastName;
+        }
+        else {
+            return lastName;
+        }
     }
 
     public String getMsgToken() {

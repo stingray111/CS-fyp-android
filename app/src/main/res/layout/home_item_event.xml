@@ -84,7 +84,7 @@
                 android:layout_height="20dp"
                 android:layout_weight="2"
                 android:gravity="center_vertical"
-                android:text="@{item.holder.userName}"
+                android:text="@{item.holder.displayName}"
                 style="@style/EventCardText" />
 
             <LinearLayout

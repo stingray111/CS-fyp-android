@@ -288,7 +288,7 @@ public class MainActivity extends LocalizationActivity {
                         EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.SET_PARAM,eventList,mMsgToken));
                     }else{
                         EventBus.getDefault().post(new ErrorMsg("Server Error",ErrorMsg.LENGTH_SHORT));
-                        Log.d(TAG,response.body().getErrorMsg());
+                        if(response.isSuccessful()) Log.d(TAG,response.body().getErrorMsg());
                     }
                 }
 

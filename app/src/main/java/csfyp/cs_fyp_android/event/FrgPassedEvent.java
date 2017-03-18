@@ -383,7 +383,7 @@ public class FrgPassedEvent extends CustomFragment implements OnMapReadyCallback
     }
 
     public void onClickHolderRate(View v) {
-        switchFragment(this, FrgRating.newInstance(mEventObj.getHolder().getId(), mEventObj.getHolder().getUserName(), mEventId));
+        switchFragment(this, FrgRating.newInstance(mEventObj.getHolder().getId(), mEventObj.getHolder().getDisplayName(), mEventId));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

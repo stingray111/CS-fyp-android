@@ -138,7 +138,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         if (mData != null && mIsMapReady && mIsLoadFinished) {
             mClusterManager.clearItems();
             for (Event item : mData) {
-                ClusterableMarker marker = new ClusterableMarker(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker), item.getLatitude(), item.getLongitude(), item.getName(), item.getHolder().getUserName() + "&" + item.getStartTime_formated() + "&" + (item.getCurrentPpl()+1) + "&" + item.getMaxPpl() + "&" + item.getId());
+                ClusterableMarker marker = new ClusterableMarker(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker), item.getLatitude(), item.getLongitude(), item.getName(), item.getHolder().getDisplayName() + "&" + item.getStartTime_formated() + "&" + (item.getCurrentPpl()+1) + "&" + item.getMaxPpl() + "&" + item.getId());
                 mClusterManager.addItem(marker);
             }
             mClusterManager.cluster();
@@ -258,7 +258,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
 
         // set self user
-        mDataBinding.homeUsername.setText(((MainActivity)getActivity()).getmUsername());
+        mDataBinding.homeUsername.setText(((MainActivity)getActivity()).getmSelf().getDisplayName());
 
         getLoaderManager().initLoader(HOME_LOADER_ID,null,this);
         return v;
