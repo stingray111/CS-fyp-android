@@ -110,11 +110,9 @@ public class User {
 
     public String getDisplayName(){
         if(nickName != null && nickName != "") {
-            Log.d("nickname", "n" + nickName);
             return nickName;
         }
         else if(firstName != null && firstName != "") {
-            Log.d("fl", "n" + firstName);
             return firstName + " " + lastName;
         }
         else {

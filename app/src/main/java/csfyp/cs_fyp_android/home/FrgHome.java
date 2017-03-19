@@ -233,7 +233,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         mScrollListener = new EndlessRecyclerViewScrollListener(mEventLayoutManager){
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                Log.d("here","trigger");
                 EventBus.getDefault().post(new ScrollEvent(ScrollEvent.OTHERS));
             }
         };
