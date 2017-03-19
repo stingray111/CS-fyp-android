@@ -5,16 +5,23 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -46,19 +53,27 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.Inflater;
 
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
+import csfyp.cs_fyp_android.model.BitmapAndBtn;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
@@ -105,6 +120,8 @@ public class ChatService extends Service {
     private Button mSendButton;
     private EditText mMessageEditText;
     private List<Event> mEventList;
+    private final List<Target> targets = new ArrayList<Target>();
+    private ProPicManager proPicManager = new ProPicManager();
     //vars
 
     public class LocalBinder extends Binder {
@@ -457,6 +474,9 @@ public class ChatService extends Service {
         final String eventName = item.getName();
         final int eventId = item.getId();
         btn.setButtonSize(FloatingActionButton.SIZE_MINI);//TODO: change icon
+
+        addPictureToButotn(item.getHolder().getProPic(),btn);
+
         btn.setLabelText(item.getName());
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -577,7 +597,6 @@ public class ChatService extends Service {
                 mStatus = 2;
             }
         });
-        btn.setImageResource(R.drawable.bg_event);
         return btn;
     }
 
@@ -624,6 +643,26 @@ public class ChatService extends Service {
 
         }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void setBtnImage(BitmapAndBtn btb){
+        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getBaseContext().getResources(),btb.bitmap);
+        if(btb.bitmap == null){
+            Log.d(TAG,"is null");
+        }
+        roundedBitmapDrawable.setCircular(true);
+        btb.btn.setImageDrawable(roundedBitmapDrawable);
+    }
+
+    public void addPictureToButotn(final String url, com.github.clans.fab.FloatingActionButton btn) {
+        Log.d("chat",url);
+        try {
+            proPicManager.setBtn(url, getBaseContext(), btn);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
 }
 
