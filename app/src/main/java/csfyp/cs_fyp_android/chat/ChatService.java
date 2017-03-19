@@ -655,7 +655,6 @@ public class ChatService extends Service {
     }
 
     public void addPictureToButotn(final String url, com.github.clans.fab.FloatingActionButton btn) {
-        Log.d("chat",url);
         try {
             proPicManager.setBtn(url, getBaseContext(), btn);
         }catch(Exception e){

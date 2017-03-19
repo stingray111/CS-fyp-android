@@ -3,6 +3,8 @@ package csfyp.cs_fyp_android.chat;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -33,12 +35,20 @@ import csfyp.cs_fyp_android.model.respond.ThirdPartySignInRespond;
 
 public class ProPicManager {
     private static final String TAG = "Pro Pic Man";
-    private static int index = 0;
+    private Bitmap defaultBitmap;
+
 
     private List<Pair<String,OwnTarget>> targets = new ArrayList<Pair<String,OwnTarget>>();
 
     public void setBtn(String url, Context context, FloatingActionButton btn) throws InterruptedException {
-        index++;
+        if(url == null || url.equals("")){
+            if(defaultBitmap == null ) {
+                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_propic_big);
+                defaultBitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+            }
+            EventBus.getDefault().post(new BitmapAndBtn(defaultBitmap,btn));
+            return;
+        }
         for(Pair<String,OwnTarget> item: targets){
             if(item.first.equals(url) ){
                 new Thread(new OwnThread(item.second,btn)).start();
