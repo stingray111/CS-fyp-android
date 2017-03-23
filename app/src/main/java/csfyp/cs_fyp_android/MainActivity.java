@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.Toast;
@@ -33,8 +34,10 @@ import java.util.List;
 
 import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.home.FrgHome;
+import csfyp.cs_fyp_android.lib.EnqueueAgain;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
+import csfyp.cs_fyp_android.lib.Utils;
 import csfyp.cs_fyp_android.lib.eventBus.PropicUpdate;
 import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
@@ -42,7 +45,9 @@ import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
+import csfyp.cs_fyp_android.model.request.UserName;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
+import csfyp.cs_fyp_android.model.respond.MsgTokenUpdateRespond;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -264,54 +269,72 @@ public class MainActivity extends LocalizationActivity {
         }
     }
 
+
     @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void chatServiceHandle(final ChatServiceSetting chatServiceSetting){
+    public void chatServiceHandle(final ChatServiceSetting chatServiceSetting) {
         if (chatServiceSetting.getMode() == ChatServiceSetting.INIT) {
-            if(chatServiceSetting.getDelay() > 0){
-                try{
-                    Thread.sleep(chatServiceSetting.getDelay());
-                }catch (Exception e){
+
+                if (chatServiceSetting.getDelay() > 0) {
+                    try {
+                        Thread.sleep(chatServiceSetting.getDelay());
+                    } catch (Exception e) {
+                    }
                 }
+                HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                Call<EventListRespond> call = httpService.getEvents(new EventListRequest(mUserId, 3));
+                call.enqueue(new Callback<EventListRespond>() {
+                    Response<EventListRespond> EventRespond;
+                    List<Event> eventList;
+                    String TAG = "ChatService(Activity)";
+
+                    @Override
+                    public void onResponse(Call<EventListRespond> call, Response<EventListRespond> response) {
+                        if (response.isSuccessful() && response.body().getErrorMsg() == null) {
+                            eventList = response.body().getEvents();
+                            Log.d(TAG, "here: " + mMsgToken);
+                            EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.SET_PARAM, eventList, mMsgToken));
+                        } else {
+                            EventBus.getDefault().post(new ErrorMsg("Server Error", ErrorMsg.LENGTH_SHORT));
+                            if (response.isSuccessful()) Log.d(TAG, response.body().getErrorMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(final Call<EventListRespond> call, Throwable t) {
+                        EventBus.getDefault().post(new ErrorMsg("Cannot connect to messaging service, will try again", ErrorMsg.LENGTH_LONG));
+                        new Handler().postDelayed(
+                                new EnqueueAgain<EventListRespond>(call, this)
+                                , 5000);
+                    }
+
+                });
             }
-            HTTP httpService = HTTP.retrofit.create(HTTP.class);
-            Call<EventListRespond> call = httpService.getEvents(new EventListRequest(mUserId, 3));
-            call.enqueue(new Callback<EventListRespond>() {
-                Response<EventListRespond> EventRespond;
-                List<Event> eventList;
+        else if(chatServiceSetting.getMode() == chatServiceSetting.UPDATE_TOKEN){
+            HTTP httpservice = HTTP.retrofit.create(HTTP.class);
+            Call<MsgTokenUpdateRespond> call = httpservice.msgTokenUpdate(new UserName(mUsername));
+            call.enqueue(new Callback<MsgTokenUpdateRespond>() {
                 String TAG = "ChatService(Activity)";
 
                 @Override
-                public void onResponse(Call<EventListRespond> call, Response<EventListRespond> response) {
-                    if(response.isSuccessful() && response.body().getErrorMsg() == null){
-                        eventList = response.body().getEvents();
-                        Log.d(TAG,"here: "+mMsgToken);
-                        EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.SET_PARAM,eventList,mMsgToken));
+                public void onResponse(Call<MsgTokenUpdateRespond> call, Response<MsgTokenUpdateRespond> response) {
+                    if(response.isSuccessful() && response.body().isSuccessful()){
+                            mMsgToken = response.body().getMsgToken();
+                            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putString("msgToken", response.body().getMsgToken());
+                            EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.INIT));
                     }else{
-                        EventBus.getDefault().post(new ErrorMsg("Server Error",ErrorMsg.LENGTH_SHORT));
-                        if(response.isSuccessful()) Log.d(TAG,response.body().getErrorMsg());
+                        EventBus.getDefault().post(new ErrorMsg("Message Server Error",Toast.LENGTH_LONG));
                     }
                 }
 
                 @Override
-                public void onFailure(final Call<EventListRespond> call, Throwable t) {
-                    EventBus.getDefault().post(new ErrorMsg("Cannot connect to messaging service, will try again",ErrorMsg.LENGTH_LONG));
+                public void onFailure(Call<MsgTokenUpdateRespond> call, Throwable t) {
+                    Log.d(TAG, "failed for response");
                     new Handler().postDelayed(
-                        new EnqueueAgain(call,this)
-                        , 5000);
-                    Log.d(TAG,"on Failure");
-                }
-
-                class EnqueueAgain implements Runnable{
-                    Call<EventListRespond> mCall;
-                    Callback<EventListRespond> mBack;
-                    public EnqueueAgain(Call<EventListRespond> call,Callback<EventListRespond> back){
-                        mCall = call;
-                        mBack = back;
-                    }
-                    @Override
-                    public void run() {
-                        mCall.clone().enqueue(mBack);
-                    }
+                            new EnqueueAgain<MsgTokenUpdateRespond>(call, this)
+                            , 5000
+                    );
                 }
             });
         }

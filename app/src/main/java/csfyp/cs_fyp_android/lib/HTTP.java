@@ -2,22 +2,26 @@ package csfyp.cs_fyp_android.lib;
 
 import java.util.concurrent.TimeUnit;
 
+import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.ChangeAttendanceRequest;
+import csfyp.cs_fyp_android.model.request.EmailOnly;
 import csfyp.cs_fyp_android.model.request.EventCreateRequest;
 import csfyp.cs_fyp_android.model.request.EventJoinQuitRequest;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
 import csfyp.cs_fyp_android.model.request.EventRequest;
 import csfyp.cs_fyp_android.model.request.Rate;
 import csfyp.cs_fyp_android.model.request.SelfRate;
+import csfyp.cs_fyp_android.model.request.UserName;
 import csfyp.cs_fyp_android.model.request.UserRequest;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
 import csfyp.cs_fyp_android.model.respond.EventRespond;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
 import csfyp.cs_fyp_android.model.respond.Logout;
+import csfyp.cs_fyp_android.model.respond.MsgTokenUpdateRespond;
 import csfyp.cs_fyp_android.model.respond.RegisterRespond;
 import csfyp.cs_fyp_android.model.respond.ThirdPartySignInRespond;
 import csfyp.cs_fyp_android.model.respond.UserRespond;
@@ -40,6 +44,11 @@ public interface HTTP {
             @Body User user
     );
 
+    @POST("/api/forget-password")
+    Call<ErrorMsgOnly> forgetUser(
+            @Body EmailOnly emailOnly
+    );
+
     @POST("/api/post-self-rate")
     Call<ErrorMsgOnly> postSelfRate (
             @Body SelfRate selfRate
@@ -58,6 +67,11 @@ public interface HTTP {
     @POST("/api/logout")
     Call<ErrorMsgOnly> logout (
             @Body Logout logout
+    );
+
+    @POST("/api/update-msg-token")
+    Call<MsgTokenUpdateRespond> msgTokenUpdate(
+            @Body UserName userName
     );
 
     @POST("/api/get-user")

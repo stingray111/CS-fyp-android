@@ -54,9 +54,7 @@ public class FrgHistory extends CustomFragment implements LoaderManager.LoaderCa
     }
 
     public static FrgHistory newInstance() {
-
         Bundle args = new Bundle();
-
         FrgHistory fragment = new FrgHistory();
         fragment.setArguments(args);
         return fragment;

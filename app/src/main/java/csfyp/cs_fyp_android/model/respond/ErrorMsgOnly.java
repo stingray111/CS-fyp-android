@@ -6,4 +6,8 @@ public class ErrorMsgOnly {
     public String getErrorMsg() {
         return errorMsg;
     }
+
+    public boolean isNull(){
+        return errorMsg == null;
+    }
 }

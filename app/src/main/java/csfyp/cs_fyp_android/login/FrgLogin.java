@@ -63,7 +63,9 @@ import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.LoginFrgBinding;
+import csfyp.cs_fyp_android.forgetPassword.FrgForgetPassword;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
@@ -106,6 +108,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     private LoginButton mFacebookLoginButton;
     private AccessToken accessToken;
     public CallbackManager callbackManager;
+    private TextView mForgetPwButton;
 
     public static FrgLogin newInstance() {
 
@@ -155,8 +158,8 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.login_frg, container, false);
         mDataBinding.setHandlers(this);
 
-
         View v = mDataBinding.getRoot();
+
 
         mLoginBtn = mDataBinding.loginBtn;
         mInputEmailOrUsername = mDataBinding.inputEmailOrUsername;
@@ -192,6 +195,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
             }
         });
 
+
         mFacebookLoginButton = mDataBinding.facebookSignInBtn;
         ArrayList<String> permission = new ArrayList<String>();
         permission.add("public_profile");
@@ -216,6 +220,13 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
             }
         });
 
+        mForgetPwButton = mDataBinding.forgetPwdBtn;
+        mForgetPwButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchFragment(FrgForgetPassword.newInstance());
+            }
+        });
 
         return v;
     }

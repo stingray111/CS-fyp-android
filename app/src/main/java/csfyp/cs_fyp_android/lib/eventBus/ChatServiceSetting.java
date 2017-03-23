@@ -12,6 +12,8 @@ import csfyp.cs_fyp_android.model.Event;
 public class ChatServiceSetting {
     public static final int INIT = 0;
     public static final int SET_PARAM= 1;
+    public static final int UPDATE_TOKEN= 2;
+
     private int mode;
     private int delay;
     private List<Event> mEventList;

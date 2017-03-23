@@ -120,6 +120,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
         mToolBar.setTitle("New Account");
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
         parentActivity.setSupportActionBar(mToolBar);
+
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -338,10 +339,10 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
             mSubmitBtn.callOnClick();
             return;
         }
+
         for (ValidationError error : errors) {
             View view = error.getView();
             String message = error.getCollatedErrorMessage(parentActivity);
-
             // Display error messages ;)
             if (view instanceof EditText) {
                 ((EditText) view).setError(message);
@@ -349,6 +350,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                 Toast.makeText(parentActivity,message,Toast.LENGTH_LONG).show();
             }
         }
+
     }
 
     public void switchFragment(Fragment to) {

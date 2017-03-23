@@ -14,9 +14,12 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -71,12 +74,16 @@ import java.util.zip.Inflater;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.Utils;
 import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.model.BitmapAndBtn;
 import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.EventListRequest;
+import csfyp.cs_fyp_android.model.request.UserName;
 import csfyp.cs_fyp_android.model.respond.EventListRespond;
+import csfyp.cs_fyp_android.model.respond.MsgTokenUpdateRespond;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -368,7 +375,7 @@ public class ChatService extends Service {
                 MATCH_PARENT,
                 MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
         mChatBox.setOnClickListener(new View.OnClickListener() {
@@ -606,13 +613,14 @@ public class ChatService extends Service {
             mMsgToken = chatServiceSetting.getmMsgToken();
             mEventList = chatServiceSetting.getmEventList();
             Log.d(TAG,"Token: "+ mMsgToken);
+            Log.d(TAG,"Token: "+ mMsgToken.length());
 
             mAuth.signInWithCustomToken(mMsgToken)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@android.support.annotation.NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
-                                Log.d(TAG,"messaging service started");
+                                Log.d(TAG, "messaging service started");
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -620,7 +628,14 @@ public class ChatService extends Service {
                                     }
                                 });
                             }
-                            else {
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            if(e instanceof com.google.firebase.auth.FirebaseAuthInvalidCredentialsException) {
+                                EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.UPDATE_TOKEN));
+                            }else {
                                 EventBus.getDefault().post(new ErrorMsg("Cannot login to messaging service", ErrorMsg.LENGTH_LONG));
                                 new Handler().postDelayed(
                                         new Runnable() {
@@ -630,14 +645,8 @@ public class ChatService extends Service {
                                             }
                                         },
                                         5000
-                                );
+                                );   //TODO: update token
                             }
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            e.printStackTrace();
                         }
                     });
 
@@ -661,7 +670,5 @@ public class ChatService extends Service {
             e.printStackTrace();
         }
     }
-
-
 }
 
