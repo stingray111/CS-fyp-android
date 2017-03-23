@@ -217,7 +217,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<User> loader, User data) {
         mUserObj = data;
         if (mUserObj != null) {
-            mToolBar.setTitle(mUserObj.getUserName());
+            mToolBar.setTitle(mUserObj.getFullName());
             mDataBinding.setUserObj(mUserObj);
             mDataBinding.profileProgressBar.setVisibility(View.GONE);
 
