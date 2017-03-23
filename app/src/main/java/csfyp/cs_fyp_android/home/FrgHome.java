@@ -71,12 +71,7 @@ import csfyp.cs_fyp_android.newEvent.FrgNewEvent;
 import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.setting.FrgSetting;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.view.View.GONE;
-import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.decending;
-import static csfyp.cs_fyp_android.home.AdtEvent.EventComparator.getComparator;
 
 public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCallbacks<BatchLoaderBundle> {
 
@@ -511,11 +506,10 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onClusterItemInfoWindowClick(ClusterableMarker clusterItem) {
-        super.onClusterItemInfoWindowClick(clusterItem);
+    public void onInfoWindowClick(Marker marker) {
+        super.onInfoWindowClick(marker);
         Toast.makeText(getContext(), "clicked", Toast.LENGTH_SHORT).show();
-        String[] temp = ((ClusterableMarker)clusterItem).getSnippet().split("&");
-        Toast.makeText(getContext(), "clicked", Toast.LENGTH_SHORT).show();
+        String[] temp = marker.getSnippet().split("&");
         switchFragment(FrgEvent.newInstance(Integer.parseInt(temp[4])));
     }
 
