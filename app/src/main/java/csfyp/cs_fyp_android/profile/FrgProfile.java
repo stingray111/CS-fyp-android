@@ -79,9 +79,11 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
         set1.setColor(Color.rgb(103, 110, 129));
         set1.setFillColor(Color.rgb(103, 110, 129));
         set1.setDrawFilled(true);
+        set1.setDrawValues(false);
+        set1.setHighlightEnabled(false);
         set1.setFillAlpha(180);
         set1.setLineWidth(2f);
-        set1.setDrawHighlightCircleEnabled(true);
+        set1.setDrawHighlightCircleEnabled(false);
         set1.setDrawHighlightIndicators(false);
 
         ArrayList<IRadarDataSet> sets = new ArrayList<IRadarDataSet>();
@@ -163,6 +165,7 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
         yAxis.setAxisMaximum(4f);
         yAxis.setGranularity(1f);
         yAxis.setDrawLabels(false);
+        //yAxis.setGranularityEnabled();
 
         Legend l = mChart.getLegend();
         l.setEnabled(false);

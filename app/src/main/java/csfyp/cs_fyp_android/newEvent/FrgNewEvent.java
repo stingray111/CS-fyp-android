@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -38,15 +36,13 @@ import java.util.List;
 import java.util.Random;
 
 import csfyp.cs_fyp_android.CustomMapFragment;
-import csfyp.cs_fyp_android.lib.CustomScrollView;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.NewEventFrgBinding;
+import csfyp.cs_fyp_android.lib.CustomScrollView;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.TimeConverter;
 import csfyp.cs_fyp_android.model.request.EventCreateRequest;
-import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
-import csfyp.cs_fyp_android.model.respond.EventListRespond;
 import csfyp.cs_fyp_android.model.respond.EventRespond;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -348,6 +344,10 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
             return;
         }
 
+
+        mDataBinding.submitEvent.setVisibility(View.VISIBLE);
+        mDataBinding.createProgressBar.setVisibility(View.GONE);
+
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
         for (ValidationError error : errors) {
             View view = error.getView();
@@ -356,12 +356,12 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
             // Display error messages ;)
             if (view instanceof EditText) {
                 ((EditText) view).setError(message);
-                mDataBinding.submitEvent.setVisibility(View.VISIBLE);
-                mDataBinding.createProgressBar.setVisibility(View.GONE);
             } else {
                 Toast.makeText(parentActivity,message,Toast.LENGTH_LONG).show();
             }
         }
+
+
     }
 
     @Override
