@@ -290,6 +290,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                 .centerCrop()
                 .placeholder(R.drawable.ic_propic_big)
                 .into(mDataBinding.homeProPic);
+
         mSortButton = mDataBinding.sortButton;
         mSortButton.setOnClickListener(new View.OnClickListener() {
             @Override

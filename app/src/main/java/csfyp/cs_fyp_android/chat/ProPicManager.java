@@ -10,6 +10,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 import android.util.Pair;
+import android.widget.ImageView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -25,6 +26,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.lib.Utils;
 import csfyp.cs_fyp_android.model.BitmapAndBtn;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.respond.ThirdPartySignInRespond;
@@ -39,12 +41,12 @@ public class ProPicManager {
 
 
     private List<Pair<String,OwnTarget>> targets = new ArrayList<Pair<String,OwnTarget>>();
-
-    public void setBtn(String url, Context context, FloatingActionButton btn) throws InterruptedException {
+public void setBtn(String url, Context context, FloatingActionButton btn) throws InterruptedException {
         if(url == null || url.equals("")){
             if(defaultBitmap == null ) {
                 Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_propic_big);
-                defaultBitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+                int size = Utils.dpToPx(context,40);
+                defaultBitmap = Bitmap.createScaledBitmap(bitmap, size, size, false);
             }
             EventBus.getDefault().post(new BitmapAndBtn(defaultBitmap,btn));
             return;
@@ -57,10 +59,10 @@ public class ProPicManager {
         }
         OwnTarget target = new OwnTarget(btn,context);
         targets.add(new Pair<String, OwnTarget>(url,target));
-
+        int size = Utils.dpToPx(context,40);
         Picasso.with(context)
                 .load(url)
-                .resize(120,120)
+                .resize(size,size)
                 .centerCrop()
                 .placeholder(R.drawable.ic_propic_big)
                 .into(targets.get(targets.size()-1).second);

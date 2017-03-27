@@ -318,9 +318,9 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
         mDataBinding.submitEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mValidator.validate();
                 mDataBinding.submitEvent.setVisibility(View.GONE);
                 mDataBinding.createProgressBar.setVisibility(View.VISIBLE);
+                mValidator.validate();
             }
 
         });
@@ -345,9 +345,6 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
         }
 
 
-        mDataBinding.submitEvent.setVisibility(View.VISIBLE);
-        mDataBinding.createProgressBar.setVisibility(View.GONE);
-
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
         for (ValidationError error : errors) {
             View view = error.getView();
@@ -361,6 +358,8 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
             }
         }
 
+        mDataBinding.submitEvent.setVisibility(View.VISIBLE);
+        mDataBinding.createProgressBar.setVisibility(View.GONE);
 
     }
 
@@ -368,14 +367,20 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
     public void onValidationSucceeded() {
         if (mMinPpl == 0) {
             Toast.makeText(getContext(), "Please choose the minimum participant", Toast.LENGTH_SHORT).show();
+            mDataBinding.submitEvent.setVisibility(View.VISIBLE);
+            mDataBinding.createProgressBar.setVisibility(View.GONE);
             return;
         }
         if (mMaxPpl == 0) {
             Toast.makeText(getContext(), "Please choose the maximum participant", Toast.LENGTH_SHORT).show();
+            mDataBinding.submitEvent.setVisibility(View.VISIBLE);
+            mDataBinding.createProgressBar.setVisibility(View.GONE);
             return;
         }
         if (mMaxPpl < mMinPpl) {
             Toast.makeText(getContext(), "Number of Maximum people must be bigger then number of minimum people", Toast.LENGTH_SHORT).show();
+            mDataBinding.submitEvent.setVisibility(View.VISIBLE);
+            mDataBinding.createProgressBar.setVisibility(View.GONE);
             return;
         }
         try {
@@ -386,10 +391,14 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
                 //Pass
             } else {
                 Toast.makeText(getContext(), "Please set the deadline time before the start time.", Toast.LENGTH_SHORT).show();
+                mDataBinding.submitEvent.setVisibility(View.VISIBLE);
+                mDataBinding.createProgressBar.setVisibility(View.GONE);
                 return;
             }
         } catch (Exception e){
             Toast.makeText(getContext(), "Please choose the date and time.", Toast.LENGTH_SHORT).show();
+            mDataBinding.submitEvent.setVisibility(View.VISIBLE);
+            mDataBinding.createProgressBar.setVisibility(View.GONE);
             return;
         }
 

@@ -107,6 +107,7 @@ public class ChatService extends Service {
     private int mStatus;  //0: icon
     private WindowManager.LayoutParams mParams;
     private Handler mHandler;
+    private User mSelf;
 
     private FloatingActionMenu mFloatingActionMenu;
     private List<com.github.clans.fab.FloatingActionButton> mFloatingActionButtonList;
@@ -195,10 +196,6 @@ public class ChatService extends Service {
         mHandler.post(runnable);
     }
 
-    public int dp2px(float dp){
-        return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, Resources.getSystem().getDisplayMetrics());
-    }
-
     public void setmMsgToken(String mMsgToken) {
         this.mMsgToken = mMsgToken;
     }
@@ -240,8 +237,8 @@ public class ChatService extends Service {
 
         mParams.gravity = Gravity.LEFT| Gravity.TOP;
 
-        mParams.x = dp2px(100);
-        mParams.y = dp2px(100);
+        mParams.x = Utils.dpToPx(getBaseContext(),100);
+        mParams.y = Utils.dpToPx(getBaseContext(),100);
 
         mSendButton = (Button) mChatBox.findViewById(R.id.sendButton);
         mMessageEditText = (EditText) mChatBox.findViewById(R.id.messageEditText);
@@ -375,7 +372,7 @@ public class ChatService extends Service {
                 MATCH_PARENT,
                 MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
         mChatBox.setOnClickListener(new View.OnClickListener() {
@@ -480,7 +477,7 @@ public class ChatService extends Service {
         final com.github.clans.fab.FloatingActionButton btn = new com.github.clans.fab.FloatingActionButton(this);
         final String eventName = item.getName();
         final int eventId = item.getId();
-        btn.setButtonSize(FloatingActionButton.SIZE_MINI);//TODO: change icon
+        btn.setButtonSize(FloatingActionButton.SIZE_MINI);
 
         addPictureToButotn(item.getHolder().getProPic(),btn);
 
@@ -523,6 +520,15 @@ public class ChatService extends Service {
                                 ((MessageViewHolder)viewHolder).messageTextView.setText(model.getContent());
                                 ((MessageViewHolder)viewHolder).messengerTextView.setText(model.getDisplayName());
                                 ((MessageViewHolder) viewHolder).timeStamp.setText(model.getTime());
+                                // load propic
+                                int size = Utils.dpToPx(getBaseContext(),36);
+                                Picasso.with(getBaseContext())
+                                        .load(model.getPhotoUrl())
+                                        .resize(size,size)
+                                        .centerCrop()
+                                        .placeholder(R.drawable.ic_propic_big)
+                                        .into(((MessageViewHolder)viewHolder).messengerImageView);
+                                //TODO
                                 break;
                             case 10:
                                 //own
