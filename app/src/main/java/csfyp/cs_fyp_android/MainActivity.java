@@ -295,7 +295,7 @@ public class MainActivity extends LocalizationActivity {
                         if (response.isSuccessful() && response.body().getErrorMsg() == null) {
                             eventList = response.body().getEvents();
                             Log.d(TAG, "here: " + mMsgToken);
-                            EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.SET_PARAM, eventList, mMsgToken));
+                            EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.SET_PARAM, eventList, mSelf));
                         } else {
                             EventBus.getDefault().post(new ErrorMsg("Server Error", ErrorMsg.LENGTH_SHORT));
                             if (response.isSuccessful()) Log.d(TAG, response.body().getErrorMsg());

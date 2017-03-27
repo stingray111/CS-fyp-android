@@ -80,13 +80,6 @@ import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.model.BitmapAndBtn;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
-import csfyp.cs_fyp_android.model.request.EventListRequest;
-import csfyp.cs_fyp_android.model.request.UserName;
-import csfyp.cs_fyp_android.model.respond.EventListRespond;
-import csfyp.cs_fyp_android.model.respond.MsgTokenUpdateRespond;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static android.view.View.GONE;
 import static android.widget.ListPopupWindow.MATCH_PARENT;
@@ -99,7 +92,6 @@ import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
 public class ChatService extends Service {
     private Point mWindowSize = new Point();
-    private String mMsgToken;
     private String TAG = "ChatService";
     public LocalBinder myBinder = new LocalBinder();
     private WindowManager mWindowManager;
@@ -194,14 +186,6 @@ public class ChatService extends Service {
 
     public void runOnUiThread(Runnable runnable) {
         mHandler.post(runnable);
-    }
-
-    public void setmMsgToken(String mMsgToken) {
-        this.mMsgToken = mMsgToken;
-    }
-
-    public String getmMsgToken() {
-        return mMsgToken;
     }
 
     public void startMsg(){
@@ -363,11 +347,11 @@ public class ChatService extends Service {
             }
         });
 
-
-
         mWindowManager.addView(mView, mParams);
 
         //ChatBox start
+        //TODO: init ChatBox
+        /*
         mParamsChatBox = new WindowManager.LayoutParams(
                 MATCH_PARENT,
                 MATCH_PARENT,
@@ -428,6 +412,7 @@ public class ChatService extends Service {
         });
 
         mWindowManager.addView(mChatBox, mParamsChatBox);
+        */
 
     }
 
@@ -490,9 +475,10 @@ public class ChatService extends Service {
                     @Override
                     public void onClick(View view) {
                         FriendlyMessage friendlyMessage = new
-                                FriendlyMessage(MainActivity.mUsername,
-                                MainActivity.mUsername,
-                                mMessageEditText.getText().toString());
+                                FriendlyMessage(mSelf.getUserName(),
+                                mSelf.getDisplayName(),
+                                mMessageEditText.getText().toString(),
+                                mSelf.getProPic());
                         mFirebaseDatabaseReference.child("messages/group_"+eventId)
                                 .push().setValue(friendlyMessage);
                         mMessageEditText.setText("");
@@ -616,12 +602,10 @@ public class ChatService extends Service {
     @Subscribe (threadMode = ThreadMode.ASYNC)
     public void loginWithContent(final ChatServiceSetting chatServiceSetting){
         if(chatServiceSetting.getMode() == ChatServiceSetting.SET_PARAM) {
-            mMsgToken = chatServiceSetting.getmMsgToken();
+            mSelf = chatServiceSetting.getmSelf();
             mEventList = chatServiceSetting.getmEventList();
-            Log.d(TAG,"Token: "+ mMsgToken);
-            Log.d(TAG,"Token: "+ mMsgToken.length());
 
-            mAuth.signInWithCustomToken(mMsgToken)
+            mAuth.signInWithCustomToken(mSelf.getMsgToken())
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@android.support.annotation.NonNull Task<AuthResult> task) {

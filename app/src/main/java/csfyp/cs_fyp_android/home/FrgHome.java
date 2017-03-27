@@ -157,12 +157,14 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             mIsPanelExpanded = savedInstanceState.getBoolean("isPanelExpanded");
         }
 
+        /*
         InputStream is = (InputStream) this.getResources().openRawResource(R.raw.server);
         try {
             SSL.setServerCert(is);
         }catch (java.io.IOException e){
             Toast.makeText(getActivity(),"SSL Error: please restart the app", Toast.LENGTH_LONG).show();
         }
+        */
 
         //chat messaging service
         if (!Utils.canDrawOverlays(getContext())){

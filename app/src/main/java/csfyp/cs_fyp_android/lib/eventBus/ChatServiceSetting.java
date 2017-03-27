@@ -4,6 +4,7 @@ import java.util.List;
 
 import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.model.Event;
+import csfyp.cs_fyp_android.model.User;
 
 /**
  * Created by ray on 13/3/2017.
@@ -17,12 +18,12 @@ public class ChatServiceSetting {
     private int mode;
     private int delay;
     private List<Event> mEventList;
-    private String mMsgToken;
+    private User mSelf;
 
-    public ChatServiceSetting(int mode,List<Event> mEventList,String mMsgToken){
+    public ChatServiceSetting(int mode,List<Event> mEventList,User mSelf){
         this.mode = mode;
         this.mEventList = mEventList;
-        this.mMsgToken = mMsgToken;
+        this.mSelf = mSelf;
         this.delay = 0;
     }
 
@@ -38,15 +39,19 @@ public class ChatServiceSetting {
         return mode;
     }
 
-    public String getmMsgToken() {
-        return mMsgToken;
-    }
-
     public void setDelay(int delay) {
         this.delay = delay;
     }
 
     public int getDelay() {
         return delay;
+    }
+
+    public void setmSelf(User mSelf) {
+        this.mSelf = mSelf;
+    }
+
+    public User getmSelf() {
+        return mSelf;
     }
 }

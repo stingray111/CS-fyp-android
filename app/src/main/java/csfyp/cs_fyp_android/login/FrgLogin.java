@@ -281,7 +281,9 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                         editor.putInt("userId", response.body().getUserId());
                         editor.putString("username", response.body().getUsername());
                         editor.putString("msgToken", response.body().getMsgToken());
+
                         Gson gson = new Gson();
+                        User self = response.body().getSelf();
                         String selfStr = gson.toJson(response.body().getSelf());
                         editor.putString("self", selfStr);
                         editor.commit();

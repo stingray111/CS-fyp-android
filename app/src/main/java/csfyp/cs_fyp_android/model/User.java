@@ -255,4 +255,5 @@ public class User {
     public int getGender() {
         return gender;
     }
+
 }

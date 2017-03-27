@@ -37,17 +37,19 @@ public class FriendlyMessage {
     }
 
 
-    public FriendlyMessage(String uid, String displayName,String content) {
+    public FriendlyMessage(String uid, String displayName,String content,String photoUrl) {
         this.uid = uid;
         this.displayName = displayName;
         this.content = content;
+        this.photoUrl = photoUrl;
         this.type = 0;
     }
 
-    public FriendlyMessage(String uid, String displayName,String content,int type) {
+    public FriendlyMessage(String uid, String displayName,String content,String photoUrl,int type) {
         this.uid = uid;
         this.displayName = displayName;
         this.content = content;
+        this.photoUrl = photoUrl;
         this.type = type;
 
     }
