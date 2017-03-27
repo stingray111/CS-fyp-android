@@ -558,6 +558,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         getLoaderManager().restartLoader(HOME_LOADER_ID,temp, this);
     }
 
+
     public static class BLoader extends CustomBatchLoader<BatchLoaderBundle> {
         public BLoader(Context context,long startAt,int offset,Location currentLocation,List<Event> eventList,String mode,int sortMode) {
             super(context);
@@ -668,5 +669,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         intent.setData(Uri.parse("package:" + getActivity().getPackageName()));
         startActivityForResult(intent, requestCode);
     }
+
 }
 

@@ -120,13 +120,7 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
                                 editor.remove("acType");
                                 editor.commit();
 
-
                                 ((MainActivity)getActivity()).unbindService(((MainActivity)getActivity()).connection);
-                                ((MainActivity) getActivity()).setmHome(FrgHome.newInstance());
-//                                FragmentManager fm = getActivity().getSupportFragmentManager();
-//                                for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
-//                                    fm.popBackStack();h
-//                                }
 
                                 replaceFragment(FrgLogin.newInstance());
                             } else

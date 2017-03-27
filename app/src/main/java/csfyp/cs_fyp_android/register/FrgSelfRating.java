@@ -13,10 +13,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
+
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.RegisterSelfRatingFrgBinding;
+import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.NoticeDialogFragment;
 import csfyp.cs_fyp_android.model.request.SelfRate;
@@ -64,6 +67,7 @@ public class FrgSelfRating  extends CustomFragment {
                     mDialog.setDialogListener(new NoticeDialogFragment.NoticeDialogListener() {
                         @Override
                         public void onDialogPositiveClick(DialogFragment dialog) {
+                            EventBus.getDefault().post(new FrgHome().newInstance());
                             replaceFragment(((MainActivity) getActivity()).getmHome());
                         }
 
@@ -105,6 +109,7 @@ public class FrgSelfRating  extends CustomFragment {
             @Override
             public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
                 if (response.isSuccessful() && response.body().getErrorMsg() == null)
+                    EventBus.getDefault().post(new FrgHome().newInstance());
                     replaceFragment(((MainActivity) getActivity()).getmHome());
             }
 
@@ -114,6 +119,7 @@ public class FrgSelfRating  extends CustomFragment {
             }
         });
 
+        EventBus.getDefault().post(new FrgHome().newInstance());
         replaceFragment(((MainActivity) getActivity()).getmHome());
     }
 }

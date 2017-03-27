@@ -64,6 +64,7 @@ import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.LoginFrgBinding;
 import csfyp.cs_fyp_android.forgetPassword.FrgForgetPassword;
+import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.model.Login;
@@ -271,40 +272,40 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
             call.enqueue(new Callback<LoginRespond>() {
                 @Override
                 public void onResponse(Call<LoginRespond> call, Response<LoginRespond> response) {
-                    if (response.isSuccessful()) {
-                        if (response.body().isSuccessful()) {
+                    if (response.isSuccessful()) if (response.body().isSuccessful()) {
 
-                            // save token to cache
-                            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putString("userToken", response.body().getToken());
-                            editor.putInt("userId", response.body().getUserId());
-                            editor.putString("username", response.body().getUsername());
-                            editor.putString("msgToken", response.body().getMsgToken());
-                            Gson gson = new Gson();
-                            String selfStr = gson.toJson(response.body().getSelf());
-                            editor.putString("self", selfStr);
-                            editor.commit();
+                        // save token to cache
+                        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString("userToken", response.body().getToken());
+                        editor.putInt("userId", response.body().getUserId());
+                        editor.putString("username", response.body().getUsername());
+                        editor.putString("msgToken", response.body().getMsgToken());
+                        Gson gson = new Gson();
+                        String selfStr = gson.toJson(response.body().getSelf());
+                        editor.putString("self", selfStr);
+                        editor.commit();
 
-                            MainActivity parent = (MainActivity)getActivity();
-                            parent.setmToken(response.body().getToken());
-                            parent.setmUserId(response.body().getUserId());
-                            parent.setmUsername(response.body().getUsername());
-                            parent.setmSelf(response.body().getSelf());
-                            parent.setmMsgToken(response.body().getMsgToken());
-                            replaceFragment(((MainActivity) getActivity()).getmHome());
+                        MainActivity parent = (MainActivity) getActivity();
+                        parent.setmToken(response.body().getToken());
+                        parent.setmUserId(response.body().getUserId());
+                        parent.setmUsername(response.body().getUsername());
+                        parent.setmSelf(response.body().getSelf());
+                        parent.setmMsgToken(response.body().getMsgToken());
+
+                        EventBus.getDefault().post(new FrgHome().newInstance());
+                        replaceFragment(((MainActivity) getActivity()).getmHome());
 
 
-                        } else {
-                            // TODO: 6/11/2016 print error msg to user
-                            if (response.body().getErrorMsg().matches("passwordWrong"))
-                                mInputPassword.setError("Wrong Password");
-                            if (response.body().getErrorMsg().matches("userNotfound"))
-                                mInputEmailOrUsername.setError("User Not Found");
-                            Log.i(TAG, response.body().getErrorMsg());
-                            mProgressBar.setVisibility(View.GONE);
-                            mLoginBtn.setVisibility(View.VISIBLE);
-                        }
+                    } else {
+                        // TODO: 6/11/2016 print error msg to user
+                        if (response.body().getErrorMsg().matches("passwordWrong"))
+                            mInputPassword.setError("Wrong Password");
+                        if (response.body().getErrorMsg().matches("userNotfound"))
+                            mInputEmailOrUsername.setError("User Not Found");
+                        Log.i(TAG, response.body().getErrorMsg());
+                        mProgressBar.setVisibility(View.GONE);
+                        mLoginBtn.setVisibility(View.VISIBLE);
                     }
                 }
 
@@ -457,6 +458,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                         parent.setmAcType(response.body().getAcType());
 
                         if(response.body().isSignIn()){
+                            EventBus.getDefault().post(new FrgHome().newInstance());
                             replaceFragment(((MainActivity) getActivity()).getmHome());
                         }
                         else{

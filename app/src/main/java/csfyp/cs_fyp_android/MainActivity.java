@@ -52,6 +52,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static org.greenrobot.eventbus.ThreadMode.*;
+
 public class MainActivity extends LocalizationActivity {
 
     public FrgHome mHome;
@@ -111,10 +113,6 @@ public class MainActivity extends LocalizationActivity {
 
     public FrgHome getmHome() {
         return mHome;
-    }
-
-    public void setmHome(FrgHome mHome) {
-        this.mHome = mHome;
     }
 
     @Override
@@ -192,7 +190,6 @@ public class MainActivity extends LocalizationActivity {
         mMsgToken = sharedPref.getString("msgToken", null);
         mAcType = sharedPref.getInt("acType",0);
 
-        mHome = FrgHome.newInstance();
 
         boolean debugMode = false;
 
@@ -219,6 +216,7 @@ public class MainActivity extends LocalizationActivity {
                 // TODO: 6/11/2016 verify token
                 // user login
 
+                mHome = FrgHome.newInstance();
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.parent_fragment_container, mHome);
                 ft.commit();
@@ -259,7 +257,7 @@ public class MainActivity extends LocalizationActivity {
         EventBus.getDefault().unregister(this);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = MAIN)
     public void errorToast(ErrorMsg err) {
         if (err.getDuration() == Toast.LENGTH_LONG){
             Toast.makeText(this, err.getErrorMsg(), Toast.LENGTH_LONG).show();
@@ -270,7 +268,12 @@ public class MainActivity extends LocalizationActivity {
     }
 
 
-    @Subscribe(threadMode = ThreadMode.ASYNC)
+    @Subscribe(threadMode = MAIN)
+    public void setmHome(FrgHome mHome) {
+        this.mHome = mHome;
+    }
+
+    @Subscribe(threadMode = ASYNC)
     public void chatServiceHandle(final ChatServiceSetting chatServiceSetting) {
         if (chatServiceSetting.getMode() == ChatServiceSetting.INIT) {
 
