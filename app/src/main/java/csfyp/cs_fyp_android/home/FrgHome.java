@@ -176,8 +176,10 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     }
 
     private void chatHeadInit(){
-        Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
-        getMainActivity().bindService(serviceIntent, getMainActivity().connection, Context.BIND_AUTO_CREATE);
+        if(!ChatService.active) {
+            Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
+            getMainActivity().startService(serviceIntent);
+        }
     }
 
     private void needPermissionDialog(final int requestCode){

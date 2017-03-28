@@ -1,6 +1,7 @@
 package csfyp.cs_fyp_android.setting;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.google.android.gms.common.api.Scope;
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.databinding.SettingFrgBinding;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
@@ -120,7 +122,8 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
                                 editor.remove("acType");
                                 editor.commit();
 
-                                ((MainActivity)getActivity()).unbindService(((MainActivity)getActivity()).connection);
+                                Intent intent = new Intent(getActivity(), ChatService.class);
+                                ((MainActivity)getActivity()).stopService(intent);
 
                                 replaceFragment(FrgLogin.newInstance());
                             } else

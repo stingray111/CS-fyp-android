@@ -14,11 +14,20 @@ public class ChatServiceSetting {
     public static final int INIT = 0;
     public static final int SET_PARAM= 1;
     public static final int UPDATE_TOKEN= 2;
+    public static final int ADD_EVENT= 3;
+    public static final int REMOVE_EVENT= 4;
 
     private int mode;
     private int delay;
     private List<Event> mEventList;
     private User mSelf;
+
+    //for add event
+    private Event eventObj;
+
+    //for remove event
+    private int rmEventId;
+
 
     public ChatServiceSetting(int mode,List<Event> mEventList,User mSelf){
         this.mode = mode;
@@ -26,6 +35,17 @@ public class ChatServiceSetting {
         this.mSelf = mSelf;
         this.delay = 0;
     }
+
+    public ChatServiceSetting(Event eventToBeAdded){
+        this.eventObj = eventToBeAdded;
+        mode = ADD_EVENT;
+    }
+
+    public ChatServiceSetting(int eventIdToBeRemoved,int mode){
+        this.rmEventId = eventIdToBeRemoved;
+        mode = REMOVE_EVENT;
+    }
+
 
     public ChatServiceSetting(int mode){
         this.mode = mode;
@@ -53,5 +73,13 @@ public class ChatServiceSetting {
 
     public User getmSelf() {
         return mSelf;
+    }
+
+    public Event getEventObj() {
+        return eventObj;
+    }
+
+    public int getRmEventId() {
+        return rmEventId;
     }
 }

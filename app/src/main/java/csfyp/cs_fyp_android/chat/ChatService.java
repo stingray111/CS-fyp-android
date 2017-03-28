@@ -56,7 +56,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.squareup.picasso.Picasso;
+import com.google.gson.Gson;
 import com.squareup.picasso.Target;
 
 import org.greenrobot.eventbus.EventBus;
@@ -75,6 +75,7 @@ import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.Utils;
+import csfyp.cs_fyp_android.lib.eventBus.ChatFramePage;
 import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.model.BitmapAndBtn;
@@ -100,19 +101,16 @@ public class ChatService extends Service {
     private WindowManager.LayoutParams mParams;
     private Handler mHandler;
     private User mSelf;
+    public static boolean active;
 
     private FloatingActionMenu mFloatingActionMenu;
     private List<com.github.clans.fab.FloatingActionButton> mFloatingActionButtonList;
     private View mChatBox;
     private WindowManager.LayoutParams mParamsChatBox;
-    private ProgressBar mProgressBar;
-    private RecyclerView mMessageRecyclerView;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
-    private LinearLayoutManager mLinearLayoutManager;
-    private DatabaseReference mFirebaseDatabaseReference;
 
     private FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder> mFirebaseAdapter;
     public static final String MESSAGES_CHILD = "testMsg";
@@ -134,13 +132,13 @@ public class ChatService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.INIT));
         return myBinder;
     }
 
 
     @Override
     public void onCreate() {
+        active = true;
         Log.d(TAG,"onCreate");
         super.onCreate();
         mHandler = new Handler();
@@ -163,12 +161,15 @@ public class ChatService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        active = true;
         Log.d(TAG,"onStartCommand");
+        EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.INIT));
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
+        active = false;
         Log.d(TAG,"onDestroy");
         super.onDestroy();
         if (mView!= null) mWindowManager.removeView(mView);
@@ -210,7 +211,6 @@ public class ChatService extends Service {
             public void onClick(View v) {
             }
         });
-        mChatBox = li.inflate(R.layout.chat_frame,null);
 
         mParams = new WindowManager.LayoutParams(
                 WRAP_CONTENT,
@@ -223,9 +223,6 @@ public class ChatService extends Service {
 
         mParams.x = Utils.dpToPx(getBaseContext(),100);
         mParams.y = Utils.dpToPx(getBaseContext(),100);
-
-        mSendButton = (Button) mChatBox.findViewById(R.id.sendButton);
-        mMessageEditText = (EditText) mChatBox.findViewById(R.id.messageEditText);
 
         mFloatingActionButtonList = new LinkedList<com.github.clans.fab.FloatingActionButton>();
         for(Event item:mEventList) {
@@ -349,71 +346,6 @@ public class ChatService extends Service {
 
         mWindowManager.addView(mView, mParams);
 
-        //ChatBox start
-        //TODO: init ChatBox
-        /*
-        mParamsChatBox = new WindowManager.LayoutParams(
-                MATCH_PARENT,
-                MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
-                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                PixelFormat.TRANSLUCENT);
-
-        mChatBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mChatBox.setVisibility(GONE);
-            }
-        });
-
-        mChatBox.findViewById(R.id.chat_inner).setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                //do nothing
-            }
-        });
-
-        mChatBox.findViewById(R.id.chatFrameBack).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mChatBox.setVisibility(GONE);
-            }
-        });
-
-        mProgressBar = (ProgressBar) mChatBox.findViewById(R.id.progressBar);
-        mMessageRecyclerView = (RecyclerView) mChatBox.findViewById(R.id.messageRecyclerView);
-
-        mLinearLayoutManager = new LinearLayoutManager(this);
-        mLinearLayoutManager.setStackFromEnd(true);
-        mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
-
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-
-        mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mMessageRecyclerView.setAdapter(mFirebaseAdapter);
-
-        mMessageEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.toString().trim().length() > 0) {
-                    mSendButton.setEnabled(true);
-                } else {
-                    mSendButton.setEnabled(false);
-                }
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        mWindowManager.addView(mChatBox, mParamsChatBox);
-        */
-
     }
 
 
@@ -432,30 +364,37 @@ public class ChatService extends Service {
         }
     }
 
-    public boolean addEvent(Event e){
-        final com.github.clans.fab.FloatingActionButton btn = createButton(e);
-        mEventList.add(e);
-        mFloatingActionButtonList.add(btn);
-        mFloatingActionMenu.addMenuButton(btn);
-        mFloatingActionMenu.setVisibility(View.VISIBLE);
-        return true;
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void addEvent(ChatServiceSetting css){
+
+        if(css.getMode() == ChatServiceSetting.ADD_EVENT) {
+            Event e = css.getEventObj();
+            final com.github.clans.fab.FloatingActionButton btn = createButton(e);
+            mEventList.add(e);
+            mFloatingActionButtonList.add(btn);
+            mFloatingActionMenu.addMenuButton(btn);
+            mFloatingActionMenu.setVisibility(View.VISIBLE);
+        }
     }
 
 
-    public boolean dropEvent(int eid){
-        for(Event item:mEventList){
-            if (item.getId() == eid){
-                com.github.clans.fab.FloatingActionButton fab = mFloatingActionButtonList.get(mEventList.indexOf(item));
-                mFloatingActionButtonList.remove(fab);
-                mFloatingActionMenu.removeMenuButton(fab);
-                mEventList.remove(item);
-                if(mFloatingActionButtonList.size() == 0){
-                    mFloatingActionMenu.setVisibility(GONE);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void dropEvent(ChatServiceSetting css){
+        if(css.getMode() == ChatServiceSetting.REMOVE_EVENT) {
+            int eid = css.getRmEventId();
+            for (Event item : mEventList) {
+                if (item.getId() == eid) {
+                    com.github.clans.fab.FloatingActionButton fab = mFloatingActionButtonList.get(mEventList.indexOf(item));
+                    mFloatingActionButtonList.remove(fab);
+                    mFloatingActionMenu.removeMenuButton(fab);
+                    mEventList.remove(item);
+                    if (mFloatingActionButtonList.size() == 0) {
+                        mFloatingActionMenu.setVisibility(GONE);
+                    }
+                    return;
                 }
-                return true;
             }
         }
-        return false;
     }
 
     private com.github.clans.fab.FloatingActionButton createButton(Event item){
@@ -470,130 +409,18 @@ public class ChatService extends Service {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                mSendButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        FriendlyMessage friendlyMessage = new
-                                FriendlyMessage(mSelf.getUserName(),
-                                mSelf.getDisplayName(),
-                                mMessageEditText.getText().toString(),
-                                mSelf.getProPic());
-                        mFirebaseDatabaseReference.child("messages/group_"+eventId)
-                                .push().setValue(friendlyMessage);
-                        mMessageEditText.setText("");
-                    }
-                });
-
-                mChatBox.findViewById(R.id.chat_frame).setVisibility(View.VISIBLE);
-
-                ((TextView)mChatBox.findViewById(R.id.chatFrameTitle)).setText(eventName);
-
-                mProgressBar.setVisibility(ProgressBar.VISIBLE);
-
-                mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder>(
-                        FriendlyMessage.class,
-                        R.layout.item_message,
-                        RecyclerView.ViewHolder.class,
-                        mFirebaseDatabaseReference.child("messages/group_"+eventId)){
-                    @Override
-                    protected void populateViewHolder(RecyclerView.ViewHolder viewHolder, FriendlyMessage model, int position) {
-                        int localType = getLocalType(model);
-                        switch (localType){
-                            case 0:
-                                //others
-                                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                                ((MessageViewHolder)viewHolder).messageTextView.setText(model.getContent());
-                                ((MessageViewHolder)viewHolder).messengerTextView.setText(model.getDisplayName());
-                                ((MessageViewHolder) viewHolder).timeStamp.setText(model.getTime());
-                                // load propic
-                                int size = Utils.dpToPx(getBaseContext(),36);
-                                Picasso.with(getBaseContext())
-                                        .load(model.getPhotoUrl())
-                                        .resize(size,size)
-                                        .centerCrop()
-                                        .placeholder(R.drawable.ic_propic_big)
-                                        .into(((MessageViewHolder)viewHolder).messengerImageView);
-                                //TODO
-                                break;
-                            case 10:
-                                //own
-                                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                                ((MessageViewHolder)viewHolder).messageTextView.setText(model.getContent());
-                                ((MessageViewHolder)viewHolder).timeStamp.setText(model.getTime());
-                                break;
-                        }
-                    }
-
-                    @Override
-                    protected FriendlyMessage parseSnapshot(DataSnapshot snapshot){
-                        FriendlyMessage friendlyMessage = super.parseSnapshot(snapshot);
-                        if(friendlyMessage !=null ){
-                            friendlyMessage.setId(snapshot.getKey());
-                        }
-                        return friendlyMessage;
-                    }
-
-                    @Override
-                    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                        switch (viewType){
-                            case 10:
-                                View selfView = LayoutInflater.from(parent.getContext())
-                                        .inflate(R.layout.item_message_own,parent,false);
-                                return new MessageViewHolder(selfView);
-                            case 0:
-                                View otherView = LayoutInflater.from(parent.getContext())
-                                        .inflate(R.layout.item_message,parent,false);
-                                return new MessageViewHolder(otherView);
-                        }
-                        Log.d(TAG,"unhandled");
-                        return null;
-                    }
-
-
-                    @Override
-                    public int getItemViewType(int position) {
-                        FriendlyMessage friendlyMessage = getItem(position);
-                        return getLocalType(friendlyMessage);
-                    }
-
-                    public int getLocalType(FriendlyMessage friendlyMessage){
-                        int localType = 0;
-                        if(friendlyMessage.getUid().equals(MainActivity.mUsername)){
-                            localType = friendlyMessage.getType()+10;
-                        }
-                        else{
-                            localType = friendlyMessage.getType();
-                        }
-                        return localType;
-                    }
-
-                };
-
-                mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-                    @Override
-                    public void onItemRangeInserted(int positionStart, int itemCount) {
-                        super.onItemRangeInserted(positionStart, itemCount);
-                        int friendlyMessageCount = mFirebaseAdapter.getItemCount();
-                        int lastVisiblePosition =
-                                mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
-                        // If the recycler view is initially being loaded or the
-                        // user is at the bottom of the list, scroll to the bottom
-                        // of the list to show the newly added message.
-                        if (lastVisiblePosition == -1 ||
-                                (positionStart >= (friendlyMessageCount - 1) &&
-                                        lastVisiblePosition == (positionStart - 1))) {
-                            mMessageRecyclerView.scrollToPosition(positionStart);
-                        }
-                    }
-                });
-
-                if(mMessageRecyclerView.getAdapter() == null) {
-                    mMessageRecyclerView.setAdapter(mFirebaseAdapter);
+                if(!ChatFrameActivity.active) {
+                    Gson gson = new Gson();
+                    String selfStr = gson.toJson(mSelf);
+                    Intent it;
+                    it = new Intent(ChatService.this, ChatFrameActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    it.putExtra("eventId", eventId);
+                    it.putExtra("mSelf", selfStr);
+                    it.putExtra("eventName", eventName);
+                    startActivity(it);
                 }else{
-                    mMessageRecyclerView.swapAdapter(mFirebaseAdapter,false);
+                    EventBus.getDefault().post(new ChatFramePage(mSelf,eventId,eventName));
                 }
-                mStatus = 2;
             }
         });
         return btn;
@@ -660,5 +487,7 @@ public class ChatService extends Service {
             e.printStackTrace();
         }
     }
+
+
 }
 

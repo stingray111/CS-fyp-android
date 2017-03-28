@@ -256,4 +256,7 @@ public class User {
         return gender;
     }
 
+    public void setMsgToken(String msgToken) {
+        this.msgToken = msgToken;
+    }
 }

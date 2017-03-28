@@ -32,6 +32,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.InputStream;
 import java.util.List;
 
+import csfyp.cs_fyp_android.chat.ChatFrameActivity;
 import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.EnqueueAgain;
@@ -63,8 +64,8 @@ public class MainActivity extends LocalizationActivity {
     private int mUserId;
     public static String mUsername;
     private String mMsgToken;
-    public ChatService mChatService;
     private int mAcType;
+    public static boolean active;
 
     public void setmAcType(int mAcType) {
         this.mAcType = mAcType;
@@ -146,15 +147,6 @@ public class MainActivity extends LocalizationActivity {
         }
     }
 
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        finish();
-//        Intent refresh = new Intent(this, MainActivity.class);
-//        startActivity(refresh);
-//    }
-
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -166,6 +158,12 @@ public class MainActivity extends LocalizationActivity {
         setTheme(R.style.AppTheme);
 
         super.onCreate(savedInstanceState);
+        active = true;
+
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            finish();
+            return;
+        }
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         if (mSelf == null) {
@@ -174,12 +172,6 @@ public class MainActivity extends LocalizationActivity {
             String self = mPrefs.getString("self", "");
             mSelf = gson.fromJson(self, User.class);
         }
-
-//        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-//                .detectDiskReads()
-//                .detectDiskWrites()
-//                .detectNetwork()
-//                .build());
 
         setContentView(R.layout.activity_main);
 
@@ -224,35 +216,24 @@ public class MainActivity extends LocalizationActivity {
         }
     }
 
-    public ServiceConnection connection = new ServiceConnection() {
-        // 成功與 Service 建立連線
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d("main", "MainActivity onServiceConnected");
-            mChatService = (((ChatService.LocalBinder)service).getService());
-            //mChatService.startMsg();
-        }
-        // 與 Service 建立連線失敗
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d("main", "MainActivity onServiceFailed");
-            mChatService = null;
-        }
-    };
 
     @Override
     protected void onDestroy() {
+        active = false;
         super.onDestroy();
+
     }
 
     @Override
     protected void onStart() {
+        active = true;
         super.onStart();
         EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
+        active = false;
         super.onStop();
         EventBus.getDefault().unregister(this);
     }
@@ -325,6 +306,13 @@ public class MainActivity extends LocalizationActivity {
                             SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPref.edit();
                             editor.putString("msgToken", response.body().getMsgToken());
+                            //TODO: put msgToken
+                            Gson gson = new Gson();
+                            mSelf.setMsgToken(mMsgToken);
+                            String selfStr = gson.toJson(mSelf);
+                            editor.putString("self", selfStr);
+                            editor.commit();
+
                             EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.INIT));
                     }else{
                         EventBus.getDefault().post(new ErrorMsg("Message Server Error",Toast.LENGTH_LONG));
@@ -343,5 +331,9 @@ public class MainActivity extends LocalizationActivity {
         }
     }
 
-
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
 }

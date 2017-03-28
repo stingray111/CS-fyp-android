@@ -29,6 +29,8 @@ import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,6 +44,7 @@ import csfyp.cs_fyp_android.databinding.NewEventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomScrollView;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.TimeConverter;
+import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.model.request.EventCreateRequest;
 import csfyp.cs_fyp_android.model.respond.EventRespond;
 import retrofit2.Call;
@@ -430,7 +433,7 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
                 public void onResponse(Call<EventRespond> call, Response<EventRespond> response) {
                     if (response.isSuccessful()) {
                         Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
-                        ((MainActivity)getActivity()).mChatService.addEvent(response.body().getEvent());
+                        EventBus.getDefault().post(new ChatServiceSetting(response.body().getEvent()));
                         onBack(null);
                     } else {
                         Toast.makeText(getContext(), response.errorBody().toString(), Toast.LENGTH_SHORT).show();

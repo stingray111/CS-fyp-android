@@ -41,6 +41,7 @@ import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.EventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.lib.eventBus.RefreshLoader;
 import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
 import csfyp.cs_fyp_android.model.Event;
@@ -202,10 +203,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
                                 resetLoader();
                                 showQuit();
-
-                                if(!((MainActivity)getActivity()).mChatService.addEvent(mEventObj)){
-                                    Log.d(TAG,"messager service return false");
-                                }
+                                EventBus.getDefault().post(new ChatServiceSetting(mEventObj));
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
@@ -240,9 +238,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 resetLoader();
                                 showJoin();
 
-                                if(!((MainActivity)getActivity()).mChatService.dropEvent(mEventId)){
-                                    Log.d(TAG,"Chat Service Return false");
-                                }
+                                EventBus.getDefault().post(new ChatServiceSetting(mEventId,ChatServiceSetting.REMOVE_EVENT));
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
@@ -269,9 +265,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                             if (response.body().getErrorMsg() == null) {
                                 Toast.makeText(getContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
                                 //TODO: drop the messaging record
-                                if(!((MainActivity)getActivity()).mChatService.dropEvent(mEventId)){
-                                    Log.d(TAG,"Chat Service return false");
-                                }
+                                EventBus.getDefault().post(new ChatServiceSetting(mEventId,ChatServiceSetting.REMOVE_EVENT));
                                 EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
                                 onBack(null);
                             }
