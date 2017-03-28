@@ -123,6 +123,7 @@ public class ChatFrameActivity extends Activity {
 
     @Override
     protected void onStart() {
+        Log.d(TAG,"on start");
         super.onStart();
         EventBus.getDefault().register(this);
         active = true;
@@ -133,7 +134,8 @@ public class ChatFrameActivity extends Activity {
         Gson gson = new Gson();
         mSelf = gson.fromJson(strSelf,User.class);
 
-        Log.d(TAG,"on start");
+        setPage(new ChatFramePage(mSelf,mEventId,mEventName));
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
