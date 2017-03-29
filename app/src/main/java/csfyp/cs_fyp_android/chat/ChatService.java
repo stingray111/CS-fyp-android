@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -54,6 +55,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.gson.Gson;
@@ -62,6 +64,7 @@ import com.squareup.picasso.Target;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.greenrobot.eventbus.util.ExceptionToResourceMapping;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -101,6 +104,8 @@ public class ChatService extends Service {
     private WindowManager.LayoutParams mParams;
     private Handler mHandler;
     private User mSelf;
+    private volatile int showingEventId;
+    private volatile String showingEventName;
     public static boolean active;
 
     private FloatingActionMenu mFloatingActionMenu;
@@ -377,7 +382,6 @@ public class ChatService extends Service {
         }
     }
 
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void dropEvent(ChatServiceSetting css){
         if(css.getMode() == ChatServiceSetting.REMOVE_EVENT) {
@@ -409,6 +413,8 @@ public class ChatService extends Service {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ChatService.this.showingEventId = eventId;
+                ChatService.this.showingEventName = eventName;
                 if(!ChatFrameActivity.active) {
                     Gson gson = new Gson();
                     String selfStr = gson.toJson(mSelf);
@@ -417,9 +423,14 @@ public class ChatService extends Service {
                     it.putExtra("eventId", eventId);
                     it.putExtra("mSelf", selfStr);
                     it.putExtra("eventName", eventName);
-                    startActivity(it);
+                    PendingIntent pit = PendingIntent.getActivity(ChatService.this,0,it,0);
+                    try{
+                        pit.send();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }else{
-                    EventBus.getDefault().post(new ChatFramePage(mSelf,eventId,eventName));
+                    EventBus.getDefault().post(new ChatFramePage(ChatFramePage.REQUEST));
                 }
             }
         });
@@ -488,6 +499,12 @@ public class ChatService extends Service {
         }
     }
 
-
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void requestChatFrameUpdate(ChatFramePage chatFramePage){
+        if(chatFramePage.mode == ChatFramePage.REQUEST){
+            Log.d(TAG,"return the values");
+            EventBus.getDefault().post(new ChatFramePage(mSelf,showingEventId,showingEventName));
+        }
+    }
 }
 

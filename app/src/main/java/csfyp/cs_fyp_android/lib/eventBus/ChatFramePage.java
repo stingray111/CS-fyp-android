@@ -7,14 +7,22 @@ import csfyp.cs_fyp_android.model.User;
  */
 
 public class ChatFramePage {
+    public static int REQUEST = 0;
+    public static int PROVIDE_DATA = 1;
     private User mSelf;
     private int mEventId;
     private String mEventName;
+    public int mode;
 
-    public ChatFramePage(User user, int mEventId, String mEventName){
-        this.mSelf = user;
+    public ChatFramePage(User mSelf, int mEventId, String mEventName){
+        this.mSelf = mSelf;
         this.mEventId = mEventId;
         this.mEventName = mEventName;
+        this.mode = PROVIDE_DATA;
+    }
+
+    public ChatFramePage(int mode){
+        this.mode = mode;
     }
 
     public User getmSelf() {
