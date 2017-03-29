@@ -12,8 +12,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.LocalizationActivity;
@@ -42,6 +45,7 @@ import csfyp.cs_fyp_android.lib.Utils;
 import csfyp.cs_fyp_android.lib.eventBus.PropicUpdate;
 import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
+import csfyp.cs_fyp_android.lib.eventBus.SnackBarMessageContent;
 import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
@@ -246,6 +250,18 @@ public class MainActivity extends LocalizationActivity {
         else {
             Toast.makeText(this, err.getErrorMsg(), Toast.LENGTH_SHORT).show();
         }
+    }
+    @Subscribe(threadMode = MAIN)
+    public void snackBarMessage(SnackBarMessageContent snackBarMessageContent){
+        final Snackbar snackBar = Snackbar.make(findViewById(R.id.parent_fragment_container),snackBarMessageContent.message,Snackbar.LENGTH_INDEFINITE);
+        snackBar.setActionTextColor(ContextCompat.getColor(this,R.color.white));
+        snackBar.setAction("OK", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackBar.dismiss();
+            }
+        });
+        snackBar.show();
     }
 
 

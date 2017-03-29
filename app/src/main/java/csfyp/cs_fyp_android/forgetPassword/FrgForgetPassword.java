@@ -26,6 +26,7 @@ import csfyp.cs_fyp_android.databinding.ForgetPasswordFrgBinding;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
+import csfyp.cs_fyp_android.lib.eventBus.SnackBarMessageContent;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.request.EmailOnly;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
@@ -100,7 +101,7 @@ public class FrgForgetPassword extends CustomFragment implements Validator.Valid
             public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
                 if(response.isSuccessful()) {
                     if(response.body().isNull()) {
-                        EventBus.getDefault().post(new ErrorMsg("New password has been sent to the cooresponding email", Toast.LENGTH_SHORT));
+                        EventBus.getDefault().post(new SnackBarMessageContent("New password has been sent to your email"));
                         getActivity().onBackPressed();
                     }
                     else{
