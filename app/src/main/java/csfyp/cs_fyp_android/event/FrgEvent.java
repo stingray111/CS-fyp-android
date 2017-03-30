@@ -28,6 +28,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -204,6 +206,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 resetLoader();
                                 showQuit();
                                 EventBus.getDefault().post(new ChatServiceSetting(mEventObj));
+                                FirebaseMessaging.getInstance().subscribeToTopic("group_"+mEventObj.getId());
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
@@ -239,6 +242,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 showJoin();
 
                                 EventBus.getDefault().post(new ChatServiceSetting(mEventId,ChatServiceSetting.REMOVE_EVENT));
+                                FirebaseMessaging.getInstance().unsubscribeFromTopic("group_"+mEventObj.getId());
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
