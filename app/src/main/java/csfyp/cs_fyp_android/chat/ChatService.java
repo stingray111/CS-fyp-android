@@ -106,7 +106,8 @@ public class ChatService extends Service {
     private User mSelf;
     private volatile int showingEventId;
     private volatile String showingEventName;
-    public static boolean active;
+    public static volatile boolean active = false;
+    public static volatile boolean created = false;
 
     private FloatingActionMenu mFloatingActionMenu;
     private List<com.github.clans.fab.FloatingActionButton> mFloatingActionButtonList;
@@ -143,6 +144,7 @@ public class ChatService extends Service {
 
     @Override
     public void onCreate() {
+        created = true;
         active = true;
         Log.d(TAG,"onCreate");
         super.onCreate();

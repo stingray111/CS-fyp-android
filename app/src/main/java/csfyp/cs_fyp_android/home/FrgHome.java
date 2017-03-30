@@ -176,7 +176,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     }
 
     private void chatHeadInit(){
-        if(!ChatService.active) {
+        if(!ChatService.created) {
             Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
             getMainActivity().startService(serviceIntent);
         }
