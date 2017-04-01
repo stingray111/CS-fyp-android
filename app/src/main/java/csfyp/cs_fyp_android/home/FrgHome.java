@@ -43,7 +43,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,9 +58,9 @@ import csfyp.cs_fyp_android.history.FrgHistory;
 import csfyp.cs_fyp_android.lib.ClusterableMarker;
 import csfyp.cs_fyp_android.lib.CustomBatchLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
-import csfyp.cs_fyp_android.lib.SSL;
 import csfyp.cs_fyp_android.lib.Utils;
 import csfyp.cs_fyp_android.lib.eventBus.ScrollEvent;
+import csfyp.cs_fyp_android.lib.eventBus.SnackBarMessageContent;
 import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
 import csfyp.cs_fyp_android.model.BatchLoaderBundle;
 import csfyp.cs_fyp_android.model.Event;
@@ -564,6 +563,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
 
     public static class BLoader extends CustomBatchLoader<BatchLoaderBundle> {
+
         public BLoader(Context context,long startAt,int offset,Location currentLocation,List<Event> eventList,String mode,int sortMode) {
             super(context);
             setTaskName(mode);
@@ -573,6 +573,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             this.eventList = eventList;
             this.mSortMode = sortMode;
         }
+
         public BLoader(Context context,Location mCurrentLocation,int sortMode){
             super(context);
             setTaskName(BLoader.TASK_FRESH_LOAD);
@@ -653,14 +654,18 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                         }
                     }else{
                         Log.i("here", "Not 200");
+                        EventBus.getDefault().post(new SnackBarMessageContent("Something wrong with the server"));
                         //Toast.makeText(getMainActivity(), "Not 200", Toast.LENGTH_LONG).show();
                     }
                 }catch(Exception e){
+                    EventBus.getDefault().post(new SnackBarMessageContent("Cannot connect to Internet", "Retry"));
                     Log.d("here","no internet");
                     e.printStackTrace();
                     //Toast.makeText(getMainActivity(), "You do not have an active internet connection, try again later.", Toast.LENGTH_LONG ).show();
                 }
-            }else{
+            } else {
+                // todo: fix problem of location on first enter home
+                EventBus.getDefault().post(new SnackBarMessageContent("You don't have location service", "Retry"));
                 Log.d("here","location fail");
                 // Toast.makeText(getMainActivity(), "You do not have an valid location service now, try again later.", Toast.LENGTH_LONG ).show();
             }

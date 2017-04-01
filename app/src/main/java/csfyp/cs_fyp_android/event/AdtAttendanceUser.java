@@ -46,14 +46,9 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.passed_event_attendance_item, parent, false);
         PassedEventAttendanceItemBinding binding;
-        ViewHolder holder;
-
-        binding = DataBindingUtil.inflate(inflater, R.layout.passed_event_attendance_item, parent, false);
-        holder = new ViewHolder(binding.getRoot());
-        holder.setBinding(binding);
-        return holder;
+        return new ViewHolder(itemView);
 
     }
 
@@ -83,6 +78,7 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
 
         public ViewHolder(View itemView) {
             super(itemView);
+            binding = DataBindingUtil.bind(itemView);
         }
 
         // each data item is just a string in this case
@@ -154,10 +150,6 @@ public class AdtAttendanceUser extends RecyclerView.Adapter<AdtAttendanceUser.Vi
 
         public PassedEventAttendanceItemBinding getBinding() {
             return binding;
-        }
-
-        public void setBinding(PassedEventAttendanceItemBinding binding) {
-            this.binding = binding;
         }
     }
 

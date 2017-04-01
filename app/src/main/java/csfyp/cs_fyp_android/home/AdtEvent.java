@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,15 +55,12 @@ public class AdtEvent extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == 0){
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            HomeItemEventBinding binding = DataBindingUtil.inflate(inflater, R.layout.home_item_event, parent, false);
-            ViewHolder holder = new ViewHolder(binding.getRoot());
-            holder.setBinding(binding);
-            return holder;
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_item_event, parent, false);
+            return new EventViewHolder(itemView);
         }else {
+            // progress bar at the bottom of the list
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_item_event_progress,parent,false);
-            RecyclerView.ViewHolder holder = new RecyclerView.ViewHolder(v){};
-            return holder;
+            return new ProgressBaeViewHolder((v));
         }
     }
 
@@ -80,11 +76,11 @@ public class AdtEvent extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if(holder instanceof AdtEvent.ViewHolder) {
-            ((AdtEvent.ViewHolder)holder).getBinding().setHandlers(((AdtEvent.ViewHolder)holder));
+        if(holder instanceof EventViewHolder) {
+            ((EventViewHolder)holder).getBinding().setHandlers((EventViewHolder)holder);
             if (mEventList != null) {
-                ((AdtEvent.ViewHolder)holder).getBinding().setItem(mEventList.get(position));
-                ((AdtEvent.ViewHolder)holder).getBinding().executePendingBindings();
+                ((EventViewHolder)holder).getBinding().setItem(mEventList.get(position));
+                ((EventViewHolder)holder).getBinding().executePendingBindings();
             }
         }
     }
@@ -109,12 +105,13 @@ public class AdtEvent extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class EventViewHolder extends RecyclerView.ViewHolder {
 
         private HomeItemEventBinding binding;
 
-        public ViewHolder(View itemView) {
+        public EventViewHolder(View itemView) {
             super(itemView);
+            binding = DataBindingUtil.bind(itemView);
         }
 
         // each data item is just a string in this case
@@ -150,13 +147,17 @@ public class AdtEvent extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
 
-        public void setBinding(HomeItemEventBinding binding) {
-            this.binding = binding;
-        }
-
         public HomeItemEventBinding getBinding() {
             return binding;
         }
+    }
+
+    public class ProgressBaeViewHolder extends RecyclerView.ViewHolder {
+
+        public ProgressBaeViewHolder(View itemView) {
+            super(itemView);
+        }
+
     }
 
     public enum EventComparator implements Comparator<Event> {

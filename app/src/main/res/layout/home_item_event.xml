@@ -7,7 +7,7 @@
             type="csfyp.cs_fyp_android.model.Event" />
         <variable
             name="handlers"
-            type="csfyp.cs_fyp_android.home.AdtEvent.ViewHolder" />
+            type="csfyp.cs_fyp_android.home.AdtEvent.EventViewHolder" />
     </data>
 
     <LinearLayout

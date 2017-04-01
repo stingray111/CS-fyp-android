@@ -21,7 +21,7 @@ import csfyp.cs_fyp_android.profile.FrgProfile;
 import csfyp.cs_fyp_android.rating.FrgRating;
 
 
-public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
+public class AdtUser extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private List<User> mUserList;
     private int mode;
@@ -44,64 +44,57 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        EventItemUserBinding binding;
-        PassedEventItemBinding passedBinding;
-        ViewHolder holder;
         if (mode == NORMAL_MODE) {
-            binding = DataBindingUtil.inflate(inflater, R.layout.event_item_user, parent, false);
-            holder = new ViewHolder(binding.getRoot());
-            holder.setBinding(binding);
-            return holder;
+            View itemView = inflater.inflate(R.layout.event_item_user, parent, false);
+            return new NormalEventViewHolder(itemView);
         }
         else if (mode == PASSED_EVENT_MODE) {
-            passedBinding = DataBindingUtil.inflate(inflater, R.layout.passed_event_item, parent, false);
-            holder = new ViewHolder(passedBinding.getRoot());
-            holder.setPassedBinding(passedBinding);
-            return holder;
+            View itemView = inflater.inflate(R.layout.passed_event_item, parent, false);
+            return new PassedEventViewHolder(itemView);
         } else {
-            binding = DataBindingUtil.inflate(inflater, R.layout.event_item_user, parent, false);
-            holder = new ViewHolder(binding.getRoot());
-            holder.setBinding(binding);
-            return holder;
+            View itemView = inflater.inflate(R.layout.event_item_user, parent, false);
+            return new NormalEventViewHolder(itemView);
         }
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (mode == PASSED_EVENT_MODE) {
-            holder.getPassedBinding().setHandlers(holder);
+            PassedEventViewHolder PEHolder = (PassedEventViewHolder) holder;
+            PEHolder.getBinding().setHandlers(PEHolder);
 
             if (mUserList != null) {
 
-                holder.getPassedBinding().setItem(mUserList.get(position));
+                PEHolder.getBinding().setItem(mUserList.get(position));
 
                 // is rated by other?
                 if (mUserList.get(position).isRatedbyOther()) {
-                    holder.getPassedBinding().rateBtn.setVisibility(View.GONE);
-                    holder.getPassedBinding().ratedImg.setVisibility(View.VISIBLE);
+                    PEHolder.getBinding().rateBtn.setVisibility(View.GONE);
+                    PEHolder.getBinding().ratedImg.setVisibility(View.VISIBLE);
                 } else {
-                    holder.getPassedBinding().rateBtn.setVisibility(View.VISIBLE);
-                    holder.getPassedBinding().ratedImg.setVisibility(View.GONE);
+                    PEHolder.getBinding().rateBtn.setVisibility(View.VISIBLE);
+                    PEHolder.getBinding().ratedImg.setVisibility(View.GONE);
                 }
 
                 // is self?
                 if (mUserList.get(position).getId() == eventId)
-                    holder.getPassedBinding().rateBtn.setVisibility(View.GONE);
+                    PEHolder.getBinding().rateBtn.setVisibility(View.GONE);
                 // is attended?
                 if (!mUserList.get(position).isAttended()) {
                     Log.i("hey", "not attended" + mUserList.get(position).getUserName());
-                    holder.getPassedBinding().rateBtn.setVisibility(View.GONE);
+                    PEHolder.getBinding().rateBtn.setVisibility(View.GONE);
                 }
 
-                holder.getPassedBinding().executePendingBindings();
+                PEHolder.getBinding().executePendingBindings();
             }
         } else {
-            holder.getBinding().setHandlers(holder);
+            NormalEventViewHolder NEHolder = (NormalEventViewHolder) holder;
+            NEHolder.getBinding().setHandlers(NEHolder);
             if (mUserList != null) {
-                holder.getBinding().setItem(mUserList.get(position));
-                holder.getBinding().executePendingBindings();
+                NEHolder.getBinding().setItem(mUserList.get(position));
+                NEHolder.getBinding().executePendingBindings();
             }
         }
     }
@@ -110,13 +103,13 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
         this.mUserList = mUserList;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class NormalEventViewHolder extends RecyclerView.ViewHolder{
 
         private EventItemUserBinding binding;
-        private PassedEventItemBinding passedBinding;
 
-        public ViewHolder(View itemView) {
+        public NormalEventViewHolder(View itemView) {
             super(itemView);
+            binding = DataBindingUtil.bind(itemView);
         }
 
         // each data item is just a string in this case
@@ -132,13 +125,35 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
             else
                 temp = null;
             EventBus.getDefault().post(temp);
+        }
 
-//            FragmentTransaction ft = ((AppCompatActivity) binding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
-//            ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
-//                    .add(R.id.parent_fragment_container, FrgProfile.newInstance(binding.getItem().getId()))
-//                    .hide(mFragment)
-//                    .addToBackStack(null)
-//                    .commit();
+        public EventItemUserBinding getBinding() {
+            return binding;
+        }
+
+    }
+
+    public class PassedEventViewHolder extends RecyclerView.ViewHolder{
+
+        private PassedEventItemBinding passedBinding;
+
+        public PassedEventViewHolder(View itemView) {
+            super(itemView);
+            passedBinding = DataBindingUtil.bind(itemView);
+        }
+
+        public void onClickUserItem(View view) {
+
+            Bundle b = new Bundle();
+            b.putInt("userId", passedBinding.getItem().getId());
+            SwitchFrg temp;
+            if (mode == NORMAL_MODE)
+                temp = new SwitchFrg(FrgEvent.TAG, FrgProfile.TAG, b);
+            else if (mode == PASSED_EVENT_MODE)
+                temp = new SwitchFrg(FrgPassedEvent.TAG, FrgProfile.TAG, b);
+            else
+                temp = null;
+            EventBus.getDefault().post(temp);
         }
 
         public void onCLickRateItem(View view) {
@@ -148,29 +163,11 @@ public class AdtUser extends RecyclerView.Adapter<AdtUser.ViewHolder>{
             b.putInt("eventId", eventId);
             SwitchFrg temp = new SwitchFrg(FrgPassedEvent.TAG, FrgRating.TAG, b);
             EventBus.getDefault().post(temp);
-
-//            FragmentTransaction ft = ((AppCompatActivity) passedBinding.getRoot().getContext()).getSupportFragmentManager().beginTransaction();
-//            ft.setCustomAnimations(R.anim.frg_slide_top_enter, R.anim.frg_slide_bottom_exit, R.anim.frg_slide_bottom_enter, R.anim.frg_slide_top_exit)
-//                    .add(R.id.parent_fragment_container, FrgRating.newInstance(passedBinding.getItem().getId(), passedBinding.getItem().getUserName(), eventId))
-//                    .hide(mFragment)
-//                    .addToBackStack(null)
-//                    .commit();
         }
 
-        public EventItemUserBinding getBinding() {
-            return binding;
-        }
-
-        public PassedEventItemBinding getPassedBinding() {
+        public PassedEventItemBinding getBinding() {
             return passedBinding;
         }
 
-        public void setBinding(EventItemUserBinding binding) {
-            this.binding = binding;
-        }
-
-        public void setPassedBinding(PassedEventItemBinding passedBinding) {
-            this.passedBinding = passedBinding;
-        }
     }
 }

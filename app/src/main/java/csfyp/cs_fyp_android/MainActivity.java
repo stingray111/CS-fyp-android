@@ -1,17 +1,13 @@
 package csfyp.cs_fyp_android;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
-import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -20,8 +16,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.akexorcist.localizationactivity.LocalizationActivity;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.mikelau.croperino.Croperino;
@@ -30,21 +24,17 @@ import com.mikelau.croperino.CroperinoFileUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.InputStream;
 import java.util.List;
 
-import csfyp.cs_fyp_android.chat.ChatFrameActivity;
-import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.EnqueueAgain;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
-import csfyp.cs_fyp_android.lib.Utils;
-import csfyp.cs_fyp_android.lib.eventBus.PropicUpdate;
 import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
+import csfyp.cs_fyp_android.lib.eventBus.PropicUpdate;
 import csfyp.cs_fyp_android.lib.eventBus.SnackBarMessageContent;
 import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.model.Event;
@@ -57,7 +47,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static org.greenrobot.eventbus.ThreadMode.*;
+import static org.greenrobot.eventbus.ThreadMode.ASYNC;
+import static org.greenrobot.eventbus.ThreadMode.MAIN;
 
 public class MainActivity extends LocalizationActivity {
 
@@ -255,12 +246,21 @@ public class MainActivity extends LocalizationActivity {
     public void snackBarMessage(SnackBarMessageContent snackBarMessageContent){
         final Snackbar snackBar = Snackbar.make(findViewById(R.id.parent_fragment_container),snackBarMessageContent.message,Snackbar.LENGTH_INDEFINITE);
         snackBar.setActionTextColor(ContextCompat.getColor(this,R.color.white));
-        snackBar.setAction("OK", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackBar.dismiss();
-            }
-        });
+        if(snackBarMessageContent.action == null)
+            snackBar.setAction("OK", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    snackBar.dismiss();
+                }
+            });
+        else
+            snackBar.setAction(snackBarMessageContent.action, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // todo reconnect here
+                    snackBar.dismiss();
+                }
+            });
         snackBar.show();
     }
 
