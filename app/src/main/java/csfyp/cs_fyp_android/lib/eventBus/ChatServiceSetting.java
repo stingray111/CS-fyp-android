@@ -28,7 +28,6 @@ public class ChatServiceSetting {
     //for remove event
     private int rmEventId;
 
-
     public ChatServiceSetting(int mode,List<Event> mEventList,User mSelf){
         this.mode = mode;
         this.mEventList = mEventList;
@@ -43,7 +42,7 @@ public class ChatServiceSetting {
 
     public ChatServiceSetting(int eventIdToBeRemoved,int mode){
         this.rmEventId = eventIdToBeRemoved;
-        mode = REMOVE_EVENT;
+        this.mode = REMOVE_EVENT;
     }
 
 

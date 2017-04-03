@@ -22,8 +22,10 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -31,11 +33,16 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.lib.Utils;
 import csfyp.cs_fyp_android.lib.eventBus.ChatFramePage;
 import csfyp.cs_fyp_android.model.User;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 /**
  * Created by ray on 27/3/2017.
@@ -51,6 +58,8 @@ public class ChatFrameActivity extends Activity {
     private ProgressBar mProgressBar;
     private LinearLayoutManager mLinearLayoutManager;
     private RecyclerView mMessageRecyclerView;
+    private ArrayList<View> mUploadingMessageList = new ArrayList<>();
+    private volatile boolean mFirebaseConnected = false;
 
     private User mSelf;
     private int mEventId;
@@ -66,6 +75,8 @@ public class ChatFrameActivity extends Activity {
         chatFrameActivity = ChatFrameActivity.this;
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         Log.d(TAG,"on Create");
+
+        Log.d(TAG,"frame create intent"+getIntent().toString());
 
         setContentView(R.layout.chat_frame);
 
@@ -95,6 +106,29 @@ public class ChatFrameActivity extends Activity {
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(".info/connected").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean connected = dataSnapshot.getValue(Boolean.class);
+                if(connected){
+                    ChatFrameActivity.this.mFirebaseConnected = true;
+                    for (View v: mUploadingMessageList) {
+                        v.setVisibility(GONE);
+                    }
+                    mUploadingMessageList.clear();
+                    Log.d(TAG,"firebase connected");
+                }else{
+                    ChatFrameActivity.this.mFirebaseConnected = false;
+                    Log.d(TAG,"firebase disconnected");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG,"listener disconnected");
+            }
+        });
+
 
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
@@ -153,7 +187,7 @@ public class ChatFrameActivity extends Activity {
             });
 
             ((TextView) findViewById(R.id.chatFrameTitle)).setText(mEventName);
-            mProgressBar.setVisibility(ProgressBar.VISIBLE);
+            mProgressBar.setVisibility(VISIBLE);
 
             mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder>(
                     FriendlyMessage.class,
@@ -178,13 +212,17 @@ public class ChatFrameActivity extends Activity {
                                     .centerCrop()
                                     .placeholder(R.drawable.ic_propic_big)
                                     .into(((MessageViewHolder) viewHolder).messengerImageView);
-                            //TODO
                             break;
                         case 10:
                             //own
                             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                             ((MessageViewHolder) viewHolder).messageTextView.setText(model.getContent());
                             ((MessageViewHolder) viewHolder).timeStamp.setText(model.getTime());
+                            if(model.isReachServer()){
+                                ((MessageViewHolder) viewHolder).uploadingProgress.setVisibility(GONE);
+                            }else {
+                                ((MessageViewHolder) viewHolder).uploadingProgress.setVisibility(VISIBLE);
+                            }
                             break;
                     }
                 }
@@ -293,7 +331,7 @@ public class ChatFrameActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        Log.d(TAG,"on new intent");
+        Log.d(TAG,"Frame new intent" + intent.toString());
     }
 
 }

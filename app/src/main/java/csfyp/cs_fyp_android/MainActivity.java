@@ -61,6 +61,7 @@ import static org.greenrobot.eventbus.ThreadMode.*;
 
 public class MainActivity extends LocalizationActivity {
 
+    private static String TAG = "MainActiivty";
     public FrgHome mHome;
     public static Location mCurrentLocation;
     private String mToken;
@@ -164,12 +165,17 @@ public class MainActivity extends LocalizationActivity {
         super.onCreate(savedInstanceState);
         active = true;
 
+        Log.d(TAG,"main create intent"+getIntent().toString());
+
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
             return;
         }
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        try {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        }catch(Exception e){
+        }
         if (mSelf == null) {
             SharedPreferences  mPrefs = getPreferences(MODE_PRIVATE);
             Gson gson = new Gson();
@@ -225,21 +231,20 @@ public class MainActivity extends LocalizationActivity {
     protected void onDestroy() {
         active = false;
         super.onDestroy();
-
     }
 
     @Override
     protected void onStart() {
+        EventBus.getDefault().register(this);
         active = true;
         super.onStart();
-        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
+        EventBus.getDefault().unregister(this);
         active = false;
         super.onStop();
-        EventBus.getDefault().unregister(this);
     }
 
     @Subscribe(threadMode = MAIN)
@@ -272,6 +277,7 @@ public class MainActivity extends LocalizationActivity {
 
     @Subscribe(threadMode = ASYNC)
     public void chatServiceHandle(final ChatServiceSetting chatServiceSetting) {
+        String TAG = "ChatService(Activity)";
         if (chatServiceSetting.getMode() == ChatServiceSetting.INIT) {
 
                 if (chatServiceSetting.getDelay() > 0) {
@@ -280,6 +286,7 @@ public class MainActivity extends LocalizationActivity {
                     } catch (Exception e) {
                     }
                 }
+
                 HTTP httpService = HTTP.retrofit.create(HTTP.class);
                 Call<EventListRespond> call = httpService.getEvents(new EventListRequest(mUserId, 3));
                 call.enqueue(new Callback<EventListRespond>() {
@@ -291,7 +298,7 @@ public class MainActivity extends LocalizationActivity {
                     public void onResponse(Call<EventListRespond> call, Response<EventListRespond> response) {
                         if (response.isSuccessful() && response.body().getErrorMsg() == null) {
                             eventList = response.body().getEvents();
-                            Log.d(TAG, "here: " + mMsgToken);
+                            Log.d(TAG, "token: " + mMsgToken);
                             EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.SET_PARAM, eventList, mSelf));
                         } else {
                             EventBus.getDefault().post(new ErrorMsg("Server Error", ErrorMsg.LENGTH_SHORT));
@@ -350,6 +357,7 @@ public class MainActivity extends LocalizationActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        Log.d(TAG, "main new intent"+ intent.toString());
         setIntent(intent);
     }
 }

@@ -107,7 +107,7 @@ public class ChatService extends Service {
     private volatile int showingEventId;
     private volatile String showingEventName;
     public static volatile boolean active = false;
-    public static volatile boolean created = false;
+    public static volatile boolean interfaceStarted =false;
 
     private FloatingActionMenu mFloatingActionMenu;
     private List<com.github.clans.fab.FloatingActionButton> mFloatingActionButtonList;
@@ -144,7 +144,6 @@ public class ChatService extends Service {
 
     @Override
     public void onCreate() {
-        created = true;
         active = true;
         Log.d(TAG,"onCreate");
         super.onCreate();
@@ -154,7 +153,7 @@ public class ChatService extends Service {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user!=null) {
-                    Log.d(TAG, "Login:\t" + user.getUid());
+                    Log.d(TAG, "Login :\t" + user.getUid());
                 }
                 else{
                     Log.d(TAG, "signedOut");
@@ -200,6 +199,7 @@ public class ChatService extends Service {
         //put the event list in
 
         Log.d(TAG, "start messaging interface");
+        interfaceStarted = true;
 
         mStatus= 0;
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -445,16 +445,21 @@ public class ChatService extends Service {
             mSelf = chatServiceSetting.getmSelf();
             mEventList = chatServiceSetting.getmEventList();
 
+            Log.d(TAG,"firebase login trying");
             mAuth.signInWithCustomToken(mSelf.getMsgToken())
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@android.support.annotation.NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
-                                Log.d(TAG, "messaging service started");
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        startMsg();
+                                        if(!ChatService.this.interfaceStarted) {
+                                            Log.d(TAG, "messaging interface started");
+                                            startMsg();
+                                        }else{
+                                            Log.d(TAG, "messaging interface started already");
+                                        }
                                     }
                                 });
                             }
@@ -508,5 +513,6 @@ public class ChatService extends Service {
             EventBus.getDefault().post(new ChatFramePage(mSelf,showingEventId,showingEventName));
         }
     }
+
 }
 

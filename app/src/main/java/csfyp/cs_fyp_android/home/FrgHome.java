@@ -61,6 +61,7 @@ import csfyp.cs_fyp_android.lib.CustomBatchLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.SSL;
 import csfyp.cs_fyp_android.lib.Utils;
+import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.lib.eventBus.ScrollEvent;
 import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
 import csfyp.cs_fyp_android.model.BatchLoaderBundle;
@@ -176,10 +177,8 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     }
 
     private void chatHeadInit(){
-        if(!ChatService.created) {
-            Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
-            getMainActivity().startService(serviceIntent);
-        }
+        Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
+        getMainActivity().startService(serviceIntent);
     }
 
     private void needPermissionDialog(final int requestCode){

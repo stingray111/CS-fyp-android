@@ -2,6 +2,7 @@ package csfyp.cs_fyp_android.chat;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import csfyp.cs_fyp_android.R;
@@ -16,6 +17,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView messengerTextView;
     public TextView timeStamp;
     public CircleImageView messengerImageView;
+    public ProgressBar uploadingProgress;
 
     public MessageViewHolder(View v) {
         super(v);
@@ -23,6 +25,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
         messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
         timeStamp = (TextView) itemView.findViewById(R.id.timeStamp);
+        uploadingProgress = (ProgressBar) itemView.findViewById(R.id.messageUploading);
     }
 
 }

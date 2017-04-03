@@ -123,6 +123,7 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
                                 editor.commit();
 
                                 Intent intent = new Intent(getActivity(), ChatService.class);
+                                ChatService.interfaceStarted = false;
                                 ((MainActivity)getActivity()).stopService(intent);
 
                                 replaceFragment(FrgLogin.newInstance());
