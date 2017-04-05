@@ -24,6 +24,12 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.io.IOException;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
@@ -32,7 +38,9 @@ import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.databinding.SettingFrgBinding;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.login.FrgLogin;
+import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.respond.ErrorMsgOnly;
 import csfyp.cs_fyp_android.model.respond.Logout;
 import retrofit2.Call;
@@ -122,21 +130,42 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
                                 editor.remove("acType");
                                 editor.commit();
 
+
+                                if(ChatService.mEventList != null) {
+                                    for (Event event : ChatService.mEventList) {
+                                        FirebaseMessaging.getInstance().unsubscribeFromTopic("group_" + event.getId());
+                                        Log.d(TAG,"unscribing");
+                                    }
+                                }
+
+                                Thread thread = new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                    try {
+                                        FirebaseInstanceId.getInstance().deleteInstanceId();
+                                        Log.d(TAG, "remove instance id success");
+                                    }catch (Exception e){
+                                        Log.d(TAG, "remove instance id fail");
+                                    }
+                                    }
+                                });
+                                thread.start();
+
                                 Intent intent = new Intent(getActivity(), ChatService.class);
                                 ChatService.interfaceStarted = false;
                                 ((MainActivity)getActivity()).stopService(intent);
 
                                 replaceFragment(FrgLogin.newInstance());
                             } else
-                                Toast.makeText(getContext(), "Logout fail", Toast.LENGTH_SHORT).show();
+                                EventBus.getDefault().post(new ErrorMsg("Logout fail",Toast.LENGTH_SHORT));
                         } else
-                            Toast.makeText(getContext(), "Logout fail", Toast.LENGTH_SHORT).show();
+                            EventBus.getDefault().post(new ErrorMsg("Logout fail",Toast.LENGTH_SHORT));
                     }
 
                     @Override
                     public void onFailure(Call<ErrorMsgOnly> call, Throwable t) {
                         view.setOnClickListener(_this);
-                        Toast.makeText(getContext(), "Logout fail", Toast.LENGTH_SHORT).show();
+                        EventBus.getDefault().post(new ErrorMsg("Logout fail",Toast.LENGTH_SHORT));
                     }
                 });
 
@@ -156,13 +185,13 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
     }
 
     public void onClickChinese(View view) {
-        Toast.makeText(getContext(), "set Chinese", Toast.LENGTH_SHORT).show();
+        EventBus.getDefault().post(new ErrorMsg("已設定為中文",Toast.LENGTH_SHORT));
         //setLocale("zh");
         ((MainActivity)getActivity()).setLanguage("zh");
     }
 
     public void onClickEnglish(View view) {
-        Toast.makeText(getContext(), "set English", Toast.LENGTH_SHORT).show();
+        EventBus.getDefault().post(new ErrorMsg("English is set",Toast.LENGTH_SHORT));
         //setLocale("en");
         ((MainActivity)getActivity()).setLanguage("en");
     }

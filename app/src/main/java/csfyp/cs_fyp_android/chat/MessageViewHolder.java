@@ -16,6 +16,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView messageTextView;
     public TextView messengerTextView;
     public TextView timeStamp;
+    public TextView date;
     public CircleImageView messengerImageView;
     public ProgressBar uploadingProgress;
 
@@ -23,9 +24,10 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         super(v);
         messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
         messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
-        messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
+        try { messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView); }catch (Exception e){ }
+        try { uploadingProgress = (ProgressBar) itemView.findViewById(R.id.messageUploading); }catch ( Exception e){ }
         timeStamp = (TextView) itemView.findViewById(R.id.timeStamp);
-        uploadingProgress = (ProgressBar) itemView.findViewById(R.id.messageUploading);
+        date = (TextView) itemView.findViewById(R.id.DateStamp);
     }
 
 }

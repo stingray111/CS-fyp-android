@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.LauncherApps;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -41,9 +42,7 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.plus.People;
-import com.google.android.gms.plus.model.people.Person;
-import com.google.firebase.appindexing.builders.PersonBuilder;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -65,10 +64,14 @@ import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.LoginFrgBinding;
 import csfyp.cs_fyp_android.forgetPassword.FrgForgetPassword;
 import csfyp.cs_fyp_android.home.FrgHome;
+import csfyp.cs_fyp_android.lib.EnqueueAgain;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
+import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
+import csfyp.cs_fyp_android.model.request.EventListRequest;
+import csfyp.cs_fyp_android.model.respond.EventListRespond;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
 import csfyp.cs_fyp_android.model.respond.ThirdPartySignInRespond;
 import csfyp.cs_fyp_android.register.FrgRegister;
@@ -298,8 +301,7 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
                         EventBus.getDefault().post(new FrgHome().newInstance());
                         replaceFragment(((MainActivity) getActivity()).getmHome());
 
-
-                    } else {
+                        } else {
                         // TODO: 6/11/2016 print error msg to user
                         if (response.body().getErrorMsg().matches("passwordWrong"))
                             mInputPassword.setError("Wrong Password");

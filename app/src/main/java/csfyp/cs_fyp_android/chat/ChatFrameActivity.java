@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.AttributeSet;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,14 +26,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
@@ -58,15 +59,13 @@ public class ChatFrameActivity extends Activity {
     private ProgressBar mProgressBar;
     private LinearLayoutManager mLinearLayoutManager;
     private RecyclerView mMessageRecyclerView;
-    private ArrayList<View> mUploadingMessageList = new ArrayList<>();
-    private volatile boolean mFirebaseConnected = false;
 
     private User mSelf;
     private int mEventId;
     private String mEventName;
 
     private DatabaseReference mFirebaseDatabaseReference;
-    private FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder> mFirebaseAdapter;
+    private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> mFirebaseAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,19 +105,18 @@ public class ChatFrameActivity extends Activity {
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        /*
         mFirebaseDatabaseReference.child(".info/connected").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean connected = dataSnapshot.getValue(Boolean.class);
                 if(connected){
-                    ChatFrameActivity.this.mFirebaseConnected = true;
                     for (View v: mUploadingMessageList) {
                         v.setVisibility(GONE);
                     }
                     mUploadingMessageList.clear();
                     Log.d(TAG,"firebase connected");
                 }else{
-                    ChatFrameActivity.this.mFirebaseConnected = false;
                     Log.d(TAG,"firebase disconnected");
                 }
             }
@@ -128,6 +126,7 @@ public class ChatFrameActivity extends Activity {
                 Log.d(TAG,"listener disconnected");
             }
         });
+        */
 
 
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -173,37 +172,59 @@ public class ChatFrameActivity extends Activity {
             this.mSelf = chatFramePage.getmSelf();
 
             mSendButton.setOnClickListener(new View.OnClickListener() {
+                final public View.OnClickListener _this = this;
                 @Override
-                public void onClick(View view) {
+                public void onClick(final View view) {
+                    view.setOnClickListener(null);
                     FriendlyMessage friendlyMessage = new
                             FriendlyMessage(mSelf.getUserName(),
                             mSelf.getDisplayName(),
                             mMessageEditText.getText().toString(),
                             mSelf.getProPic());
+
                     mFirebaseDatabaseReference.child("messages/group_" + mEventId)
-                            .push().setValue(friendlyMessage);
+                            .push().setValue(friendlyMessage, new DatabaseReference.CompletionListener()
+                    {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            if(databaseError != null){
+                                Log.d(TAG, "message sent fail: " + databaseError.getMessage());
+                            }else{
+                                databaseReference.child("reachServer").keepSynced(true);
+                                databaseReference.child("reachServer").setValue(true);
+                                mFirebaseAdapter.notifyItemChanged(mFirebaseAdapter.getItemCount()-1);
+                            }
+                        }
+                    });
                     mMessageEditText.setText("");
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.setOnClickListener(_this);
+                        }
+                    }, 1500);
                 }
             });
 
             ((TextView) findViewById(R.id.chatFrameTitle)).setText(mEventName);
             mProgressBar.setVisibility(VISIBLE);
 
-            mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder>(
+            mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(
                     FriendlyMessage.class,
                     R.layout.item_message,
-                    RecyclerView.ViewHolder.class,
+                    MessageViewHolder.class,
                     mFirebaseDatabaseReference.child("messages/group_" + mEventId)) {
+
                 @Override
-                protected void populateViewHolder(RecyclerView.ViewHolder viewHolder, FriendlyMessage model, int position) {
+                protected void populateViewHolder(MessageViewHolder viewHolder, FriendlyMessage model, int position) {
                     int localType = getLocalType(model);
                     switch (localType) {
                         case 0:
                             //others
                             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                            ((MessageViewHolder) viewHolder).messageTextView.setText(model.getContent());
-                            ((MessageViewHolder) viewHolder).messengerTextView.setText(model.getDisplayName());
-                            ((MessageViewHolder) viewHolder).timeStamp.setText(model.getTime());
+                            viewHolder.messageTextView.setText(model.getContent());
+                            viewHolder.messengerTextView.setText(model.getDisplayName());
+                            viewHolder.timeStamp.setText(model.getTime());
                             // load propic
                             int size = Utils.dpToPx(getBaseContext(), 36);
                             Picasso.with(getBaseContext())
@@ -211,17 +232,17 @@ public class ChatFrameActivity extends Activity {
                                     .resize(size, size)
                                     .centerCrop()
                                     .placeholder(R.drawable.ic_propic_big)
-                                    .into(((MessageViewHolder) viewHolder).messengerImageView);
+                                    .into(viewHolder.messengerImageView);
                             break;
                         case 10:
                             //own
                             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                            ((MessageViewHolder) viewHolder).messageTextView.setText(model.getContent());
-                            ((MessageViewHolder) viewHolder).timeStamp.setText(model.getTime());
+                            viewHolder.messageTextView.setText(model.getContent());
+                            viewHolder.timeStamp.setText(model.getTime());
                             if(model.isReachServer()){
-                                ((MessageViewHolder) viewHolder).uploadingProgress.setVisibility(GONE);
+                                viewHolder.uploadingProgress.setVisibility(GONE);
                             }else {
-                                ((MessageViewHolder) viewHolder).uploadingProgress.setVisibility(VISIBLE);
+                                viewHolder.uploadingProgress.setVisibility(VISIBLE);
                             }
                             break;
                     }
@@ -237,7 +258,7 @@ public class ChatFrameActivity extends Activity {
                 }
 
                 @Override
-                public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                     switch (viewType) {
                         case 10:
                             View selfView = LayoutInflater.from(parent.getContext())
@@ -250,6 +271,27 @@ public class ChatFrameActivity extends Activity {
                     }
                     Log.d(TAG, "unhandled");
                     return null;
+                }
+
+                @Override
+                public void onBindViewHolder(MessageViewHolder viewHolder, int position) {
+                    super.onBindViewHolder(viewHolder, position);
+                    final Date thisMessageDate = this.getItem(position).getDate();
+                    final String thisMessageDay = (String)DateFormat.format("dd-MMM-yyyy", thisMessageDate);
+                    if(position != 0){
+                        final Date previousMessageDate = this.getItem(position - 1).getDate();
+                        //set date
+                        final String previousMessageDay = (String)DateFormat.format("dd-MMM-yyyy", previousMessageDate);
+                        if(!thisMessageDay.equals(previousMessageDay)){
+                            viewHolder.date.setVisibility(VISIBLE);
+                            viewHolder.date.setText(thisMessageDay);
+                        }else{
+                            viewHolder.date.setVisibility(GONE);
+                        }
+                    }else{
+                        viewHolder.date.setVisibility(VISIBLE);
+                        viewHolder.date.setText(thisMessageDay);
+                    }
                 }
 
 

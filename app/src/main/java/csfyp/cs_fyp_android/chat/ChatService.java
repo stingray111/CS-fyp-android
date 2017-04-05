@@ -58,25 +58,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.squareup.picasso.Target;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.greenrobot.eventbus.util.ExceptionToResourceMapping;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.Inflater;
 
-import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
-import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.Utils;
 import csfyp.cs_fyp_android.lib.eventBus.ChatFramePage;
 import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
@@ -86,7 +80,6 @@ import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
 
 import static android.view.View.GONE;
-import static android.widget.ListPopupWindow.MATCH_PARENT;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
 
@@ -123,8 +116,7 @@ public class ChatService extends Service {
     private static final String MESSAGE_URL = "https://cs-fyp.firebaseio.com/testMsg";
     private Button mSendButton;
     private EditText mMessageEditText;
-    private List<Event> mEventList;
-    private final List<Target> targets = new ArrayList<Target>();
+    public static List<Event> mEventList;
     private ProPicManager proPicManager = new ProPicManager();
     //vars
 
@@ -148,6 +140,15 @@ public class ChatService extends Service {
         Log.d(TAG,"onCreate");
         super.onCreate();
         mHandler = new Handler();
+
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        active = true;
+        Log.d(TAG,"onStartCommand");
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -162,15 +163,15 @@ public class ChatService extends Service {
         };
         mAuth = FirebaseAuth.getInstance();
         mAuth.addAuthStateListener(mAuthListener);
-        EventBus.getDefault().register(this);
-    }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        active = true;
-        Log.d(TAG,"onStartCommand");
-        EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.INIT));
-        return super.onStartCommand(intent, flags, startId);
+        boolean fromHome = intent.getBooleanExtra("fromHome",false);
+        if(fromHome) {
+            EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.INIT));
+            Log.d(TAG, "from home");
+        }else{
+            Log.d(TAG, "not from home");
+        }
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -182,13 +183,8 @@ public class ChatService extends Service {
         if(mAuthListener!=null){
             mAuth.removeAuthStateListener(mAuthListener);
         }
-        FirebaseAuth.getInstance().signOut();
+        mAuth.signOut();
         EventBus.getDefault().unregister(this);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void temp (){
-
     }
 
     public void runOnUiThread(Runnable runnable) {
@@ -197,6 +193,10 @@ public class ChatService extends Service {
 
     public void startMsg(){
         //put the event list in
+
+        for(Event event: mEventList){
+            FirebaseMessaging.getInstance().subscribeToTopic("group_"+event.getId());
+        }
 
         Log.d(TAG, "start messaging interface");
         interfaceStarted = true;
@@ -415,8 +415,11 @@ public class ChatService extends Service {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 ChatService.this.showingEventId = eventId;
                 ChatService.this.showingEventName = eventName;
+
+                mFloatingActionMenu.close(true);
                 if(!ChatFrameActivity.active) {
                     Gson gson = new Gson();
                     String selfStr = gson.toJson(mSelf);
@@ -445,6 +448,10 @@ public class ChatService extends Service {
             mSelf = chatServiceSetting.getmSelf();
             mEventList = chatServiceSetting.getmEventList();
 
+            for(Event event: mEventList){
+                FirebaseMessaging.getInstance().subscribeToTopic("group_"+event.getId());
+            }
+
             Log.d(TAG,"firebase login trying");
             mAuth.signInWithCustomToken(mSelf.getMsgToken())
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -456,6 +463,7 @@ public class ChatService extends Service {
                                     public void run() {
                                         if(!ChatService.this.interfaceStarted) {
                                             Log.d(TAG, "messaging interface started");
+                                            Log.d(TAG, "IID_Token: " + FirebaseInstanceId.getInstance().getToken());
                                             startMsg();
                                         }else{
                                             Log.d(TAG, "messaging interface started already");
@@ -513,6 +521,8 @@ public class ChatService extends Service {
             EventBus.getDefault().post(new ChatFramePage(mSelf,showingEventId,showingEventName));
         }
     }
+
+
 
 }
 

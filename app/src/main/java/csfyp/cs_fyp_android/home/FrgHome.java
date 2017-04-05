@@ -167,17 +167,11 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         }
         */
 
-        //chat messaging service
-        if (!Utils.canDrawOverlays(getContext())){
-            requestPermission(OVERLAY_PERMISSION_REQ_CODE_CHATHEAD_MSG);
-        } else {
-            chatHeadInit();
-        }
-
     }
 
     private void chatHeadInit(){
         Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
+        serviceIntent.putExtra("fromHome",true);
         getMainActivity().startService(serviceIntent);
     }
 
@@ -223,6 +217,12 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //chat messaging service
+        if (!Utils.canDrawOverlays(getContext())){
+            requestPermission(OVERLAY_PERMISSION_REQ_CODE_CHATHEAD_MSG);
+        } else {
+            chatHeadInit();
+        }
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.home_frg, container, false);
         mDataBinding.setHandlers(this);
         View v = mDataBinding.getRoot();
@@ -502,10 +502,14 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (hidden){
-            getLoaderManager().destroyLoader(HOME_LOADER_ID);
-        } else {
-            getLoaderManager().restartLoader(HOME_LOADER_ID, null, this);
+        try {
+            if (hidden) {
+                getLoaderManager().destroyLoader(HOME_LOADER_ID);
+            } else {
+                getLoaderManager().restartLoader(HOME_LOADER_ID, null, this);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
     }
 
