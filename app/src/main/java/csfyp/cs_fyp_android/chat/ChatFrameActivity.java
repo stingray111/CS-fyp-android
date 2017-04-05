@@ -35,6 +35,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
@@ -105,29 +106,6 @@ public class ChatFrameActivity extends Activity {
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        /*
-        mFirebaseDatabaseReference.child(".info/connected").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                boolean connected = dataSnapshot.getValue(Boolean.class);
-                if(connected){
-                    for (View v: mUploadingMessageList) {
-                        v.setVisibility(GONE);
-                    }
-                    mUploadingMessageList.clear();
-                    Log.d(TAG,"firebase connected");
-                }else{
-                    Log.d(TAG,"firebase disconnected");
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG,"listener disconnected");
-            }
-        });
-        */
-
 
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
@@ -209,6 +187,8 @@ public class ChatFrameActivity extends Activity {
             ((TextView) findViewById(R.id.chatFrameTitle)).setText(mEventName);
             mProgressBar.setVisibility(VISIBLE);
 
+            DatabaseReference list = mFirebaseDatabaseReference.child("messages/group_" + mEventId) ;
+
             mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(
                     FriendlyMessage.class,
                     R.layout.item_message,
@@ -221,7 +201,7 @@ public class ChatFrameActivity extends Activity {
                     switch (localType) {
                         case 0:
                             //others
-                            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                            mProgressBar.setVisibility(ProgressBar.GONE);
                             viewHolder.messageTextView.setText(model.getContent());
                             viewHolder.messengerTextView.setText(model.getDisplayName());
                             viewHolder.timeStamp.setText(model.getTime());
@@ -236,7 +216,7 @@ public class ChatFrameActivity extends Activity {
                             break;
                         case 10:
                             //own
-                            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                            mProgressBar.setVisibility(ProgressBar.GONE);
                             viewHolder.messageTextView.setText(model.getContent());
                             viewHolder.timeStamp.setText(model.getTime());
                             if(model.isReachServer()){
@@ -301,6 +281,7 @@ public class ChatFrameActivity extends Activity {
                     return getLocalType(friendlyMessage);
                 }
 
+
                 public int getLocalType(FriendlyMessage friendlyMessage) {
                     int localType = 0;
                     if (friendlyMessage.getUid().equals(MainActivity.mUsername)) { //TODO
@@ -311,6 +292,7 @@ public class ChatFrameActivity extends Activity {
                     return localType;
                 }
             };
+
 
             mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
                 @Override
@@ -329,11 +311,24 @@ public class ChatFrameActivity extends Activity {
                 }
             });
 
+            list.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    mProgressBar.setVisibility(GONE);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
             if (mMessageRecyclerView.getAdapter() == null) {
                 mMessageRecyclerView.setAdapter(mFirebaseAdapter);
             } else {
                 mMessageRecyclerView.swapAdapter(mFirebaseAdapter, false);
             }
+
         }
 
     }

@@ -130,5 +130,14 @@ public class FriendlyMessage {
     public boolean isReachServer() {
         return reachServer;
     }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    public void setReachServer(boolean reachServer) {
+        this.reachServer = reachServer;
+    }
+
 }
 
