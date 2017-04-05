@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.LauncherApps;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,7 +27,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.Profile;
 import com.facebook.internal.CallbackManagerImpl;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -41,9 +39,6 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.plus.People;
-import com.google.android.gms.plus.model.people.Person;
-import com.google.firebase.appindexing.builders.PersonBuilder;
 import com.google.gson.Gson;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -66,7 +61,6 @@ import csfyp.cs_fyp_android.databinding.LoginFrgBinding;
 import csfyp.cs_fyp_android.forgetPassword.FrgForgetPassword;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
-import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.respond.LoginRespond;
@@ -76,8 +70,6 @@ import csfyp.cs_fyp_android.register.FrgSelfRating;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import com.facebook.FacebookSdk;
 
 import static com.google.android.gms.common.SignInButton.SIZE_WIDE;
 
@@ -235,9 +227,11 @@ public class FrgLogin extends CustomFragment implements Validator.ValidationList
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient != null) {
             mGoogleApiClient.stopAutoManage(getActivity());
-            mGoogleApiClient.disconnect();
+            if (mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.disconnect();
+            }
         }
     }
 

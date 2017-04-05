@@ -46,7 +46,6 @@ import csfyp.cs_fyp_android.lib.ClusterableMarkerRenderer;
 
 import static android.app.Activity.RESULT_OK;
 import static csfyp.cs_fyp_android.home.FrgHome.HOME_LOCATION_SETTING_CALLBACK;
-import static csfyp.cs_fyp_android.home.FrgHome.HOME_PERMISSION_CALLBACK;
 
 public class CustomMapFragment extends CustomFragment implements OnMapReadyCallback,
         ResultCallback,
@@ -95,6 +94,7 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
             mLastTarget = savedInstanceState.getParcelable("lastTarget");
             mLastZoom = savedInstanceState.getFloat("lastZoom");
             mIsSetToInitLocation = savedInstanceState.getBoolean("isSetToInitLocation");
+            mIsPermissionGranted = ((MainActivity)getActivity()).ismIsPermissionGranted();
         }
         // check location setting
         if (isUseLocationService)
@@ -323,10 +323,6 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
 
         // check permission for location
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-            } else {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, HOME_PERMISSION_CALLBACK);
-            }
         } else {
             // permission granted
             mIsPermissionGranted = true;
@@ -342,17 +338,16 @@ public class CustomMapFragment extends CustomFragment implements OnMapReadyCallb
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
     }
 
-    // permission result callback
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == HOME_PERMISSION_CALLBACK) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mIsPermissionGranted = true;
-                startLocationUpdate();
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == HOME_PERMISSION_CALLBACK) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                mIsPermissionGranted = true;
+//                startLocationUpdate();
+//            }
+//        }
+//    }
 
     // setting result callback
     @Override

@@ -83,7 +83,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
     public static final int HOME_LOADER_ID = 1;
     public static final int HOME_LOCATION_SETTING_CALLBACK = 10;
-    public static final int HOME_PERMISSION_CALLBACK = 11;
     public static final String TAG = "HomeFragment";
 
     private boolean mIsPanelExpanded;

@@ -1,14 +1,20 @@
 package csfyp.cs_fyp_android;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -53,8 +59,10 @@ import static org.greenrobot.eventbus.ThreadMode.MAIN;
 
 public class MainActivity extends LocalizationActivity {
 
+    private static final int PERMISSIONS_MULTIPLE_REQUEST = 1324;
     public FrgHome mHome;
     public static Location mCurrentLocation;
+    private boolean mIsPermissionGranted = false;
     private String mToken;
     private User mSelf;
     private int mUserId;
@@ -112,6 +120,50 @@ public class MainActivity extends LocalizationActivity {
         return mHome;
     }
 
+    public boolean ismIsPermissionGranted() {
+        return mIsPermissionGranted;
+    }
+
+    private void checkPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) +
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) +
+                ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) +
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) +
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) +
+                ContextCompat.checkSelfPermission(this, Manifest.permission.SYSTEM_ALERT_WINDOW) +
+                ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SYSTEM_ALERT_WINDOW) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.INTERNET) ) {
+
+                Snackbar.make(findViewById(R.id.parent_fragment_container), "Please Grant Permissions", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("ENABLE", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    requestPermissions(
+                                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.INTERNET}, PERMISSIONS_MULTIPLE_REQUEST);
+                                }
+                            }
+                        }).show();
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.INTERNET}, PERMISSIONS_MULTIPLE_REQUEST);
+                }
+            }
+        } else {
+            mIsPermissionGranted = true;
+
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -145,6 +197,7 @@ public class MainActivity extends LocalizationActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("isPermissionGranted", mIsPermissionGranted);
         super.onSaveInstanceState(outState);
     }
 
@@ -154,6 +207,10 @@ public class MainActivity extends LocalizationActivity {
         setTheme(R.style.AppTheme);
 
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null)
+            mIsPermissionGranted = savedInstanceState.getBoolean("isPermissionGranted");
+
         active = true;
 
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
@@ -212,6 +269,51 @@ public class MainActivity extends LocalizationActivity {
         }
     }
 
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !mIsPermissionGranted) {
+            checkPermission();
+        } else {
+            mIsPermissionGranted = true;
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_MULTIPLE_REQUEST:
+                if (grantResults.length > 0) {
+                    boolean fineLocationPermission = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean coarseLocationPermission = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    boolean cameraPermission = grantResults[2] == PackageManager.PERMISSION_GRANTED;
+                    boolean readExternalFilePermission = grantResults[3] == PackageManager.PERMISSION_GRANTED;
+                    boolean writeExternalFilePermission = grantResults[4] == PackageManager.PERMISSION_GRANTED;
+                    boolean alertWindowPermission = grantResults[5] == PackageManager.PERMISSION_GRANTED;
+                    boolean internetPermission = grantResults[6] == PackageManager.PERMISSION_GRANTED;
+
+
+                    if(fineLocationPermission && coarseLocationPermission && cameraPermission && readExternalFilePermission && writeExternalFilePermission && alertWindowPermission && internetPermission)
+                    {
+                        mIsPermissionGranted = true;
+                    }
+                }
+                else {
+                    Snackbar.make(this.findViewById(android.R.id.content), "Please Grant Permissions", Snackbar.LENGTH_INDEFINITE)
+                            .setAction("ENABLE", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        requestPermissions(
+                                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.INTERNET}, PERMISSIONS_MULTIPLE_REQUEST);
+                                    }
+                                }
+                            }).show();
+                }
+                break;
+        }
+    }
 
     @Override
     protected void onDestroy() {
