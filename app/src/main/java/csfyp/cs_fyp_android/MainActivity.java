@@ -36,6 +36,7 @@ import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.lib.eventBus.PropicUpdate;
 import csfyp.cs_fyp_android.lib.eventBus.SnackBarMessageContent;
+import csfyp.cs_fyp_android.lib.eventBus.Toggle;
 import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
@@ -262,6 +263,15 @@ public class MainActivity extends LocalizationActivity {
                 }
             });
         snackBar.show();
+    }
+
+    @Subscribe(threadMode = MAIN)
+    public void ToggleUniversalProgressBar(Toggle toggle) {
+        if (toggle.getMode() == Toggle.SHOW) {
+            findViewById(R.id.universalProgressBar).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.universalProgressBar).setVisibility(View.GONE);
+        }
     }
 
 

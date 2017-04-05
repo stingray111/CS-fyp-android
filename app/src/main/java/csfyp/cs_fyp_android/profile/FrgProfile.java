@@ -179,14 +179,6 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
 
         getLoaderManager().initLoader(USER_LOADER_ID, null, this);
 
-//        // load propic
-//        Picasso.with(getContext())
-//                .load(((MainActivity)getActivity()).getmSelf().getProPic())
-//                .resize(300,300)
-//                .centerCrop()
-//                .placeholder(R.drawable.ic_propic_big)
-//                .into(mDataBinding.profileProPic);
-
         return v;
     }
 
