@@ -16,6 +16,8 @@ public class ChatServiceSetting {
     public static final int UPDATE_TOKEN= 2;
     public static final int ADD_EVENT= 3;
     public static final int REMOVE_EVENT= 4;
+    public static final int CallChatFrame= 5;
+    public static final int SWAP_EVENT_LIST = 6;
 
     private int mode;
     private int delay;
@@ -33,6 +35,16 @@ public class ChatServiceSetting {
         this.mEventList = mEventList;
         this.mSelf = mSelf;
         this.delay = 0;
+    }
+
+    public ChatServiceSetting(List<Event> mEventList,int mode){
+        this.mode = mode;
+        this.mEventList = mEventList;
+    }
+
+    public ChatServiceSetting(Event event, int mode){
+        this.eventObj = event;
+        this.mode = mode;
     }
 
     public ChatServiceSetting(Event eventToBeAdded){

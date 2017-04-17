@@ -85,6 +85,69 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="Chat Service"
+                    android:textSize="16sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="#000000" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Floating Chat Menu"
+                        android:layout_weight="4"
+                        android:textSize="20sp"/>
+                    <Switch
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:id="@+id/floatingChatMenuToggle"
+                        android:layout_gravity="center"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/floatingChatModeColumn"
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="4"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:text="Mode"/>
+                    <Spinner
+                        android:id="@+id/floatingChatMode"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="50dp"
+                        android:entries="@array/floatingChatModeSpinner"/>
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout

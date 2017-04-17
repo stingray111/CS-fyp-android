@@ -61,7 +61,8 @@ public class ChatFrameActivity extends Activity {
     private LinearLayoutManager mLinearLayoutManager;
     private RecyclerView mMessageRecyclerView;
 
-    private User mSelf;
+    //private User mSelf;
+    public static User mSelf;
     private int mEventId;
     private String mEventName;
 
@@ -199,6 +200,8 @@ public class ChatFrameActivity extends Activity {
                 protected void populateViewHolder(MessageViewHolder viewHolder, FriendlyMessage model, int position) {
                     int localType = getLocalType(model);
                     switch (localType) {
+                        case 3:
+                        case 13:
                         case 0:
                             //others
                             mProgressBar.setVisibility(ProgressBar.GONE);
@@ -225,6 +228,7 @@ public class ChatFrameActivity extends Activity {
                                 viewHolder.uploadingProgress.setVisibility(VISIBLE);
                             }
                             break;
+
                     }
                 }
 
@@ -244,10 +248,13 @@ public class ChatFrameActivity extends Activity {
                             View selfView = LayoutInflater.from(parent.getContext())
                                     .inflate(R.layout.item_message_own, parent, false);
                             return new MessageViewHolder(selfView);
+                        case 3:
+                        case 13:
                         case 0:
                             View otherView = LayoutInflater.from(parent.getContext())
                                     .inflate(R.layout.item_message, parent, false);
                             return new MessageViewHolder(otherView);
+
                     }
                     Log.d(TAG, "unhandled");
                     return null;
@@ -256,21 +263,30 @@ public class ChatFrameActivity extends Activity {
                 @Override
                 public void onBindViewHolder(MessageViewHolder viewHolder, int position) {
                     super.onBindViewHolder(viewHolder, position);
-                    final Date thisMessageDate = this.getItem(position).getDate();
-                    final String thisMessageDay = (String)DateFormat.format("dd-MMM-yyyy", thisMessageDate);
-                    if(position != 0){
-                        final Date previousMessageDate = this.getItem(position - 1).getDate();
-                        //set date
-                        final String previousMessageDay = (String)DateFormat.format("dd-MMM-yyyy", previousMessageDate);
-                        if(!thisMessageDay.equals(previousMessageDay)){
+                    long type = this.getItem(position).getType();
+                    if(type == 3 || type == 13){
+                        viewHolder.date.setText("Group Created");
+                        viewHolder.date.setVisibility(VISIBLE);
+                        viewHolder.date.setPadding(0,0,0,10);
+                        viewHolder.contentRoot.setVisibility(GONE);
+                    }else {
+                        viewHolder.contentRoot.setVisibility(VISIBLE);
+                        final Date thisMessageDate = this.getItem(position).getDate();
+                        final String thisMessageDay = (String) DateFormat.format("dd-MMM-yyyy", thisMessageDate);
+                        if (position != 0) {
+                            final Date previousMessageDate = this.getItem(position - 1).getDate();
+                            //set date
+                            final String previousMessageDay = (String) DateFormat.format("dd-MMM-yyyy", previousMessageDate);
+                            if (!thisMessageDay.equals(previousMessageDay)) {
+                                viewHolder.date.setVisibility(VISIBLE);
+                                viewHolder.date.setText(thisMessageDay);
+                            } else {
+                                viewHolder.date.setVisibility(GONE);
+                            }
+                        } else {
                             viewHolder.date.setVisibility(VISIBLE);
                             viewHolder.date.setText(thisMessageDay);
-                        }else{
-                            viewHolder.date.setVisibility(GONE);
                         }
-                    }else{
-                        viewHolder.date.setVisibility(VISIBLE);
-                        viewHolder.date.setText(thisMessageDay);
                     }
                 }
 

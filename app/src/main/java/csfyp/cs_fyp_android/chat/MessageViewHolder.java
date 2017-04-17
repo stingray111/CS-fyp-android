@@ -19,6 +19,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView date;
     public CircleImageView messengerImageView;
     public ProgressBar uploadingProgress;
+    public View contentRoot;
 
     public MessageViewHolder(View v) {
         super(v);
@@ -28,6 +29,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         try { uploadingProgress = (ProgressBar) itemView.findViewById(R.id.messageUploading); }catch ( Exception e){ }
         timeStamp = (TextView) itemView.findViewById(R.id.timeStamp);
         date = (TextView) itemView.findViewById(R.id.DateStamp);
+        contentRoot = itemView.findViewById(R.id.item_message_content_root);
     }
 
 }

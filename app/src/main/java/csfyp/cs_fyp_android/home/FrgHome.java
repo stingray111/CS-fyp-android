@@ -52,6 +52,7 @@ import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.about.FrgAbout;
 import csfyp.cs_fyp_android.chat.ChatService;
+import csfyp.cs_fyp_android.chat.FrgChat;
 import csfyp.cs_fyp_android.currentEvent.FrgCurrentEvent;
 import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
 import csfyp.cs_fyp_android.event.FrgEvent;
@@ -75,8 +76,6 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCallbacks<BatchLoaderBundle> {
-
-    private static final int OVERLAY_PERMISSION_REQ_CODE_CHATHEAD_MSG = 12345;
 
     private static final int SORT_DISTANCE =1;
     private static final int SORT_POP =2;
@@ -169,43 +168,11 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
     }
 
-    private void chatHeadInit(){
-        Intent serviceIntent = new Intent(getMainActivity(), ChatService.class);
-        serviceIntent.putExtra("fromHome",true);
-        getMainActivity().startService(serviceIntent);
-    }
-
-    private void needPermissionDialog(final int requestCode){
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage("You need to allow permission");
-        builder.setPositiveButton("OK",
-                new android.content.DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO Auto-generated method stub
-                        requestPermission(requestCode);
-                    }
-                });
-        builder.setNegativeButton("Cancel", new android.content.DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-        builder.setCancelable(false);
-        builder.show();
-    }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == OVERLAY_PERMISSION_REQ_CODE_CHATHEAD_MSG){
-            if (!Utils.canDrawOverlays(getContext())) {
-            }else{
-                chatHeadInit();
-            }
-        }
+
     }
 
     @Override
@@ -218,11 +185,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //chat messaging service
-        if (!Utils.canDrawOverlays(getContext())){
-            requestPermission(OVERLAY_PERMISSION_REQ_CODE_CHATHEAD_MSG);
-        } else {
-            chatHeadInit();
-        }
+        getMainActivity().chatAuthInit();
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.home_frg, container, false);
         mDataBinding.setHandlers(this);
         View v = mDataBinding.getRoot();
@@ -535,6 +498,9 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     public void onClickProfile(View view) {
         switchFragment(FrgProfile.newInstance(getMainActivity().getmUserId()));
     }
+    public void onClickChat(View view){
+        switchFragment(FrgChat.newInstance());
+    }
 
     public void onClickAbout(View view) {
         switchFragment(FrgAbout.newInstance());
@@ -669,12 +635,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
             }
             return null;
         }
-    }
-
-    private void requestPermission(int requestCode){
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-        intent.setData(Uri.parse("package:" + getActivity().getPackageName()));
-        startActivityForResult(intent, requestCode);
     }
 
 }

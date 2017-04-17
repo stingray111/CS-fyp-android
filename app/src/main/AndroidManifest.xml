@@ -63,7 +63,8 @@
             android:name=".chat.ChatFrameActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent" />
+            android:theme="@android:style/Theme.Translucent" >
+        </activity>
 
         <service android:name=".chat.ChatService"
             android:label="MeetUs Chat" >

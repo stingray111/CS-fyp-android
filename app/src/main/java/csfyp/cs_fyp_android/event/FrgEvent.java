@@ -28,6 +28,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -40,6 +41,7 @@ import java.util.List;
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.chat.FriendlyMessage;
 import csfyp.cs_fyp_android.databinding.EventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
@@ -205,8 +207,11 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
                                 resetLoader();
                                 showQuit();
-                                EventBus.getDefault().post(new ChatServiceSetting(mEventObj));
-                                FirebaseMessaging.getInstance().subscribeToTopic("group_"+mEventObj.getId());
+
+                                getMainActivity().addEventChat(mEventObj);
+                                User self = getMainActivity().getmSelf();
+                                //FriendlyMessage friendlyMessage = new FriendlyMessage(self.getUserName(),self.getDisplayName(),"",self.getProPic(),3);
+                                //FirebaseDatabase.getInstance().getReference("messages/group_"+ mEventObj.getId()).push().setValue(friendlyMessage);
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
@@ -241,8 +246,7 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 resetLoader();
                                 showJoin();
 
-                                EventBus.getDefault().post(new ChatServiceSetting(mEventId,ChatServiceSetting.REMOVE_EVENT));
-                                FirebaseMessaging.getInstance().unsubscribeFromTopic("group_"+mEventObj.getId());
+                                getMainActivity().removeEventChat(mEventId);
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
@@ -269,12 +273,11 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                             if (response.body().getErrorMsg() == null) {
                                 Toast.makeText(getContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
                                 //TODO: drop the messaging record
-                                EventBus.getDefault().post(new ChatServiceSetting(mEventId,ChatServiceSetting.REMOVE_EVENT));
-                                EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
+                                getMainActivity().removeEventChat(mEventId);
                                 onBack(null);
                             }
                             else
-                                Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
+                               Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -461,5 +464,9 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
         }
     }
 
+
+    public MainActivity getMainActivity(){
+        return (MainActivity)getActivity();
+    }
 }
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +14,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
@@ -30,6 +36,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import csfyp.cs_fyp_android.CustomFragment;
 import csfyp.cs_fyp_android.MainActivity;
@@ -38,6 +45,7 @@ import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.databinding.SettingFrgBinding;
 import csfyp.cs_fyp_android.home.FrgHome;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
 import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.login.FrgLogin;
 import csfyp.cs_fyp_android.model.Event;
@@ -47,6 +55,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.view.View.GONE;
+
 public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnConnectionFailedListener {
     public FrgSetting(){super();}
     public static final String TAG = "Setting";
@@ -54,6 +64,8 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
     private Button mlogoutBtn;
     private SettingFrgBinding mBinding;
     private GoogleApiClient mGoogleApiClient;
+    private Switch floatingChatMenuSwitch;
+    private Spinner floatingChatMenuSpinner;
 
     public static FrgSetting newInstance() {
         Bundle args = new Bundle();
@@ -95,6 +107,65 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
             }
         });
 
+        floatingChatMenuSwitch = (Switch) v.findViewById(R.id.floatingChatMenuToggle);
+        floatingChatMenuSpinner = (Spinner) v.findViewById(R.id.floatingChatMode);
+        final View floatingChatMenuSpinnerColumn = v.findViewById(R.id.floatingChatModeColumn);
+        if(getMainActivity().floatingChatMenuOn){
+            floatingChatMenuSwitch.setChecked(true);
+        }else{
+            floatingChatMenuSwitch.setChecked(false);
+            floatingChatMenuSpinnerColumn.setVisibility(GONE);
+        }
+        floatingChatMenuSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    //start chat head
+                    getMainActivity().floatingChatMenuOn = true;
+                    getMainActivity().chatHeadInit();
+                    if(getMainActivity().messageFullEventList.size() <= 2) {
+                        getMainActivity().floatingChatMenuShowing = getMainActivity().messageFullEventList;
+                    }else{
+                        getMainActivity().floatingChatMenuShowing = getMainActivity().messageFullEventList.subList(0,3);
+                    }
+                    new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                    EventBus.getDefault().post(new ChatServiceSetting(getMainActivity().floatingChatMenuShowing,ChatServiceSetting.SWAP_EVENT_LIST));
+                            }
+                    },1000);
+                    //floatingChatMenuSpinnerColumn.setVisibility(View.VISIBLE);
+                    floatingChatMenuSpinnerColumn.setVisibility(View.GONE);
+                }else{
+                    //stop chat head
+                    getMainActivity().stopService(new Intent(getMainActivity(),ChatService.class));
+                    floatingChatMenuSpinnerColumn.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        floatingChatMenuSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //pos 0 is auto, pos 1 is custom
+                Log.d("here","pos"+ position);
+                if(position == 0){
+                    //auto
+                    if(getMainActivity().floatingChatMenuAuto != true){
+                        getMainActivity().setFloatingChatToAuto();
+                    }
+                }else{
+                    //custom
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
         mlogoutBtn = (Button) v.findViewById(R.id.logoutBtn);
         mlogoutBtn.setOnClickListener(new View.OnClickListener() {
             View.OnClickListener _this = this;
@@ -130,26 +201,12 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
                                 editor.remove("acType");
                                 editor.commit();
 
-
-                                if(ChatService.mEventList != null) {
-                                    for (Event event : ChatService.mEventList) {
+                                if(getMainActivity().messageFullEventList != null) {
+                                    for (Event event : getMainActivity().messageFullEventList) {
                                         FirebaseMessaging.getInstance().unsubscribeFromTopic("group_" + event.getId());
                                         Log.d(TAG,"unscribing");
                                     }
                                 }
-
-                                Thread thread = new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                    try {
-                                        FirebaseInstanceId.getInstance().deleteInstanceId();
-                                        Log.d(TAG, "remove instance id success");
-                                    }catch (Exception e){
-                                        Log.d(TAG, "remove instance id fail");
-                                    }
-                                    }
-                                });
-                                thread.start();
 
                                 Intent intent = new Intent(getActivity(), ChatService.class);
                                 ChatService.interfaceStarted = false;
@@ -199,5 +256,9 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i(TAG, "Google Connection Fail");
+    }
+
+    private MainActivity getMainActivity(){
+        return (MainActivity)getActivity();
     }
 }

@@ -1,9 +1,13 @@
 package csfyp.cs_fyp_android.model;
 
 import android.location.Location;
+import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import csfyp.cs_fyp_android.lib.TimeConverter;
 import csfyp.cs_fyp_android.model.request.Rate;
@@ -68,6 +72,20 @@ public class Event {
 
     public int getCurrentPpl() {
         return currentPpl;
+    }
+
+    public Date getStartTimeInDate(){
+        SimpleDateFormat foreignFormat= new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        foreignFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date time = null;
+        try {
+            time = foreignFormat.parse(startTime_formated);
+            return time;
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        return new Date();
+
     }
 
     public String getStartTime_formated() {
