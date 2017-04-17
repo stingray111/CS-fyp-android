@@ -54,12 +54,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.support.design.widget.Snackbar.make;
 import static org.greenrobot.eventbus.ThreadMode.ASYNC;
 import static org.greenrobot.eventbus.ThreadMode.MAIN;
 
 public class MainActivity extends LocalizationActivity {
 
     private static final int PERMISSIONS_MULTIPLE_REQUEST = 1324;
+    private static final String permissionString[] = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.INTERNET};
     public FrgHome mHome;
     public static Location mCurrentLocation;
     private boolean mIsPermissionGranted = false;
@@ -142,20 +144,18 @@ public class MainActivity extends LocalizationActivity {
                     ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SYSTEM_ALERT_WINDOW) ||
                     ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.INTERNET) ) {
 
-                Snackbar.make(findViewById(R.id.parent_fragment_container), "Please Grant Permissions", Snackbar.LENGTH_INDEFINITE)
+                make(findViewById(R.id.parent_fragment_container), "Please Grant Permissions", Snackbar.LENGTH_INDEFINITE)
                         .setAction("ENABLE", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    requestPermissions(
-                                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.INTERNET}, PERMISSIONS_MULTIPLE_REQUEST);
+                                    requestPermissions(permissionString, PERMISSIONS_MULTIPLE_REQUEST);
                                 }
                             }
                         }).show();
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    requestPermissions(
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.INTERNET}, PERMISSIONS_MULTIPLE_REQUEST);
+                    requestPermissions(permissionString, PERMISSIONS_MULTIPLE_REQUEST);
                 }
             }
         } else {
@@ -210,6 +210,12 @@ public class MainActivity extends LocalizationActivity {
 
         if (savedInstanceState != null)
             mIsPermissionGranted = savedInstanceState.getBoolean("isPermissionGranted");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !mIsPermissionGranted) {
+            checkPermission();
+        } else {
+            mIsPermissionGranted = true;
+        }
 
         active = true;
 
@@ -272,16 +278,12 @@ public class MainActivity extends LocalizationActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !mIsPermissionGranted) {
-            checkPermission();
-        } else {
-            mIsPermissionGranted = true;
-        }
+
 
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull final String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_MULTIPLE_REQUEST:
                 if (grantResults.length > 0) {
@@ -300,16 +302,16 @@ public class MainActivity extends LocalizationActivity {
                     }
                 }
                 else {
-                    Snackbar.make(this.findViewById(android.R.id.content), "Please Grant Permissions", Snackbar.LENGTH_INDEFINITE)
+                    Snackbar sb = Snackbar.make(this.findViewById(android.R.id.content), "Please Grant Permissions", Snackbar.LENGTH_INDEFINITE)
                             .setAction("ENABLE", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        requestPermissions(
-                                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.INTERNET}, PERMISSIONS_MULTIPLE_REQUEST);
+                                        requestPermissions(permissionString, PERMISSIONS_MULTIPLE_REQUEST);
                                     }
                                 }
-                            }).show();
+                            });
+                    sb.setActionTextColor(ContextCompat.getColor(this,R.color.white)).show();
                 }
                 break;
         }
@@ -347,7 +349,7 @@ public class MainActivity extends LocalizationActivity {
     }
     @Subscribe(threadMode = MAIN)
     public void snackBarMessage(SnackBarMessageContent snackBarMessageContent){
-        final Snackbar snackBar = Snackbar.make(findViewById(R.id.parent_fragment_container),snackBarMessageContent.message,Snackbar.LENGTH_INDEFINITE);
+        final Snackbar snackBar = make(findViewById(R.id.parent_fragment_container),snackBarMessageContent.message,Snackbar.LENGTH_INDEFINITE);
         snackBar.setActionTextColor(ContextCompat.getColor(this,R.color.white));
         if(snackBarMessageContent.action == null)
             snackBar.setAction("OK", new View.OnClickListener() {
