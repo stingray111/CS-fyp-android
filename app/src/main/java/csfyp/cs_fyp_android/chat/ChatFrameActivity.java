@@ -202,6 +202,8 @@ public class ChatFrameActivity extends Activity {
                     switch (localType) {
                         case 3:
                         case 13:
+                        case 4:
+                        case 14:
                         case 0:
                             //others
                             mProgressBar.setVisibility(ProgressBar.GONE);
@@ -250,6 +252,8 @@ public class ChatFrameActivity extends Activity {
                             return new MessageViewHolder(selfView);
                         case 3:
                         case 13:
+                        case 4:
+                        case 14:
                         case 0:
                             View otherView = LayoutInflater.from(parent.getContext())
                                     .inflate(R.layout.item_message, parent, false);
@@ -264,10 +268,16 @@ public class ChatFrameActivity extends Activity {
                 public void onBindViewHolder(MessageViewHolder viewHolder, int position) {
                     super.onBindViewHolder(viewHolder, position);
                     long type = this.getItem(position).getType();
-                    if(type == 3 || type == 13){
+                    if(type == 3 || type == 13) {
                         viewHolder.date.setText("Group Created");
                         viewHolder.date.setVisibility(VISIBLE);
-                        viewHolder.date.setPadding(0,0,0,10);
+                        viewHolder.date.setPadding(0, 0, 0, 10);
+                        viewHolder.contentRoot.setVisibility(GONE);
+                    }else if(type == 4 || type == 14){
+                        String content = this.getItem(position).getContent();
+                        viewHolder.date.setText(content);
+                        viewHolder.date.setVisibility(VISIBLE);
+                        viewHolder.date.setPadding(0, 0, 0, 10);
                         viewHolder.contentRoot.setVisibility(GONE);
                     }else {
                         viewHolder.contentRoot.setVisibility(VISIBLE);
