@@ -58,25 +58,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.squareup.picasso.Target;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.greenrobot.eventbus.util.ExceptionToResourceMapping;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.Inflater;
 
-import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
-import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.Utils;
 import csfyp.cs_fyp_android.lib.eventBus.ChatFramePage;
 import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
@@ -86,7 +81,6 @@ import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.User;
 
 import static android.view.View.GONE;
-import static android.widget.ListPopupWindow.MATCH_PARENT;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
 
@@ -100,33 +94,24 @@ public class ChatService extends Service {
     public LocalBinder myBinder = new LocalBinder();
     private WindowManager mWindowManager;
     private View mView;
-    private int mStatus;  //0: icon
+    private int mStatus;
     private WindowManager.LayoutParams mParams;
     private Handler mHandler;
     private User mSelf;
+    private String selfStr;
     private volatile int showingEventId;
     private volatile String showingEventName;
     public static volatile boolean active = false;
-    public static volatile boolean created = false;
+    public static volatile boolean interfaceStarted =false;
 
     private FloatingActionMenu mFloatingActionMenu;
-    private List<com.github.clans.fab.FloatingActionButton> mFloatingActionButtonList;
-    private View mChatBox;
-    private WindowManager.LayoutParams mParamsChatBox;
+    private List<com.github.clans.fab.FloatingActionButton> mFloatingActionButtonList = new ArrayList<com.github.clans.fab.FloatingActionButton>();
 
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-
 
     private FirebaseRecyclerAdapter<FriendlyMessage, RecyclerView.ViewHolder> mFirebaseAdapter;
-    public static final String MESSAGES_CHILD = "testMsg";
-    private static final String MESSAGE_URL = "https://cs-fyp.firebaseio.com/testMsg";
-    private Button mSendButton;
-    private EditText mMessageEditText;
-    private List<Event> mEventList;
-    private final List<Target> targets = new ArrayList<Target>();
+    public static List<Event> mEventList = new ArrayList<Event>();
     private ProPicManager proPicManager = new ProPicManager();
-    //vars
 
     public class LocalBinder extends Binder {
         public ChatService getService() {
@@ -144,62 +129,48 @@ public class ChatService extends Service {
 
     @Override
     public void onCreate() {
-        created = true;
         active = true;
         Log.d(TAG,"onCreate");
         super.onCreate();
         mHandler = new Handler();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user!=null) {
-                    Log.d(TAG, "Login:\t" + user.getUid());
-                }
-                else{
-                    Log.d(TAG, "signedOut");
-                }
-            }
-        };
-        mAuth = FirebaseAuth.getInstance();
-        mAuth.addAuthStateListener(mAuthListener);
         EventBus.getDefault().register(this);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(mWindowManager== null || mView == null)
+            startMsg();
         active = true;
         Log.d(TAG,"onStartCommand");
-        EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.INIT));
-        return super.onStartCommand(intent, flags, startId);
+
+        boolean fromHome = intent.getBooleanExtra("fromHome",false);
+        this.selfStr = intent.getStringExtra("self");
+        Gson gson = new Gson();
+        mSelf = gson.fromJson(selfStr,User.class);
+        return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
         active = false;
         Log.d(TAG,"onDestroy");
-        super.onDestroy();
-        if (mView!= null) mWindowManager.removeView(mView);
-        if(mAuthListener!=null){
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-        FirebaseAuth.getInstance().signOut();
         EventBus.getDefault().unregister(this);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void temp (){
-
+        if (mView!= null && mWindowManager!=null) mWindowManager.removeView(mView);
+        mView = null;
+        mWindowManager = null;
+        super.onDestroy();
     }
 
     public void runOnUiThread(Runnable runnable) {
         mHandler.post(runnable);
     }
 
+
     public void startMsg(){
         //put the event list in
 
         Log.d(TAG, "start messaging interface");
+        interfaceStarted = true;
 
         mStatus= 0;
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -231,18 +202,21 @@ public class ChatService extends Service {
         mParams.x = Utils.dpToPx(getBaseContext(),100);
         mParams.y = Utils.dpToPx(getBaseContext(),100);
 
-        mFloatingActionButtonList = new LinkedList<com.github.clans.fab.FloatingActionButton>();
+        /*
         for(Event item:mEventList) {
             final com.github.clans.fab.FloatingActionButton btn = createButton(item);
             mFloatingActionButtonList.add(btn);
         }
 
-        mFloatingActionMenu = (FloatingActionMenu) mView.findViewById(R.id.floatingMsgMenu);
-        mFloatingActionMenu.setVisibility(View.GONE);
         for (com.github.clans.fab.FloatingActionButton _fab : mFloatingActionButtonList) {
             mFloatingActionMenu.addMenuButton(_fab);
             mFloatingActionMenu.setVisibility(View.VISIBLE);
         }
+        */
+
+        mFloatingActionButtonList = new LinkedList<com.github.clans.fab.FloatingActionButton>();
+        mFloatingActionMenu = (FloatingActionMenu) mView.findViewById(R.id.floatingMsgMenu);
+        mFloatingActionMenu.setVisibility(View.GONE);
 
         AnimatorSet set = new AnimatorSet();
 
@@ -373,7 +347,6 @@ public class ChatService extends Service {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void addEvent(ChatServiceSetting css){
-
         if(css.getMode() == ChatServiceSetting.ADD_EVENT) {
             Event e = css.getEventObj();
             final com.github.clans.fab.FloatingActionButton btn = createButton(e);
@@ -403,6 +376,27 @@ public class ChatService extends Service {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void swapEventList(ChatServiceSetting css){
+        if(css.getMode() == ChatServiceSetting.SWAP_EVENT_LIST){
+            mFloatingActionButtonList.clear();
+            mEventList.clear();
+            mFloatingActionMenu.removeAllMenuButtons();
+
+            for(Event event:css.getmEventList()){
+                final com.github.clans.fab.FloatingActionButton btn = createButton(event);
+                mEventList.add(event);
+                mFloatingActionButtonList.add(btn);
+                mFloatingActionMenu.addMenuButton(btn);
+            }
+            if(mEventList.size() == 0){
+                mFloatingActionMenu.setVisibility(GONE);
+            }else{
+                mFloatingActionMenu.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
     private com.github.clans.fab.FloatingActionButton createButton(Event item){
         final com.github.clans.fab.FloatingActionButton btn = new com.github.clans.fab.FloatingActionButton(this);
         final String eventName = item.getName();
@@ -415,72 +409,30 @@ public class ChatService extends Service {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 ChatService.this.showingEventId = eventId;
                 ChatService.this.showingEventName = eventName;
+
+                mFloatingActionMenu.close(true);
                 if(!ChatFrameActivity.active) {
-                    Gson gson = new Gson();
-                    String selfStr = gson.toJson(mSelf);
                     Intent it;
                     it = new Intent(ChatService.this, ChatFrameActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     it.putExtra("eventId", eventId);
                     it.putExtra("mSelf", selfStr);
                     it.putExtra("eventName", eventName);
-                    PendingIntent pit = PendingIntent.getActivity(ChatService.this,0,it,0);
-                    try{
+                    PendingIntent pit = PendingIntent.getActivity(ChatService.this, 0, it, 0);
+                    try {
                         pit.send();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
+
                 }else{
-                    EventBus.getDefault().post(new ChatFramePage(ChatFramePage.REQUEST));
+                    EventBus.getDefault().post(new ChatFramePage(mSelf, eventId, eventName));
                 }
             }
         });
         return btn;
-    }
-
-    @Subscribe (threadMode = ThreadMode.ASYNC)
-    public void loginWithContent(final ChatServiceSetting chatServiceSetting){
-        if(chatServiceSetting.getMode() == ChatServiceSetting.SET_PARAM) {
-            mSelf = chatServiceSetting.getmSelf();
-            mEventList = chatServiceSetting.getmEventList();
-
-            mAuth.signInWithCustomToken(mSelf.getMsgToken())
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@android.support.annotation.NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
-                                Log.d(TAG, "messaging service started");
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        startMsg();
-                                    }
-                                });
-                            }
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            if(e instanceof com.google.firebase.auth.FirebaseAuthInvalidCredentialsException) {
-                                EventBus.getDefault().post(new ChatServiceSetting(ChatServiceSetting.UPDATE_TOKEN));
-                            }else {
-                                EventBus.getDefault().post(new ErrorMsg("Cannot login to messaging service", ErrorMsg.LENGTH_LONG));
-                                new Handler().postDelayed(
-                                        new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                EventBus.getDefault().post(chatServiceSetting);
-                                            }
-                                        },
-                                        5000
-                                );   //TODO: update token
-                            }
-                        }
-                    });
-
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -508,5 +460,8 @@ public class ChatService extends Service {
             EventBus.getDefault().post(new ChatFramePage(mSelf,showingEventId,showingEventName));
         }
     }
+
+
+
 }
 

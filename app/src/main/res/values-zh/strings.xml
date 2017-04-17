@@ -8,6 +8,7 @@
     <string name="title_new_event">建立活動</string>
     <string name="title_history">歷史記錄</string>
     <string name="title_ongoing_event">進行中的活動</string>
+    <string name="navbar_chat">聊天</string>
     <string name="title_setting">設定</string>
     <string name="title_about">關於MeetUs</string>
 

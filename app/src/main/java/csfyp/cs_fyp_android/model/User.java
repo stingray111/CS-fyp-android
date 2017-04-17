@@ -259,4 +259,6 @@ public class User {
     public void setMsgToken(String msgToken) {
         this.msgToken = msgToken;
     }
+
+
 }

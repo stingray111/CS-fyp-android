@@ -14,6 +14,7 @@
     <string name="navbar_new_event">Create Event</string>
     <string name="navbar_history">History</string>
     <string name="navbar_ongoing_event">Ongoing Event</string>
+    <string name="navbar_chat">Chat</string>
     <string name="navbar_setting">Setting</string>
     <string name="navbar_about">About</string>
 
@@ -105,8 +106,10 @@
     <string name="skeptical">Skeptical</string>
     <string name="rational">Rational</string>
 
-
-
+    <string-array name="floatingChatModeSpinner">
+        <item>Auto</item>
+        <item>Custom</item>
+    </string-array>
 
 
 </resources>

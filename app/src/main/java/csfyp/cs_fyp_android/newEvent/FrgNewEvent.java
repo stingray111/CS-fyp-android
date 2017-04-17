@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
@@ -40,11 +41,13 @@ import java.util.Random;
 import csfyp.cs_fyp_android.CustomMapFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
+import csfyp.cs_fyp_android.chat.FriendlyMessage;
 import csfyp.cs_fyp_android.databinding.NewEventFrgBinding;
 import csfyp.cs_fyp_android.lib.CustomScrollView;
 import csfyp.cs_fyp_android.lib.HTTP;
 import csfyp.cs_fyp_android.lib.TimeConverter;
 import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
+import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.EventCreateRequest;
 import csfyp.cs_fyp_android.model.respond.EventRespond;
 import retrofit2.Call;
@@ -433,7 +436,11 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
                 public void onResponse(Call<EventRespond> call, Response<EventRespond> response) {
                     if (response.isSuccessful()) {
                         Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
-                        EventBus.getDefault().post(new ChatServiceSetting(response.body().getEvent()));
+
+                        getMainActivity().addEventChat(response.body().getEvent());
+                        User self = getMainActivity().getmSelf();
+                        FriendlyMessage friendlyMessage = new FriendlyMessage(self.getUserName(),self.getDisplayName(),"",self.getProPic(),3);
+                        FirebaseDatabase.getInstance().getReference("messages/group_"+ response.body().getEvent().getId()).push().setValue(friendlyMessage);
                         onBack(null);
                     } else {
                         Toast.makeText(getContext(), response.errorBody().toString(), Toast.LENGTH_SHORT).show();
@@ -491,5 +498,9 @@ public class FrgNewEvent extends CustomMapFragment implements Validator.Validati
     @Override
     public void onMarkerDragEnd(Marker marker) {
         mMarker = marker;
+    }
+
+    public MainActivity getMainActivity(){
+        return (MainActivity)getActivity();
     }
 }

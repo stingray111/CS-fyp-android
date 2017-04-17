@@ -31,6 +31,7 @@ public class FriendlyMessage {
     private Long creationDate;
     private String displayName;
     private String photoUrl;
+    private boolean reachServer;
     private int type; //0 is text,1 photo, 2 audio
 
     public FriendlyMessage() {
@@ -43,6 +44,7 @@ public class FriendlyMessage {
         this.content = content;
         this.photoUrl = photoUrl;
         this.type = 0;
+        this.reachServer = false;
     }
 
     public FriendlyMessage(String uid, String displayName,String content,String photoUrl,int type) {
@@ -51,7 +53,7 @@ public class FriendlyMessage {
         this.content = content;
         this.photoUrl = photoUrl;
         this.type = type;
-
+        this.reachServer = false;
     }
 
 
@@ -124,5 +126,18 @@ public class FriendlyMessage {
     public String getPhotoUrl() {
         return photoUrl;
     }
+
+    public boolean isReachServer() {
+        return reachServer;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    public void setReachServer(boolean reachServer) {
+        this.reachServer = reachServer;
+    }
+
 }
 

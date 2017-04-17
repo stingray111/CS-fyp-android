@@ -9,4 +9,7 @@
     <color name="purple">#7d00b3</color>
     <color name="green">#00b309</color>
     <color name="blue">#0048b3</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="icon_color">#666666</color>
 </resources>
