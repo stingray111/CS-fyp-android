@@ -633,7 +633,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
                 }
             } else {
                 // todo: fix problem of location on first enter home
-                EventBus.getDefault().post(new SnackBarMessageContent("You don't have location service", "Retry"));
+                //EventBus.getDefault().post(new SnackBarMessageContent("You don't have location service", "Retry"));
                 Log.d("here","location fail");
                 // Toast.makeText(getMainActivity(), "You do not have an valid location service now, try again later.", Toast.LENGTH_LONG ).show();
             }

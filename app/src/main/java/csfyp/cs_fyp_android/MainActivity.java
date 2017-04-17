@@ -171,18 +171,15 @@ public class MainActivity extends LocalizationActivity {
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) +
                 ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) +
                 ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) +
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) +
-                ContextCompat.checkSelfPermission(this, Manifest.permission.SYSTEM_ALERT_WINDOW) +
-                ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION) ||
                     ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) ||
                     ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
                     ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SYSTEM_ALERT_WINDOW) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.INTERNET) ) {
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                     ) {
 
                 make(findViewById(R.id.parent_fragment_container), "Please Grant Permissions", Snackbar.LENGTH_INDEFINITE)
                         .setAction("ENABLE", new View.OnClickListener() {
@@ -341,8 +338,9 @@ public class MainActivity extends LocalizationActivity {
                     boolean internetPermission = grantResults[6] == PackageManager.PERMISSION_GRANTED;
 
 
-                    if(fineLocationPermission && coarseLocationPermission && cameraPermission && readExternalFilePermission && writeExternalFilePermission && alertWindowPermission && internetPermission)
+                    if(fineLocationPermission && coarseLocationPermission && cameraPermission && readExternalFilePermission && writeExternalFilePermission )
                     {
+                        Log.d(TAG,"grantend = true");
                         mIsPermissionGranted = true;
                     }
                 }

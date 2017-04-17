@@ -101,7 +101,7 @@ public class ChatFrgAdt extends RecyclerView.Adapter<ChatGroupsViewHolder>{
                             holder.lastMsgContent.setText("");
                         }else {
                             holder.lastMsgContent.setText((String) dataSnapshot.child("content").getValue());
-                            holder.lastMsgSender.setText(sender);
+                            holder.lastMsgSender.setText(sender+" :");
                         }
                     }catch (Exception e){
                         e.printStackTrace();
