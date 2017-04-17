@@ -477,7 +477,6 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
     @Override
     public void onInfoWindowClick(Marker marker) {
         super.onInfoWindowClick(marker);
-        Toast.makeText(getContext(), "clicked", Toast.LENGTH_SHORT).show();
         String[] temp = marker.getSnippet().split("&");
         switchFragment(FrgEvent.newInstance(Integer.parseInt(temp[4])));
     }
