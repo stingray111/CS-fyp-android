@@ -202,6 +202,11 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                             Log.i(TAG, "is 200");
                             if (response.body().getErrorMsg() == null) {
                                 Toast.makeText(getContext(), "Joined successfully", Toast.LENGTH_SHORT).show();
+
+                                User self =getMainActivity().getmSelf();
+                                FriendlyMessage friendlyMessage = new FriendlyMessage(self.getUserName(),self.getDisplayName(),self.getDisplayName()+" joined the group",self.getProPic(),4);
+                                FirebaseDatabase.getInstance().getReference("messages/group_"+ mEventId).push().setValue(friendlyMessage);
+
                                 Log.i(TAG, "Joined successfully");
                                 mIsJoined = true;
                                 EventBus.getDefault().post(new RefreshLoader(CURRENT_EVENT_LOADER_ID));
@@ -209,9 +214,6 @@ public class FrgEvent extends CustomFragment implements OnMapReadyCallback,Loade
                                 showQuit();
 
                                 getMainActivity().addEventChat(mEventObj);
-                                User self = getMainActivity().getmSelf();
-                                //FriendlyMessage friendlyMessage = new FriendlyMessage(self.getUserName(),self.getDisplayName(),"",self.getProPic(),3);
-                                //FirebaseDatabase.getInstance().getReference("messages/group_"+ mEventObj.getId()).push().setValue(friendlyMessage);
                             }
                             else
                                 Toast.makeText(getContext(), response.body().getErrorMsg(), Toast.LENGTH_SHORT).show();

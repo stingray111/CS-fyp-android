@@ -32,7 +32,7 @@ public class FriendlyMessage {
     private String displayName;
     private String photoUrl;
     private boolean reachServer;
-    private int type; //0 is text,1 photo, 2 audio
+    private int type; //0 is text,1 photo, 2 audio, 3 is create, 4 is join
 
     public FriendlyMessage() {
     }

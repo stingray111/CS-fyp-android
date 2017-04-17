@@ -97,12 +97,16 @@ public class ChatFrgAdt extends RecyclerView.Adapter<ChatGroupsViewHolder>{
                         long type = (long)dataSnapshot.child("type").getValue();
                         String sender = (String) dataSnapshot.child("displayName").getValue();
                         if(type == 3) {
-                            holder.lastMsgSender.setText(sender+" created the group");
+                            holder.lastMsgSender.setText(sender + " created the group");
+                            holder.lastMsgContent.setText("");
+                        }else if(type == 4){
+                            holder.lastMsgSender.setText(sender + " joined the group");
                             holder.lastMsgContent.setText("");
                         }else {
-                            holder.lastMsgContent.setText((String) dataSnapshot.child("content").getValue());
                             holder.lastMsgSender.setText(sender+" :");
+                            holder.lastMsgContent.setText((String) dataSnapshot.child("content").getValue());
                         }
+
                     }catch (Exception e){
                         e.printStackTrace();
                     }
