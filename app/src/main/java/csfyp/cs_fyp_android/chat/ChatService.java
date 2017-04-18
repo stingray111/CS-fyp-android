@@ -236,7 +236,7 @@ public class ChatService extends Service {
             @Override
             public void onAnimationStart(Animator animation) {
                 mFloatingActionMenu.getMenuIconView().setImageResource(mFloatingActionMenu.isOpened()
-                        ? R.drawable.ic_speech_bubble: R.drawable.ic_close_black_24dp);
+                        ? R.drawable.ic_app_icon_for_chat: R.drawable.ic_close_black_24dp);
             }
         });
         set.play(scaleOutX).with(scaleOutY);
