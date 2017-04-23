@@ -16,7 +16,7 @@
         fab:menu_icon="@drawable/ic_app_icon_for_chat"
         fab:menu_fab_size="normal"
         fab:menu_showShadow="false"
-        fab:menu_colorNormal="@color/colorPrimaryDark"
+        fab:menu_colorNormal="@color/colorPrimary"
         fab:menu_colorPressed="@color/colorPrimary"
         fab:menu_colorRipple="#99FFFFFF"
         fab:menu_animationDelayPerItem="50"
