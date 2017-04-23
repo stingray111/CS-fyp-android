@@ -27,13 +27,20 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
 import com.squareup.picasso.Picasso;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 
 import csfyp.cs_fyp_android.CustomFragment;
+import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.databinding.ProfileFrgBinding;
+import csfyp.cs_fyp_android.editProfile.FrgEditProfile;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.eventBus.RefreshLoader;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.UserRequest;
 import csfyp.cs_fyp_android.model.respond.UserRespond;
@@ -107,6 +114,11 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
 
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.profile_frg, container, false);
         View v  = mDataBinding.getRoot();
+
+        if (mUserId == ((MainActivity)getActivity()).getmUserId())
+            mDataBinding.editBtnLayout.setVisibility(View.VISIBLE);
+
+        mDataBinding.setHandlers(this);
 
         mToolBar = (Toolbar) v.findViewById(R.id.profileToolBar);
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
@@ -221,11 +233,14 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
 
             setChartData(e, a, c, n, o);
 
-            if (data.getDescription() == null || data.getDescription().replace(" ","").isEmpty())
+            if (data.getDescription() == null || data.getDescription().replace(" ","").isEmpty()) {
                 data.setDescription(getResources().getString(R.string.profile_no_description));
+                //mDataBinding.profileDescription.setText(R.string.profile_no_description);
+            }
+
             if (data.getPhone() == null || data.getPhone().replace(" ","").isEmpty()) {
                 data.setPhone(getResources().getString(R.string.profile_no_phone));
-                mDataBinding.profilePhoneNo.setText(R.string.profile_no_phone);
+                //mDataBinding.profilePhoneNo.setText(R.string.profile_no_phone);
             }
 
             Picasso.with(getContext())
@@ -240,5 +255,35 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader<User> loader) {
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getLoaderManager().restartLoader(USER_LOADER_ID, null, this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(RefreshLoader event) {
+        if (event.getLoaderId() == USER_LOADER_ID) {
+            Log.i(TAG, "loader reloading");
+            getLoaderManager().restartLoader(event.getLoaderId(), null, this);
+        }
+    }
+
+    public void onClickEditProfile(View view) {
+        switchFragment(this, FrgEditProfile.newInstance(mUserObj.getId(), mUserObj.getProPic(), mUserObj.getFirstName(), mUserObj.getLastName(), mUserObj.getNickName(), mUserObj.getPhone(), mUserObj.getDescription()));
     }
 }

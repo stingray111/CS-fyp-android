@@ -85,6 +85,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
     private EditText mPasswordField;
     @ConfirmPassword(message = "Password doesn't match")
     private EditText mSecondPasswordField;
+    @NotEmpty
     @Pattern(regex = mRegexName,message = "Symbols are not allowed. Maximum length is 20")
     private EditText mFirstNameField;
     @NotEmpty
@@ -308,10 +309,6 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                 }
             });
         }
-
-
-
-
     }
 
     @Override
@@ -368,6 +365,16 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
         if(update != null) {
             EventBus.getDefault().removeStickyEvent(update);
         }
+    }
+
+    @Override
+    public void onBack(String identifier) {
+        View currentView = getActivity().getCurrentFocus();
+        if(currentView!=null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(currentView.getWindowToken(),0);
+        }
+        super.onBack(identifier);
     }
 }
 
