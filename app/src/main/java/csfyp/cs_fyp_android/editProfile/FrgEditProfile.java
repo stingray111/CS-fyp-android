@@ -140,7 +140,7 @@ public class FrgEditProfile extends CustomFragment implements Validator.Validati
         mToolBar = mDatabinding.editToolBar;
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
         parentActivity.setSupportActionBar(mToolBar);
-        mToolBar.setTitle("Edit Profile");
+        mToolBar.setTitle(R.string.editProfile);
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

@@ -70,7 +70,7 @@ public class FrgForgetPassword extends CustomFragment implements Validator.Valid
         mDatabinding = DataBindingUtil.inflate(inflater, R.layout.forget_password_frg, container, false);
 
         mToolBar = mDatabinding.forgetPwdToolBar;
-        mToolBar.setTitle("Forget Password");
+        mToolBar.setTitle(R.string.forgetPasswordTitle);
         mToolBar.setNavigationIcon(R.drawable.ic_previous_page);
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

@@ -188,7 +188,7 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
 
         // Setting up Action Bar
         mToolBar = mDataBinding.homeToolbar;
-        mToolBar.setTitle("Home");
+        mToolBar.setTitle(R.string.home);
         parentActivity.setSupportActionBar(mToolBar);
         mToolBar.setNavigationIcon(R.drawable.ic_hamburger);
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {

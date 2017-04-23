@@ -71,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         android:gravity="center"
-                        android:text="Personal Information"
+                        android:text="@string/personalInformation"
                         android:textColor="#000000"
                         android:textSize="20sp"
                         android:id="@+id/textView2" />
@@ -85,7 +85,7 @@
                             android:id="@+id/editFirstNameField"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="First Name"
+                            android:hint="@string/firstName"
                             android:inputType="textPersonName"
                             android:maxLines="1"
                             android:textSize="15sp" />
@@ -101,7 +101,7 @@
                             android:id="@+id/editLastNameField"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Last Name"
+                            android:hint="@string/lastName"
                             android:inputType="textPersonName"
                             android:maxLines="1"
                             android:textSize="15sp" />
@@ -117,7 +117,7 @@
                             android:id="@+id/editNickNameField"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Nick Name"
+                            android:hint="@string/nickName"
                             android:inputType="textPersonName"
                             android:maxLines="1"
                             android:textSize="15sp" />
@@ -133,7 +133,7 @@
                             android:id="@+id/editPhoneField"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Phone Number"
+                            android:hint="@string/phoneNum"
                             android:inputType="phone"
                             android:maxLines="1"
                             android:textSize="15sp" />
@@ -150,7 +150,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="150dp"
                             android:gravity="start"
-                            android:hint="Describe yourself"
+                            android:hint="@string/description"
                             android:inputType="textMultiLine"
                             android:textSize="15sp" />
 
@@ -174,7 +174,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_margin="15dp"
-                            android:text="Apply Changes"
+                            android:text="@string/applyChanges"
                             style="@style/DefaultButton" />
 
                     </LinearLayout>

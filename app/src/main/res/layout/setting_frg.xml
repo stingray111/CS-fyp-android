@@ -91,7 +91,7 @@
                     android:paddingTop="10dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
-                    android:text="Chat Service"
+                    android:text="@string/chat"
                     android:textSize="16sp" />
 
                 <View
@@ -112,7 +112,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Floating Chat Menu"
+                        android:text="@string/floatingChatMenu"
                         android:layout_weight="4"
                         android:textSize="20sp"/>
                     <Switch
@@ -161,7 +161,7 @@
                     android:layout_height="40dp"
                     android:layout_margin="8dp"
                     android:background="@drawable/bg_button"
-                    android:text="logout"
+                    android:text="@string/logout"
                     android:textColor="#FFF"/>
 
             </LinearLayout>

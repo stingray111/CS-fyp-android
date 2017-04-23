@@ -39,7 +39,7 @@
                     android:layout_margin="8dp"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:text="How do the following sentences describe you?"/>
+                    android:text="@string/selfPersonalityTestingQuestion"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -48,7 +48,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:textSize="18sp"
-                    android:text="1. I am reserved."/>
+                    android:text="@string/selfPersonalityTestingQuestion1"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -90,7 +90,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:textSize="18sp"
-                    android:text="2. I am generally trusting."/>
+                    android:text="@string/selfPersonalityTestingQuestion2"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -132,7 +132,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:textSize="18sp"
-                    android:text="3. I tend to be lazy."/>
+                    android:text="@string/selfPersonalityTestingQuestion3"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -174,7 +174,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:textSize="18sp"
-                    android:text="4. I am relaxed, handle stress well."/>
+                    android:text="@string/selfPersonalityTestingQuestion4"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -216,7 +216,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:textSize="18sp"
-                    android:text="5. I have few artistic interests."/>
+                    android:text="@string/selfPersonalityTestingQuestion5"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -258,7 +258,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:textSize="18sp"
-                    android:text="6. I am outgoing, sociable."/>
+                    android:text="@string/selfPersonalityTestingQuestion6"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -300,7 +300,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:textSize="18sp"
-                    android:text="7. I tend to find fault with others."/>
+                    android:text="@string/selfPersonalityTestingQuestion7"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -342,7 +342,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:textSize="18sp"
-                    android:text="8. I do a thorough job."/>
+                    android:text="@string/selfPersonalityTestingQuestion8"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -384,7 +384,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:textSize="18sp"
-                    android:text="9. I get nervous easily."/>
+                    android:text="@string/selfPersonalityTestingQuestion9"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -426,7 +426,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:textSize="18sp"
-                    android:text="10. I have an active imagination."/>
+                    android:text="@string/selfPersonalityTestingQuestion10"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -467,7 +467,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_margin="15dp"
-                    android:text="Submit"
+                    android:text="@string/submit"
                     style="@style/DefaultButton"
                     android:onClick="@{handlers::onClickSubmitSelfRate}"/>
 

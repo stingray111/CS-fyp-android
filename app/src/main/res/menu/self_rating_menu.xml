@@ -3,6 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/selfRatingSkip"
         android:orderInCategory="100"
-        android:title="skip"
+        android:title="@string/self_rate_skip_dialog_title"
         app:showAsAction="always" />
 </menu>

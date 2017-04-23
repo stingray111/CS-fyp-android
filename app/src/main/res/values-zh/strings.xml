@@ -105,4 +105,57 @@
     <string name="skeptical">疑心重</string>
     <string name="rational">理性</string>
 
+    <string name="deadline">報名限期</string>
+    <string name="logout">登出</string>
+    <string name = "chat">聊天</string>
+    <string name = "floatingChatMenu">浮動聊天視窗</string>
+    <string name = "detail">詳情</string>
+    <string name = "people">參加者</string>
+    <string name = "event">活動</string>
+    <string name = "editProfile">更改資料</string>
+    <string name = "userNameOrEmail">用戶名稱 ／ 電郵</string>
+    <string name = "password">密碼</string>
+    <string name = "forgetPassword">忘記密碼?</string>
+    <string name = "login">登入</string>
+    <string name = "signUp">未有帳戶? 註冊</string>
+    <string name = "register">註冊</string>
+    <string name = "loginInformation">登入資料</string>
+    <string name = "username">用戶名稱</string>
+    <string name = "email">電郵</string>
+    <string name = "enterPasswordAgain">再次輸入密碼</string>
+
+
+    <string name = "personalInformation">個人資料</string>
+    <string name = "firstName">名字</string>
+    <string name = "lastName">姓氏</string>
+    <string name = "nickName">暱稱</string>
+    <string name = "gender">性別</string>
+    <string name = "male">男</string>
+    <string name = "female">女</string>
+    <string name = "phoneNum">電話號碼</string>
+    <string name = "description">請形容你自己</string>
+    <string name = "submit">提交</string>
+
+    <string name = "forgetPasswordTitle">忘記密碼</string>
+    <string name = "enterYourEmail">輸入電郵地址</string>
+
+
+    <string name = "selfPersonalityTesting">自我心理測驗</string>
+    <string name = "selfPersonalityTestingQuestion">以下句子適合形容你的性格嗎?</string>
+    <string name = "selfPersonalityTestingQuestion1">1. 我是一個含蓄的人</string>
+    <string name = "selfPersonalityTestingQuestion2">2. 我輕易相信別人</string>
+    <string name = "selfPersonalityTestingQuestion3">3. 我很懶惰</string>
+    <string name = "selfPersonalityTestingQuestion4">4. 我能輕易應付壓力</string>
+    <string name = "selfPersonalityTestingQuestion5">5. 我幾乎沒有藝術興趣</string>
+    <string name = "selfPersonalityTestingQuestion6">6. 我很外向和善於交往</string>
+    <string name = "selfPersonalityTestingQuestion7">7. 我常挑別人的錯處</string>
+    <string name = "selfPersonalityTestingQuestion8">8. 我做事徹底</string>
+    <string name = "selfPersonalityTestingQuestion9">9. 我容易感到緊張</string>
+    <string name = "selfPersonalityTestingQuestion10">10. 我幻想力豐富</string>
+
+    <string name = "home">首頁</string>
+    <string name = "applyChanges">更新資料</string>
+    <string name = "youHaveNoHistory">你未有任何歷史</string>
+    <string name = "youHaveNotJoinedAnyEvent">你未有參加任何活動</string>
+
 </resources>

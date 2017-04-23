@@ -33,9 +33,9 @@ import retrofit2.http.POST;
 
 public interface HTTP {
 
-    //String theURL ="https://stingray.space:3001";
+    String theURL ="https://stingray.space:3001";
     //String theURL = "https://stingray.space:3000";
-    String theURL = "http://192.168.1.241:3000";
+    //String theURL = "http://192.168.1.241:3000";
 
 
     @POST("/api/register")

@@ -30,7 +30,7 @@
             android:id="@+id/historyEmptyMsg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="You don't have any history"
+            android:text="@string/youHaveNoHistory"
             android:textSize="16sp"
             android:gravity="center"
             android:visibility="gone"/>

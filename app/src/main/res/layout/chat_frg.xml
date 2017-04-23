@@ -17,7 +17,7 @@
             android:id="@+id/chatEmptyMsg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="You don't have any event"
+            android:text="@string/youHaveNotJoinedAnyEvent"
             android:textSize="16sp"
             android:gravity="center"
             android:visibility="gone"/>

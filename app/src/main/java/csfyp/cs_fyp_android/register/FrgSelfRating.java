@@ -56,14 +56,15 @@ public class FrgSelfRating  extends CustomFragment {
         AppCompatActivity parentActivity = (AppCompatActivity)getActivity();
         parentActivity.setSupportActionBar(mToolBar);
 
-        parentActivity.getSupportActionBar().setTitle("Self Personality Testing");
+        parentActivity.getSupportActionBar().setTitle(R.string.selfPersonalityTesting);
 
         mToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.selfRatingSkip) {
                     // // TODO: 3/2/2017 add skip action
-                    mDialog = NoticeDialogFragment.newInstance(R.string.self_rate_skip_dialog_title, R.string.self_rate_skip_dialog_message);
+
+                    mDialog = NoticeDialogFragment.newInstance(R.string.self_rate_skip_dialog_message,R.string.self_rate_skip_dialog_title);
                     mDialog.setDialogListener(new NoticeDialogFragment.NoticeDialogListener() {
                         @Override
                         public void onDialogPositiveClick(DialogFragment dialog) {

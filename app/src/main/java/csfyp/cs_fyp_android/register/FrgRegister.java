@@ -118,7 +118,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
         super.onCreateView(inflater,container,savedInstanceState);
         View v  =  inflater.inflate(R.layout.register_frg,container,false);
         mToolBar = (Toolbar) v.findViewById(R.id.registerToolBar);
-        mToolBar.setTitle("New Account");
+        mToolBar.setTitle(R.string.register);
         AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
         parentActivity.setSupportActionBar(mToolBar);
 
