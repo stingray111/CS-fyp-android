@@ -68,6 +68,7 @@ public class FrgEditProfile extends CustomFragment implements Validator.Validati
 
 
     private int mUserId;
+    @NotEmpty
     @Pattern(regex = mRegexName,message = "Symbols are not allowed. Maximum length is 20")
     private EditText mFirstNameField;
     @NotEmpty

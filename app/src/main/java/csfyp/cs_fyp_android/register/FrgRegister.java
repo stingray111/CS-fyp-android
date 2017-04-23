@@ -85,6 +85,7 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
     private EditText mPasswordField;
     @ConfirmPassword(message = "Password doesn't match")
     private EditText mSecondPasswordField;
+    @NotEmpty
     @Pattern(regex = mRegexName,message = "Symbols are not allowed. Maximum length is 20")
     private EditText mFirstNameField;
     @NotEmpty
