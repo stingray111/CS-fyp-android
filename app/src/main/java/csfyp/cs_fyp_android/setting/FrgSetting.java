@@ -79,17 +79,21 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater,container,savedInstanceState);
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestProfile()
-                .requestEmail()
-                .requestId()
-                .requestIdToken(getString(R.string.oauth_client_id))
-                .requestScopes(new Scope(Scopes.PROFILE))
-                .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-                .enableAutoManage(getActivity(), this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+
+        if(mGoogleApiClient != null) {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestProfile()
+                    .requestEmail()
+                    .requestId()
+                    .requestIdToken(getString(R.string.oauth_client_id))
+                    .requestScopes(new Scope(Scopes.PROFILE))
+                    .build();
+
+            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                    .enableAutoManage(getActivity(), this)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .build();
+        }
 
         mBinding = DataBindingUtil.inflate(inflater, R.layout.setting_frg, container, false);
         mBinding.setHandlers(this);
@@ -178,13 +182,15 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
                 call.enqueue(new Callback<ErrorMsgOnly>() {
                     @Override
                     public void onResponse(Call<ErrorMsgOnly> call, Response<ErrorMsgOnly> response) {
+                        /*
                         if (response.isSuccessful()) {
                             if (response.body().getErrorMsg() == null) {
+                            */
                                 int acType = ((MainActivity)getActivity()).getmAcType();
                                 if(acType == FrgLogin.FB){
                                     LoginManager.getInstance().logOut();
                                 }else if(acType == FrgLogin.GOOGLE){
-                                    if(mGoogleApiClient.isConnected()) {
+                                    if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
                                         Auth.GoogleSignInApi.signOut(mGoogleApiClient);
                                         Log.d(TAG, "signout google");
                                     }else{
@@ -213,10 +219,14 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
                                 ((MainActivity)getActivity()).stopService(intent);
 
                                 replaceFragment(FrgLogin.newInstance());
+                        /*
                             } else
                                 EventBus.getDefault().post(new ErrorMsg("Logout fail",Toast.LENGTH_SHORT));
                         } else
                             EventBus.getDefault().post(new ErrorMsg("Logout fail",Toast.LENGTH_SHORT));
+                            */
+
+                        view.setOnClickListener(_this);
                     }
 
                     @Override
@@ -234,11 +244,21 @@ public class FrgSetting extends CustomFragment implements  GoogleApiClient.OnCon
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             mGoogleApiClient.stopAutoManage(getActivity());
             mGoogleApiClient.disconnect();
         }
+        super.onDestroyView();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.stopAutoManage(getActivity());
+            mGoogleApiClient.disconnect();
+        }
+        super.onDestroy();
     }
 
     public void onClickChinese(View view) {

@@ -1,17 +1,20 @@
 package csfyp.cs_fyp_android.profile;
 
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.RadarChart;
@@ -40,6 +43,7 @@ import csfyp.cs_fyp_android.databinding.ProfileFrgBinding;
 import csfyp.cs_fyp_android.editProfile.FrgEditProfile;
 import csfyp.cs_fyp_android.lib.CustomLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
+import csfyp.cs_fyp_android.lib.NoticeDialogFragment;
 import csfyp.cs_fyp_android.lib.eventBus.RefreshLoader;
 import csfyp.cs_fyp_android.model.User;
 import csfyp.cs_fyp_android.model.request.UserRequest;
@@ -54,6 +58,9 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
     private int mUserId;
     private User mUserObj;
     private RadarChart mChart;
+    private ImageButton mImageButton;
+    //private NoticeDialogFragment mDialog;
+    private AlertDialog.Builder mDialog;
     private ProfileFrgBinding mDataBinding;
     private Response<UserRespond> mUserRespond;
 
@@ -148,6 +155,8 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
         MarkerView mv = new MarkerView(getContext(),R.layout.radar_markerview);
         mv.setChartView(mChart); // For bounds control
 
+
+
         //setData();
 
         mChart.animateXY(
@@ -188,6 +197,25 @@ public class FrgProfile extends CustomFragment implements LoaderManager.LoaderCa
         l.setXEntrySpace(5f);
         l.setYEntrySpace(3f);
         l.setTextColor(Color.BLACK);
+
+        mDialog = new AlertDialog.Builder(getContext())
+                .setMessage(R.string.ratingFullForm)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }
+                );
+
+                        mImageButton = mDataBinding.showRatingFullName;
+        mImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.show();
+
+            }
+        });
+
 
         getLoaderManager().initLoader(USER_LOADER_ID, null, this);
 

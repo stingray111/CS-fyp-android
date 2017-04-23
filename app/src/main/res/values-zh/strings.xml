@@ -158,4 +158,6 @@
     <string name = "youHaveNoHistory">你未有任何歷史</string>
     <string name = "youHaveNotJoinedAnyEvent">你未有參加任何活動</string>
 
+    <string name = "ratingFullForm">"O: 開放性\nN: 神經質\nA: 友善性\nE: 外向性\nC: 審慎性"</string>
+
 </resources>

@@ -163,7 +163,7 @@
     <string name = "youHaveNoHistory">You don\'t have any history</string>
     <string name = "youHaveNotJoinedAnyEvent">You haven\'t joined any event yet</string>
 
-
+    <string name = "ratingFullForm">"O: Openness to experience\nN: Neuroticism\nA: Agreeableness\nE: Extraversion\nC: Conscientiousness"</string>
 
 
 
