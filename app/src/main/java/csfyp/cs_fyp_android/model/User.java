@@ -1,7 +1,5 @@
 package csfyp.cs_fyp_android.model;
 
-import android.util.Log;
-
 public class User {
     private int id;
     private String userName;
@@ -93,6 +91,16 @@ public class User {
         this.proPic = proPic;
         this.isSelfRated = false;
         this.level = 1;
+    }
+
+    public User(int id, String firstName, String lastName, String nickName, String proPic, String phone, String description) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.nickName = nickName;
+        this.proPic = proPic;
+        this.phone = phone;
+        this.description = description;
     }
 
     public String getFullName(){
@@ -260,5 +268,19 @@ public class User {
         this.msgToken = msgToken;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public void setProPic(String proPic) {
+        this.proPic = proPic;
+    }
 }

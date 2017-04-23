@@ -2,7 +2,6 @@ package csfyp.cs_fyp_android.lib;
 
 import java.util.concurrent.TimeUnit;
 
-import csfyp.cs_fyp_android.lib.eventBus.ErrorMsg;
 import csfyp.cs_fyp_android.model.Event;
 import csfyp.cs_fyp_android.model.Login;
 import csfyp.cs_fyp_android.model.User;
@@ -34,9 +33,9 @@ import retrofit2.http.POST;
 
 public interface HTTP {
 
-    String theURL ="https://stingray.space:3001";
+    //String theURL ="https://stingray.space:3001";
     //String theURL = "https://stingray.space:3000";
-    //String theURL = "http://192.168.1.5:3000";
+    String theURL = "http://192.168.1.241:3000";
 
 
     @POST("/api/register")
@@ -77,6 +76,11 @@ public interface HTTP {
     @POST("/api/get-user")
     Call<UserRespond> getUser(
             @Body UserRequest userRequest
+    );
+
+    @POST("/api/edit-profile")
+    Call<ErrorMsgOnly> editProfie (
+            @Body User user
     );
 
     @POST("/api/push-event")

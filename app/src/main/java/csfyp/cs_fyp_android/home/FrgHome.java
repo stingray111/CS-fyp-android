@@ -1,14 +1,10 @@
 package csfyp.cs_fyp_android.home;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -30,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.maps.GoogleMap;
@@ -50,7 +45,6 @@ import csfyp.cs_fyp_android.CustomMapFragment;
 import csfyp.cs_fyp_android.MainActivity;
 import csfyp.cs_fyp_android.R;
 import csfyp.cs_fyp_android.about.FrgAbout;
-import csfyp.cs_fyp_android.chat.ChatService;
 import csfyp.cs_fyp_android.chat.FrgChat;
 import csfyp.cs_fyp_android.currentEvent.FrgCurrentEvent;
 import csfyp.cs_fyp_android.databinding.HomeFrgBinding;
@@ -59,8 +53,7 @@ import csfyp.cs_fyp_android.history.FrgHistory;
 import csfyp.cs_fyp_android.lib.ClusterableMarker;
 import csfyp.cs_fyp_android.lib.CustomBatchLoader;
 import csfyp.cs_fyp_android.lib.HTTP;
-import csfyp.cs_fyp_android.lib.Utils;
-import csfyp.cs_fyp_android.lib.eventBus.ChatServiceSetting;
+import csfyp.cs_fyp_android.lib.eventBus.RefreshLoader;
 import csfyp.cs_fyp_android.lib.eventBus.ScrollEvent;
 import csfyp.cs_fyp_android.lib.eventBus.SnackBarMessageContent;
 import csfyp.cs_fyp_android.lib.eventBus.SwitchFrg;
@@ -640,5 +633,19 @@ public class FrgHome extends CustomMapFragment implements LoaderManager.LoaderCa
         }
     }
 
+    @Subscribe
+    public void onMessageEvent(RefreshLoader event) {
+        if (event.getLoaderId() == HOME_LOADER_ID) {
+            Log.i(TAG, "loader reloading");
+            // load propic
+            Picasso.with(getContext())
+                    .load(((MainActivity)getActivity()).getmSelf().getProPic())
+                    .resize(100,100)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_propic_big)
+                    .into(mDataBinding.homeProPic);
+            mDataBinding.homeUsername.setText(((MainActivity)getActivity()).getmSelf().getDisplayName());
+        }
+    }
 }
 

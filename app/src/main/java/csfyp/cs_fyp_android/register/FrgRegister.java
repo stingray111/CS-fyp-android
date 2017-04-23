@@ -308,10 +308,6 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
                 }
             });
         }
-
-
-
-
     }
 
     @Override
@@ -368,6 +364,16 @@ public class FrgRegister extends CustomFragment implements Validator.ValidationL
         if(update != null) {
             EventBus.getDefault().removeStickyEvent(update);
         }
+    }
+
+    @Override
+    public void onBack(String identifier) {
+        View currentView = getActivity().getCurrentFocus();
+        if(currentView!=null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(currentView.getWindowToken(),0);
+        }
+        super.onBack(identifier);
     }
 }
 

@@ -140,9 +140,11 @@ public class FrgCurrentEvent extends CustomFragment implements LoaderManager.Loa
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(RefreshLoader event) {
-        Log.i("reload", "here");
-        getLoaderManager().restartLoader(event.getLoaderId(), null, this);
-        mEventAdapter.notifyDataSetChanged();
+        if (event.getLoaderId() == CURRENT_EVENT_LOADER_ID) {
+            Log.i(TAG, "loader reloading");
+            getLoaderManager().restartLoader(event.getLoaderId(), null, this);
+            mEventAdapter.notifyDataSetChanged();
+        }
     }
 
     @Subscribe( threadMode = ThreadMode.MAIN )
